@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
@@ -36,6 +37,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
     private ImageView photo_Iv;
     private RadioGroup rg;
     private Bitmap bitmap;
+    private EditText carEt;
 
     int login_status = -1;
     int status_IO;
@@ -64,6 +66,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
         photo_Tv = (TextView) view.findViewById(R.id.photo_button);
         confirm_Tv = (TextView) view.findViewById(R.id.confirm_button);
         photo_Iv = (ImageView) view.findViewById(R.id.photo);
+        carEt = (EditText) view.findViewById(R.id.car_editText);
 
         photo_Tv.setOnClickListener(this);
         confirm_Tv.setOnClickListener(this);
@@ -150,12 +153,21 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
                 startActivityForResult(intent2, REQUEST_PHOTO);//开启相机，传入上面的Intent对象
                 break;
             case R.id.confirm_button:
-                if (bitmap != null ){
-                    String photoName = PhotoSaver.createPhotoName();
-                    PhotoSaver.savePhoto2SDCard(PATH, photoName, bitmap);
-                    Toast.makeText(getActivity(), "照片存储成功！路径为 " + PATH, Toast.LENGTH_SHORT).show();
-                    //TODO 还应检查车架号是否输入
+                if (carEt.getText().toString()!=""){
+                    if (bitmap != null){
+                        String photoName = PhotoSaver.createPhotoName();
+                        PhotoSaver.savePhoto2SDCard(PATH, photoName, bitmap);
+                        Toast.makeText(getActivity(), "照片存储成功！路径为 " + PATH, Toast.LENGTH_SHORT).show();
+                        //TODO 将车架号和合同照片共同上传
+                    }
+                    else {
+                        Toast.makeText(getActivity(), "请拍摄合同照片后再确认提交", Toast.LENGTH_SHORT).show();
+                    }
                 }
+                else {
+                    Toast.makeText(getActivity(), "请输入车架号信息后再确认提交", Toast.LENGTH_SHORT).show();
+                }
+
                 break;
         }
     }

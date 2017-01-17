@@ -32,4 +32,7 @@ dependencies {
     compile 'cn.bingoogolapple:bga-qrcodecore:1.1.6@aar'
     compile 'cn.bingoogolapple:bga-zxing:1.1.6@aar'
     compile 'pub.devrel:easypermissions:0.1.7'
+    compile 'com.squareup.okhttp3:okhttp:3.5.0'
+    compile 'com.squareup.okio:okio:1.7.0'
+    compile 'com.alibaba:fastjson:1.2.21'
 }

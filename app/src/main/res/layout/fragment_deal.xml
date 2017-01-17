@@ -273,7 +273,7 @@
                     <TextView
                         android:id="@+id/photo_button"
                         style="@style/AutoWrapTv"
-                        android:text="开始拍照" />
+                        android:text="开始拍摄合同" />
 
                 </TableLayout>
 

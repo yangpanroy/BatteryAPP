@@ -105,4 +105,39 @@ public class JsonLoader {
         return hashMapList_container;
     }
 
+    public ArrayList<HashMap<String,Object>> loadSearchResultJson2container(String jsonObject, ArrayList<HashMap<String,Object>> container){
+        this.jsonObject = jsonObject;
+        hashMapList_container = container;
+        try {
+            //从assets获取json文件
+            InputStreamReader isr = new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream("assets/" + jsonFile));
+            //字节流转字符流
+            BufferedReader bfr = new BufferedReader(isr);
+            String line ;
+            StringBuilder stringBuilder = new StringBuilder();
+            while ((line = bfr.readLine())!=null){
+                stringBuilder.append(line);
+            }//将JSON数据转化为字符串
+            JSONObject root = new JSONObject(stringBuilder.toString());
+            JSONArray array = root.getJSONArray(jsonObject);
+            for (int i = 0;i < array.length();i++)
+            {
+                JSONObject module = array.getJSONObject(i);
+                HashMap<String, Object> map = new HashMap<String, Object>();
+                map.put("ItemTitle", module.getString("title"));
+                map.put("ItemText1", module.getString("date"));
+                map.put("ItemText2", module.getString("text1"));
+                map.put("ItemText3", module.getString("text2"));
+                map.put("ItemText4", module.getString("text3"));
+                map.put("ItemText5", module.getString("service_phone"));
+                hashMapList_container.add(map);
+                bfr.close();
+                isr.close();//依次关闭流
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        return hashMapList_container;
+    }
+
 }
