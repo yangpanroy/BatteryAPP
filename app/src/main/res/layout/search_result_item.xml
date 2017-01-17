@@ -13,13 +13,13 @@
     <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/searchResult_list_cell"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:stretchColumns="0">
 
         <TableRow android:layout_margin="8dp">
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -39,7 +39,7 @@
                         android:layout_height="match_parent"
                         android:text="深圳比克汽车厂"
                         android:gravity="center_vertical"
-                        android:textSize="6pt"
+                        android:textSize="8pt"
                         android:id="@+id/searchResult_Itemtitle" />
 
                 </LinearLayout>
@@ -48,35 +48,35 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="交付日期：2016年8月3日 "
-                    android:textSize="6pt"
+                    android:textSize="7pt"
                     android:id="@+id/searchResult_Itemtext1" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="电池包匹配：11A2FMZABCDEF1212345AB..."
-                    android:textSize="6pt"
+                    android:text="电池包匹配：11A2FMZADEF1212345AB..."
+                    android:textSize="7pt"
                     android:id="@+id/searchResult_Itemtext2" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="汽车匹配状态：已匹配"
-                    android:textSize="6pt"
+                    android:textSize="7pt"
                     android:id="@+id/searchResult_Itemtext3" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="汽车匹配车架号：7758521"
-                    android:textSize="6pt"
+                    android:textSize="7pt"
                     android:id="@+id/searchResult_Itemtext4" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="售后投诉电话：0045-77892122"
-                    android:textSize="6pt"
+                    android:textSize="7pt"
                     android:id="@+id/searchResult_Itemtext5" />
 
             </LinearLayout>

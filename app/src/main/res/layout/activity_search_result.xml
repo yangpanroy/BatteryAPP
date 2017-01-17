@@ -43,7 +43,7 @@
                             android:layout_height="match_parent"
                             android:text="@string/itemTitle"
                             android:gravity="center_vertical"
-                            android:textSize="6pt"
+                            android:textSize="8pt"
                             android:id="@+id/searchResult_head_title" />
 
                     </LinearLayout>
@@ -51,50 +51,50 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="模组编号：11A2FMZABCDEF1212345AB..."
-                        android:textSize="6pt"
+                        android:text="模组编号：11A2FMZADEF1212345AB..."
+                        android:textSize="7pt"
                         android:id="@+id/searchResult_head_text1" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="生产企业：深圳比克电池厂"
-                        android:textSize="6pt"
+                        android:textSize="7pt"
                         android:id="@+id/searchResult_head_text2" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="生产日期：2016年8月3日 "
-                        android:textSize="6pt"
+                        android:textSize="7pt"
                         android:id="@+id/searchResult_head_text3" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="产品批次：2016年8月3日"
-                        android:textSize="6pt"
+                        android:textSize="7pt"
                         android:id="@+id/searchResult_head_text4" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="电池类型：锂电池"
-                        android:textSize="6pt"
+                        android:textSize="7pt"
                         android:id="@+id/searchResult_head_text5" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="电池包匹配：11A2FMZABCDEF1212345AB..."
-                        android:textSize="6pt"
+                        android:text="电池包匹配：11A2FMZABCD212345AB..."
+                        android:textSize="7pt"
                         android:id="@+id/searchResult_head_text6" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="售后投诉电话：0045-77892122"
-                        android:textSize="6pt"
+                        android:textSize="7pt"
                         android:id="@+id/searchResult_head_text7" />
 
                 </LinearLayout>

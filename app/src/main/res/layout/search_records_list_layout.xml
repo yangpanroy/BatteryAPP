@@ -22,8 +22,8 @@
             android:background="@color/white"
             android:id="@+id/clear_all_records_tv"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:textSize="16sp"
+            android:layout_height="50dp"
+            android:textSize="8pt"
             android:gravity="center"
             android:text="清除历史记录"/>
 
