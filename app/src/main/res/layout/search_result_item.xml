@@ -85,7 +85,7 @@
                 android:layout_width="50pt"
                 android:layout_height="50pt"
                 android:id="@+id/searchResult_ItemImage"
-                android:src="@drawable/ic_battery" />
+                android:src="@drawable/battery_pic" />
 
         </TableRow>
 

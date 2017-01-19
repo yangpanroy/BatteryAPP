@@ -119,10 +119,10 @@ public class fragment_main extends Fragment implements MyItemClickListener{
     }
 
     @Override
-    public void onItemClick(View view, int postion) {//点击事件的回调函数
+    public void onItemClick(View view, int position) {//点击事件的回调函数
         //TODO 定义Item的点击响应事件
-        System.out.println("点击了第" + postion + "行");
-        Toast.makeText(getActivity(), "点击了第"+postion+"行模组信息", Toast.LENGTH_SHORT).show();
+        System.out.println("点击了第" + position + "行");
+        Toast.makeText(getActivity(), "点击了第"+position+"行模组信息", Toast.LENGTH_SHORT).show();
     }
 
 }

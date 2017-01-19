@@ -146,7 +146,7 @@
                             android:layout_height="50pt"
                             android:layout_gravity="center"
                             android:id="@+id/user_company_Image"
-                            android:src="@drawable/ic_battery" />
+                            android:src="@drawable/user_head" />
 
                     </TableRow>
 
@@ -241,7 +241,7 @@
                             android:layout_height="40pt"
                             android:layout_gravity="center"
                             android:id="@+id/Image_4s"
-                            android:src="@drawable/ic_battery" />
+                            android:src="@drawable/user_head" />
 
                     </TableRow>
 
@@ -290,13 +290,14 @@
                 android:layout_width="300dp"
                 android:layout_height="200dp"
                 android:id="@+id/photo"
-                android:src="@drawable/photo"
+                android:src="@drawable/contract"
                 android:layout_gravity="center_horizontal"
                 android:layout_margin="20dp"/>
 
             <TextView
                 android:id="@+id/photo_button"
                 android:layout_width="match_parent"
+                android:layout_height="50dp"
                 style="@style/AutoWrapTv"
                 android:textSize="7pt"
                 android:text="开始拍摄合同" />
@@ -304,6 +305,7 @@
             <TextView
                 android:id="@+id/confirm_button"
                 android:layout_width="match_parent"
+                android:layout_height="50dp"
                 style="@style/AutoWrapTv"
                 android:text="确定提交"
                 android:textSize="7pt"

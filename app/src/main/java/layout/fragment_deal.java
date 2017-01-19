@@ -68,6 +68,9 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
         photo_Iv = (ImageView) view.findViewById(R.id.photo);
         carEt = (EditText) view.findViewById(R.id.car_editText);
 
+        photo_Tv.setVisibility(View.VISIBLE);
+        confirm_Tv.setVisibility(View.GONE);
+
         photo_Tv.setOnClickListener(this);
         confirm_Tv.setOnClickListener(this);
     }
@@ -158,7 +161,11 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
                         String photoName = PhotoSaver.createPhotoName();
                         PhotoSaver.savePhoto2SDCard(PATH, photoName, bitmap);
                         Toast.makeText(getActivity(), "照片存储成功！路径为 " + PATH, Toast.LENGTH_SHORT).show();
+                        photo_Tv.setVisibility(View.VISIBLE);
+                        confirm_Tv.setVisibility(View.GONE);
+                        photo_Iv.setImageDrawable(getResources().getDrawable(R.drawable.contract));
                         //TODO 将车架号和合同照片共同上传
+
                     }
                     else {
                         Toast.makeText(getActivity(), "请拍摄合同照片后再确认提交", Toast.LENGTH_SHORT).show();
@@ -201,6 +208,10 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
             if (requestCode == REQUEST_PHOTO){
                 bitmap=(Bitmap) bundle.get("data");//从附加值中获取返回的图像
                 photo_Iv.setImageBitmap(bitmap);//显示缩略图像
+                if (photo_Iv != null){
+                    photo_Tv.setVisibility(View.GONE);
+                    confirm_Tv.setVisibility(View.VISIBLE);
+                }
             }
 
         } if(resultCode == getActivity().RESULT_CANCELED) {

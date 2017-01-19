@@ -77,7 +77,7 @@
                 android:layout_width="50pt"
                 android:layout_height="50pt"
                 android:id="@+id/ItemImage"
-                android:src="@drawable/ic_battery"
+                android:src="@drawable/battery_pic"
                 android:layout_alignParentTop="true"
                 android:layout_toEndOf="@+id/textView" />
 

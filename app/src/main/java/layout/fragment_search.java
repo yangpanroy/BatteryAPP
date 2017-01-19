@@ -114,25 +114,8 @@ public class fragment_search extends Fragment implements View.OnClickListener {
                     if (searchContentEt.getText().toString().length() > 0) {
 
                         String record = searchContentEt.getText().toString();
-
-                        //判断数据库中是否存在该记录
-                        if (!recordsDao.isHasRecord(record)) {
-                            tempList.add(record);
-                        }
-                        //将搜索记录保存至数据库中
-                        recordsDao.addRecords(record);
-                        reversedList();
-                        checkRecordsSize();
-                        recordsAdapter.notifyDataSetChanged();
-
-                        //根据关键词去搜索
-
-                        //TODO 跳转到搜索结果页面
-                        Intent intent = new Intent(MainActivity.mainActivity, SearchResultActivity.class);
-                        Bundle bundle=new Bundle();
-                        bundle.putString("battery_code", searchContentEt.getText().toString());
-                        intent.putExtras(bundle);
-                        startActivityForResult(intent, 2);
+                        //开始搜索
+                        doSearch(record);
 
                     } else {
                         Toast.makeText(getActivity(), "搜索内容不能为空", Toast.LENGTH_SHORT).show();
@@ -171,8 +154,32 @@ public class fragment_search extends Fragment implements View.OnClickListener {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //将获取到的字符串传到搜索结果界面
                 searchContentEt.setText(searchRecordsList.get(position));
+                String record = searchContentEt.getText().toString();
+                //开始搜索
+                doSearch(record);
             }
         });
+    }
+
+    public void doSearch(String record) {
+        //判断数据库中是否存在该记录
+        if (!recordsDao.isHasRecord(record)) {
+            tempList.add(record);
+        }
+        //将搜索记录保存至数据库中
+        recordsDao.addRecords(record);
+        reversedList();
+        checkRecordsSize();
+        recordsAdapter.notifyDataSetChanged();
+
+        //根据关键词去搜索
+
+        //跳转到搜索结果页面
+        Intent intent = new Intent(MainActivity.mainActivity, SearchResultActivity.class);
+        Bundle bundle=new Bundle();
+        bundle.putString("battery_code", searchContentEt.getText().toString());
+        intent.putExtras(bundle);
+        startActivityForResult(intent, 2);
     }
 
     //当没有匹配的搜索数据的时候不显示历史记录栏
@@ -215,6 +222,9 @@ public class fragment_search extends Fragment implements View.OnClickListener {
             Bundle bundle=data.getExtras();
             String result= bundle.getString("result");
             searchContentEt.setText(result);
+            String record = searchContentEt.getText().toString();
+            //开始搜索
+            doSearch(record);
         }
     }
 
