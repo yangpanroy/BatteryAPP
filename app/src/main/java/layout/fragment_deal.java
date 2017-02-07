@@ -10,6 +10,8 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,13 +23,26 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.novadata.batteryapp.MainActivity;
 import com.novadata.batteryapp.R;
 import com.novadata.batteryapp.ScanActivity;
+import com.zhy.http.okhttp.OkHttpUtils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import Bean.Import_Export_Item;
+import Callback.ListImportExportItemCallback;
+import Callback.MyStringCallback;
+import adapter.ImportExportItemAdapter;
+import adapter.MyItemClickListener;
+import okhttp3.Call;
+import okhttp3.MediaType;
 import utils.PhotoSaver;
 
-public class fragment_deal extends Fragment implements View.OnClickListener, RadioGroup.OnCheckedChangeListener {
+public class fragment_deal extends Fragment implements View.OnClickListener, RadioGroup.OnCheckedChangeListener, MyItemClickListener {
 
 
     private View view;
@@ -38,6 +53,9 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
     private RadioGroup rg;
     private Bitmap bitmap;
     private EditText carEt;
+    private RecyclerView rv;
+    private ImportExportItemAdapter ieItemAdapter;
+    private ArrayList<HashMap<String,Object>> listItem = new ArrayList<HashMap<String,Object>>();
 
     int login_status = -1;
     int status_IO;
@@ -78,6 +96,8 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
     private void initCompanyView() {
         start2Scan_Tv = (TextView) view.findViewById(R.id.scan_button);
         rg = (RadioGroup) view.findViewById(R.id.company_RadioGroup);
+
+        getList();//GET整个出入库扫描信息
 
         start2Scan_Tv.setOnClickListener(this);
         rg.setOnCheckedChangeListener(this);
@@ -204,6 +224,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
             if (requestCode == REQUEST_SCAN){
                 String result= bundle.getString("result");//获得扫描的二维码信息
                 //TODO 将结果展示
+                initList();
             }
             if (requestCode == REQUEST_PHOTO){
                 bitmap=(Bitmap) bundle.get("data");//从附加值中获取返回的图像
@@ -219,5 +240,79 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
         }
     }
 
+    private void initList() {
+        //先POST到json server
+        OkHttpUtils
+                .postString()
+                .url("http://192.168.191.1:3000/Import_Export_Item")
+                .mediaType(MediaType.parse("application/json; charset=utf-8"))
+                .content(new Gson().toJson(new Import_Export_Item("模组：11A2FMZABCDEF1212345AB...", "深圳比克电池厂", "深圳比克汽车厂")))
+                /*TODO 此处应根据出入库radioButton的响应事件来决定是出库还是入库
+                       根据出入库的状态决定当前账户的身份应作为 出发地 还是 目的地*/
+                .build()
+                .execute(new MyStringCallback());
+        //再GET整个出入库扫描信息
+        getList();
+    }
+
+
+    public void getList() {
+        OkHttpUtils
+                .get()//
+                .url("http://192.168.191.1:3000/Import_Export_Item")//
+                .build()//
+                .execute(new ListImportExportItemCallback()//
+                {
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
+                        Log.i("Tag", "ListImportExportItemCallback Error");
+                    }
+
+                    @Override
+                    public void onResponse(List<Import_Export_Item> response, int id) {
+                        if (response.size() > 0) {
+                            listItem.removeAll(listItem);
+                            for (int i = 0; i < response.size(); i++) {
+                                HashMap<String, Object> map = new HashMap<>();
+                                map.put("item_module_id", response.get(i).getItem_module_id());
+                                map.put("logistics_source", response.get(i).getLogistics_source());
+                                map.put("logistics_destination", response.get(i).getLogistics_destination());
+                                listItem.add(map);
+                                initView();
+                            }
+                            Log.i("Tag", "ListImportExportItemCallback Success");
+
+                        } else {
+                            Log.i("Tag", "ListImportExportItemCallback Empty");
+                        }
+                    }
+                });
+    }
+
+    public void initView(){
+        //为ListView绑定适配器
+        ieItemAdapter = new ImportExportItemAdapter(getActivity(), listItem);
+        ieItemAdapter.setOnItemClickListener(this);
+
+        rv = (RecyclerView) view.findViewById(R.id.import_export_recycleView);
+        rv.setAdapter(ieItemAdapter);
+        //使用线性布局
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        rv.setLayoutManager(layoutManager);
+        rv.setHasFixedSize(true);
+        //Rv.addItemDecoration(new DividerItemDecoration(getActivity(), layoutManager.getOrientation()));//用类设置分割线
+        //Rv.addItemDecoration(new DividerItemDecoration(this, R.drawable.list_divider)); //用已有图片设置分割线
+
+        //设置Item之间的间距
+        int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.item_space);
+        rv.addItemDecoration(new SpaceItemDecoration(spacingInPixels));
+    }
+
+    @Override
+    public void onItemClick(View view, int position) {//点击事件的回调函数
+        //TODO 定义Item的点击响应事件
+        System.out.println("点击了第" + position + "行");
+        Toast.makeText(getActivity(), "点击了第" + position + "行模组信息", Toast.LENGTH_SHORT).show();
+    }
 
 }

@@ -12,13 +12,13 @@ import com.novadata.batteryapp.R;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class SearchResultAdapter extends RecyclerView.Adapter{
+public class ImportExportItemAdapter extends RecyclerView.Adapter{
 
     private LayoutInflater inflater;
     private ArrayList<HashMap<String, Object>> listItem;
     private MyItemClickListener myItemClickListener;
 
-    public SearchResultAdapter(Context context, ArrayList<HashMap<String, Object>> listItem) {
+    public ImportExportItemAdapter(Context context, ArrayList<HashMap<String, Object>> listItem) {
         inflater = LayoutInflater.from(context);
         this.listItem = listItem;
     }//构造函数，传入数据
@@ -26,17 +26,15 @@ public class SearchResultAdapter extends RecyclerView.Adapter{
     //定义RecyclerView的ViewHolder
     class Holder extends RecyclerView.ViewHolder {
 
-        TextView searchResult_Itemtitle, searchResult_Itemtext1, searchResult_Itemtext2, searchResult_Itemtext3, searchResult_Itemtext4, searchResult_Itemtext5;
+        TextView item_module_id, logistics_source, logistics_destination;
 
         public Holder(View itemView) {
             super(itemView);
 
-            searchResult_Itemtitle = (TextView) itemView.findViewById(R.id.searchResult_Itemtitle);
-            searchResult_Itemtext1 = (TextView) itemView.findViewById(R.id.searchResult_Itemtext1);
-            searchResult_Itemtext2 = (TextView) itemView.findViewById(R.id.searchResult_Itemtext2);
-            searchResult_Itemtext3 = (TextView) itemView.findViewById(R.id.searchResult_Itemtext3);
-            searchResult_Itemtext4 = (TextView) itemView.findViewById(R.id.searchResult_Itemtext4);
-            searchResult_Itemtext5 = (TextView) itemView.findViewById(R.id.searchResult_Itemtext5);
+            item_module_id = (TextView) itemView.findViewById(R.id.item_module_id);
+            logistics_source = (TextView) itemView.findViewById(R.id.logistics_source);
+            logistics_destination = (TextView) itemView.findViewById(R.id.logistics_destination);
+
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -51,19 +49,16 @@ public class SearchResultAdapter extends RecyclerView.Adapter{
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View layout = LayoutInflater.from(parent.getContext()).inflate(R.layout.search_result_item, parent, false);
+        View layout = LayoutInflater.from(parent.getContext()).inflate(R.layout.import_export_item, parent, false);
         return new Holder(layout);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         if(holder instanceof Holder) {
-            ((Holder) holder).searchResult_Itemtitle.setText((String) listItem.get(position).get("ItemTitle"));
-            ((Holder) holder).searchResult_Itemtext1.setText((String) listItem.get(position).get("ItemText1"));
-            ((Holder) holder).searchResult_Itemtext2.setText((String) listItem.get(position).get("ItemText2"));
-            ((Holder) holder).searchResult_Itemtext3.setText((String) listItem.get(position).get("ItemText3"));
-            ((Holder) holder).searchResult_Itemtext4.setText((String) listItem.get(position).get("ItemText4"));
-            ((Holder) holder).searchResult_Itemtext5.setText((String) listItem.get(position).get("ItemText5"));
+            ((Holder) holder).item_module_id.setText((String) listItem.get(position).get("item_module_id"));
+            ((Holder) holder).logistics_source.setText((String) listItem.get(position).get("logistics_source"));
+            ((Holder) holder).logistics_destination.setText((String) listItem.get(position).get("logistics_destination"));
         }
     }//在这里绑定数据到ViewHolder里面
 

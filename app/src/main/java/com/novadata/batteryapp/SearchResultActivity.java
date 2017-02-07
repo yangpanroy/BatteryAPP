@@ -57,6 +57,7 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
                     @Override
                     public void onResponse(List<Search_Result_Item> response, int id) {
                         if (response.size() > 0) {
+                            listItem.removeAll(listItem);
                             for (int i = 0; i < response.size(); i++) {
                                 HashMap<String, Object> map = new HashMap<>();
                                 map.put("ItemTitle", response.get(i).getTitle());

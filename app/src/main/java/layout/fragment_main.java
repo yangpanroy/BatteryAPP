@@ -69,6 +69,7 @@ public class fragment_main extends Fragment implements MyItemClickListener{
                     @Override
                     public void onResponse(List<Main_Search_History_Item> response, int id) {
                         if (response.size() > 0) {
+                            listItem.removeAll(listItem);
                             for (int i = 0; i < response.size(); i++) {
                                 HashMap<String, Object> map = new HashMap<>();
                                 map.put("ItemTitle", response.get(i).getTitle());
@@ -125,6 +126,7 @@ public class fragment_main extends Fragment implements MyItemClickListener{
                     {
                         if (response.size() > 0)
                         {
+                            Banner_image_url.removeAll(Banner_image_url);
                             for (int i = 0; i < response.size(); i++)
                             {
                                 Banner_image_url.add(response.get(i));

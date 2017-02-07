@@ -34,5 +34,6 @@ dependencies {
     compile 'pub.devrel:easypermissions:0.1.7'
     compile 'com.squareup.okhttp3:okhttp:3.5.0'
     compile 'com.squareup.okio:okio:1.7.0'
-    compile 'com.alibaba:fastjson:1.2.21'
+    compile 'com.zhy:okhttputils:2.6.2'
+    compile 'com.google.code.gson:gson:2.3.1'
 }
