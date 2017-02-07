@@ -5,33 +5,39 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
+
 import com.bumptech.glide.Glide;
 import com.novadata.batteryapp.R;
 import com.youth.banner.Banner;
+import com.zhy.http.okhttp.OkHttpUtils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import Bean.Main_Search_History_Item;
+import Callback.ListBannerImageUrlCallback;
+import Callback.ListMainSearchHistoryItemCallback;
 import adapter.MyItemClickListener;
 import adapter.SearchHistoryItemAdapter;
-import utils.JsonLoader;
+import okhttp3.Call;
 
 public class fragment_main extends Fragment implements MyItemClickListener{
 
     private View view;
     private Banner banner;
 
-    private RecyclerView Rv;
     //设置Item内组件资源
-    private ArrayList<HashMap<String,Object>> listItem = new ArrayList<HashMap<String,Object>>();
-    private SearchHistoryItemAdapter shItemAdapter;
+    private ArrayList<HashMap<String,Object>> listItem = new ArrayList<>();
 
     //设置图片资源:url或本地资源
-    List<String> Banner_image_url = new ArrayList<String>();
+    List<String> Banner_image_url = new ArrayList<>();
 
     @Nullable
     @Override
@@ -41,18 +47,102 @@ public class fragment_main extends Fragment implements MyItemClickListener{
 
         view = inflater.inflate(R.layout.fragment_main, container, false);
         banner = (Banner) view.findViewById(R.id.banner);
-        //读取json数据
-        JsonLoader jsonLoader = new JsonLoader("db.json");
-        Banner_image_url = jsonLoader.loadJson2container("banner_image_url", Banner_image_url);
-        listItem = jsonLoader.loadJson2container("search_history_item", listItem);
-        //设置banner广告图样式
-        initItemHead();
-        initView();
+
+        initBanner();
+        initList();
 
         return view;
     }
 
-    private void initItemHead() {
+    private void initList() {
+        OkHttpUtils
+                .get()//
+                .url("http://192.168.191.1:3000/search_history_item")//
+                .build()//
+                .execute(new ListMainSearchHistoryItemCallback()//
+                {
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
+                        Log.i("Tag", "ListMainSearchHistoryItemCallback Error");
+                    }
+
+                    @Override
+                    public void onResponse(List<Main_Search_History_Item> response, int id) {
+                        if (response.size() > 0) {
+                            for (int i = 0; i < response.size(); i++) {
+                                HashMap<String, Object> map = new HashMap<>();
+                                map.put("ItemTitle", response.get(i).getTitle());
+                                map.put("ItemText1", "模组编号：" + response.get(i).getModule_num());
+                                map.put("ItemText2", "生产信息：" + response.get(i).getProduce_date() + " " + response.get(i).getProducer());
+                                map.put("ItemText3", "流通信息：" + response.get(i).getLatest_logistics_date() + " " + response.get(i).getLatest_logistics_place());
+                                map.put("ItemImage", response.get(i).getModule_image());
+                                listItem.add(map);
+                                initView();
+                            }
+                            Log.i("Tag", "ListMainSearchHistoryItemCallback Success");
+
+                        } else {
+                            Log.i("Tag", "ListMainSearchHistoryItemCallback Empty");
+                        }
+                    }
+                });
+    }
+
+    public void initView(){
+        //为ListView绑定适配器
+        SearchHistoryItemAdapter shItemAdapter = new SearchHistoryItemAdapter(getActivity(), listItem);
+        shItemAdapter.setOnItemClickListener(this);
+
+        RecyclerView rv = (RecyclerView) view.findViewById(R.id.my_recycler_view);
+        rv.setAdapter(shItemAdapter);
+        //使用线性布局
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        rv.setLayoutManager(layoutManager);
+        rv.setHasFixedSize(true);
+        //Rv.addItemDecoration(new DividerItemDecoration(getActivity(), layoutManager.getOrientation()));//用类设置分割线
+        //Rv.addItemDecoration(new DividerItemDecoration(this, R.drawable.list_divider)); //用已有图片设置分割线
+
+        //设置Item之间的间距
+        int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.item_space);
+        rv.addItemDecoration(new SpaceItemDecoration(spacingInPixels));
+    }
+
+    private void initBanner() {
+        OkHttpUtils
+                .get()//
+                .url("http://192.168.191.1:3000/banner_image_url")//
+                .build()//
+                .execute(new ListBannerImageUrlCallback()//
+                {
+                    @Override
+                    public void onError(Call call, Exception e, int id)
+                    {
+                        Log.i("Tag", "ListBannerImageUrlCallback Error");
+                    }
+
+                    @Override
+                    public void onResponse(List<String> response, int id)
+                    {
+                        if (response.size() > 0)
+                        {
+                            for (int i = 0; i < response.size(); i++)
+                            {
+                                Banner_image_url.add(response.get(i));
+                                //设置banner广告图样式
+                                initBannerStyle();
+                            }
+                            Log.i("Tag", "ListBannerImageUrlCallback Success");
+
+                        }else
+                        {
+                            Log.i("Tag", "ListBannerImageUrlCallback Empty");
+                        }
+
+                    }
+                });
+    }
+
+    private void initBannerStyle() {
         //设置样式,默认为:Banner.NOT_INDICATOR(不显示指示器和标题)
         //可选样式如下:
         //1. Banner.CIRCLE_INDICATOR    显示圆形指示器
@@ -97,25 +187,6 @@ public class fragment_main extends Fragment implements MyItemClickListener{
                 Toast.makeText(getActivity(), "你点击了：" + position, Toast.LENGTH_LONG).show();
             }
         });
-    }
-
-    public void initView(){
-        //为ListView绑定适配器
-        shItemAdapter = new SearchHistoryItemAdapter(getActivity(),listItem);
-        shItemAdapter.setOnItemClickListener(this);
-
-        Rv = (RecyclerView) view.findViewById(R.id.my_recycler_view);
-        Rv.setAdapter(shItemAdapter);
-        //使用线性布局
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        Rv.setLayoutManager(layoutManager);
-        Rv.setHasFixedSize(true);
-        //Rv.addItemDecoration(new DividerItemDecoration(getActivity(), layoutManager.getOrientation()));//用类设置分割线
-        //Rv.addItemDecoration(new DividerItemDecoration(this, R.drawable.list_divider)); //用已有图片设置分割线
-
-        //设置Item之间的间距
-        int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.item_space);
-        Rv.addItemDecoration(new SpaceItemDecoration(spacingInPixels));
     }
 
     @Override

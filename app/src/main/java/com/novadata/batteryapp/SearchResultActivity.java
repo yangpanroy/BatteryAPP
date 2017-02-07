@@ -4,17 +4,23 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.zhy.http.okhttp.OkHttpUtils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
+import Bean.Search_Result_Item;
+import Callback.ListSearchResultItemCallback;
 import adapter.MyItemClickListener;
 import adapter.SearchResultAdapter;
 import layout.SpaceItemDecoration;
-import utils.JsonLoader;
+import okhttp3.Call;
 
 public class SearchResultActivity extends AppCompatActivity implements MyItemClickListener{
 
@@ -33,12 +39,43 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
         Bundle bundle=this.getIntent().getExtras();
         battery_code = bundle.getString("battery_code");
 
-        JsonLoader jsonLoader = new JsonLoader("db.json");
-        listItem = jsonLoader.loadSearchResultJson2container("search_result_item", listItem);
+        initList();
+    }
 
-        initView();
-        initData();
+    private void initList() {
+        OkHttpUtils
+                .get()//
+                .url("http://192.168.191.1:3000/search_result_item")//
+                .build()//
+                .execute(new ListSearchResultItemCallback()//
+                {
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
+                        Log.i("Tag", "ListSearchResultItemCallback Error");
+                    }
 
+                    @Override
+                    public void onResponse(List<Search_Result_Item> response, int id) {
+                        if (response.size() > 0) {
+                            for (int i = 0; i < response.size(); i++) {
+                                HashMap<String, Object> map = new HashMap<>();
+                                map.put("ItemTitle", response.get(i).getTitle());
+                                map.put("ItemText1", response.get(i).getDate());
+                                map.put("ItemText2", response.get(i).getText1());
+                                map.put("ItemText3", response.get(i).getText2());
+                                map.put("ItemText4", response.get(i).getText3());
+                                map.put("ItemText5", response.get(i).getService_phone());
+                                listItem.add(map);
+                                initView();
+                                initData();
+                            }
+                            Log.i("Tag", "ListSearchResultItemCallback Success");
+
+                        } else {
+                            Log.i("Tag", "ListSearchResultItemCallback Empty");
+                        }
+                    }
+                });
     }
 
     private void initView() {

@@ -237,8 +237,8 @@
                         </LinearLayout>
 
                         <ImageView
-                            android:layout_width="40pt"
-                            android:layout_height="40pt"
+                            android:layout_width="50pt"
+                            android:layout_height="50pt"
                             android:layout_gravity="center"
                             android:id="@+id/Image_4s"
                             android:src="@drawable/user_head" />
