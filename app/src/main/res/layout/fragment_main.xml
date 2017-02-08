@@ -6,10 +6,28 @@
     tools:context="layout.fragment_main"
     android:orientation="vertical">
 
-    <com.youth.banner.Banner xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/banner"
+    <LinearLayout
+        android:orientation="vertical"
+        android:background="@color/colorPrimary"
         android:layout_width="match_parent"
-        android:layout_height="130dp" />
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_margin="4dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:textSize="14pt"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:text="Battery"/>
+
+        <com.youth.banner.Banner xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/banner"
+            android:layout_width="match_parent"
+            android:layout_height="150dp" />
+
+    </LinearLayout>
 
     <android.support.v7.widget.CardView
         xmlns:card_view="http://schemas.android.com/apk/res-auto"

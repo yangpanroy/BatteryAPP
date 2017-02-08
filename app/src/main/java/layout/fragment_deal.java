@@ -37,12 +37,11 @@ import Bean.Import_Export_Item;
 import Callback.ListImportExportItemCallback;
 import Callback.MyStringCallback;
 import adapter.ImportExportItemAdapter;
-import adapter.MyItemClickListener;
 import okhttp3.Call;
 import okhttp3.MediaType;
 import utils.PhotoSaver;
 
-public class fragment_deal extends Fragment implements View.OnClickListener, RadioGroup.OnCheckedChangeListener, MyItemClickListener {
+public class fragment_deal extends Fragment implements View.OnClickListener, RadioGroup.OnCheckedChangeListener {
 
 
     private View view;
@@ -56,6 +55,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
     private RecyclerView rv;
     private ImportExportItemAdapter ieItemAdapter;
     private ArrayList<HashMap<String,Object>> listItem = new ArrayList<HashMap<String,Object>>();
+    private Import_Export_Item latestImportExportItem;
 
     int login_status = -1;
     int status_IO;
@@ -223,6 +223,10 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
 
             if (requestCode == REQUEST_SCAN){
                 String result= bundle.getString("result");//获得扫描的二维码信息
+                if ((latestImportExportItem == null) && (status_IO == IMPORT))
+                {
+                    Toast.makeText(getActivity(), "ERROR：未找到出库信息，无法完成入库！", Toast.LENGTH_SHORT).show();
+                }//TODO 条件判断完善
                 //TODO 将结果展示
                 initList();
             }
@@ -281,7 +285,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
                                 initView();
                             }
                             Log.i("Tag", "ListImportExportItemCallback Success");
-
+                            latestImportExportItem = response.get(response.size() - 1);
                         } else {
                             Log.i("Tag", "ListImportExportItemCallback Empty");
                         }
@@ -292,12 +296,13 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
     public void initView(){
         //为ListView绑定适配器
         ieItemAdapter = new ImportExportItemAdapter(getActivity(), listItem);
-        ieItemAdapter.setOnItemClickListener(this);
 
         rv = (RecyclerView) view.findViewById(R.id.import_export_recycleView);
         rv.setAdapter(ieItemAdapter);
         //使用线性布局
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        layoutManager.setStackFromEnd(true);//列表再底部开始展示，反转后由上面开始展示
+        layoutManager.setReverseLayout(true);//列表翻转
         rv.setLayoutManager(layoutManager);
         rv.setHasFixedSize(true);
         //Rv.addItemDecoration(new DividerItemDecoration(getActivity(), layoutManager.getOrientation()));//用类设置分割线
@@ -306,13 +311,6 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
         //设置Item之间的间距
         int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.item_space);
         rv.addItemDecoration(new SpaceItemDecoration(spacingInPixels));
-    }
-
-    @Override
-    public void onItemClick(View view, int position) {//点击事件的回调函数
-        //TODO 定义Item的点击响应事件
-        System.out.println("点击了第" + position + "行");
-        Toast.makeText(getActivity(), "点击了第" + position + "行模组信息", Toast.LENGTH_SHORT).show();
     }
 
 }

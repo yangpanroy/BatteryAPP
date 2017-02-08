@@ -38,7 +38,7 @@ public class SearchHistoryItemAdapter extends RecyclerView.Adapter {
     //定义RecyclerView的ViewHolder
     class Holder extends RecyclerView.ViewHolder {
 
-        private TextView Title, Text1, Text2,Text3;
+        private TextView Title, Text1, Text2,Text3,Text4,Text5;
         private ImageView ima;
 
         public Holder(View itemView) {
@@ -48,6 +48,8 @@ public class SearchHistoryItemAdapter extends RecyclerView.Adapter {
             Text1 = (TextView) itemView.findViewById(R.id.Itemtext1);
             Text2 = (TextView) itemView.findViewById(R.id.Itemtext2);
             Text3 = (TextView) itemView.findViewById(R.id.Itemtext3);
+            Text4 = (TextView) itemView.findViewById(R.id.Itemtext4);
+            Text5 = (TextView) itemView.findViewById(R.id.Itemtext5);
             ima = (ImageView) itemView.findViewById(R.id.ItemImage);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -95,6 +97,8 @@ public class SearchHistoryItemAdapter extends RecyclerView.Adapter {
             ((Holder) holder).Text1.setText((String) listItem.get(position).get("ItemText1"));
             ((Holder) holder).Text2.setText((String) listItem.get(position).get("ItemText2"));
             ((Holder) holder).Text3.setText((String) listItem.get(position).get("ItemText3"));
+            ((Holder) holder).Text4.setText((String) listItem.get(position).get("ItemText4"));
+            ((Holder) holder).Text5.setText((String) listItem.get(position).get("ItemText5"));
             imageUrl = (String) listItem.get(position).get("ItemImage");
             imageView = ((Holder) holder).ima;
             Thread imageViewHandler = new Thread(new NetImageHandler());

@@ -16,14 +16,21 @@
         android:layout_height="wrap_content"
         android:stretchColumns="0">
 
-        <TableRow android:layout_margin="8dp">
+        <TableRow android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_weight="5"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
             <LinearLayout
+                android:layout_weight="3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
@@ -35,7 +42,7 @@
                         android:id="@+id/searchResult_icon" />
 
                     <TextView
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:text="深圳比克汽车厂"
                         android:gravity="center_vertical"
@@ -54,7 +61,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="电池包匹配：11A2FMZADEF1212345AB..."
+                    android:text="电池包：11A2FMZADEF1212345AB..."
                     android:textSize="7pt"
                     android:id="@+id/searchResult_Itemtext2" />
 
@@ -82,12 +89,21 @@
             </LinearLayout>
 
             <ImageView
-                android:layout_width="50pt"
-                android:layout_height="50pt"
+                android:layout_weight="2"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center_vertical"
                 android:id="@+id/searchResult_ItemImage"
                 android:src="@drawable/battery_pic" />
 
         </TableRow>
+
+        <LinearLayout
+            android:layout_gravity="center_horizontal"
+            android:layout_width="300dp"
+            android:layout_height="1dp"
+            android:background="#d9d9d9">
+        </LinearLayout>
 
     </TableLayout>
 

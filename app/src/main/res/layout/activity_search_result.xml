@@ -41,7 +41,7 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:text="@string/itemTitle"
+                            android:text="电池包"
                             android:gravity="center_vertical"
                             android:textSize="8pt"
                             android:id="@+id/searchResult_head_title" />

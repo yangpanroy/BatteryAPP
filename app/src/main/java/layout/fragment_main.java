@@ -73,9 +73,11 @@ public class fragment_main extends Fragment implements MyItemClickListener{
                             for (int i = 0; i < response.size(); i++) {
                                 HashMap<String, Object> map = new HashMap<>();
                                 map.put("ItemTitle", response.get(i).getTitle());
-                                map.put("ItemText1", "模组编号：" + response.get(i).getModule_num());
-                                map.put("ItemText2", "生产信息：" + response.get(i).getProduce_date() + " " + response.get(i).getProducer());
-                                map.put("ItemText3", "流通信息：" + response.get(i).getLatest_logistics_date() + " " + response.get(i).getLatest_logistics_place());
+                                map.put("ItemText1", "编号：" + response.get(i).getModule_num());
+                                map.put("ItemText2", "生产日期：" + response.get(i).getProduce_date());
+                                map.put("ItemText3", "生产企业：" + response.get(i).getProducer());
+                                map.put("ItemText4", "最近流通时间：" + response.get(i).getLatest_logistics_date());
+                                map.put("ItemText5", "最近流通地点：" + response.get(i).getLatest_logistics_place());
                                 map.put("ItemImage", response.get(i).getModule_image());
                                 listItem.add(map);
                                 initView();
