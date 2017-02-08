@@ -32,7 +32,7 @@
                 android:background="@color/white"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="请输入你要搜索的内容"/>
+                android:hint="点击左侧图标开始二维码扫描"/>
         </LinearLayout>
 
         <TextView

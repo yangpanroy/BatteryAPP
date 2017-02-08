@@ -21,7 +21,7 @@
             app:tabTextColor="@color/colorTabText"
             app:tabSelectedTextColor="@color/colorSelectedTabText"
             app:tabMode="fixed"
-            app:tabBackground="@color/colorPrimary"
+            app:tabBackground="@color/colorPrimaryDark"
             app:tabTextAppearance="@style/TextAppearance.Design.Tab"/>
 
 </LinearLayout>
