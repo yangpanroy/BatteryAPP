@@ -14,15 +14,35 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:gravity="center"
             android:background="@color/colorPrimary"
             android:id="@+id/deal_default_layout"
             android:visibility="visible">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:background="@drawable/deal_background"
+                android:layout_width="match_parent"
+                android:layout_height="247dp">
+
+                <TextView
+                    android:layout_margin="6dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:textSize="14pt"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:text="Battery"/>
+
+
+
+            </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:paddingTop="50dp"
                 android:text="请登录后使用交易功能"
                 android:textColor="@color/white"
                 android:textSize="10pt"/>
@@ -36,129 +56,157 @@
             android:id="@+id/deal_company_layout"
             android:visibility="visible">
 
-            <android.support.v7.widget.CardView
-                xmlns:card_view="http://schemas.android.com/apk/res-auto"
-                xmlns:android="http://schemas.android.com/apk/res/android"
+            <LinearLayout
+                android:orientation="vertical"
+                android:background="@drawable/deal_background"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:foreground="?android:attr/selectableItemBackground"
-                card_view:cardCornerRadius="0dp"
-                card_view:cardElevation="4dp"
-                >
+                android:layout_height="247dp">
 
-                <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                <TextView
+                    android:layout_margin="6dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:textSize="14pt"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:text="Battery"/>
+
+                <android.support.v7.widget.CardView
+                    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                    xmlns:android="http://schemas.android.com/apk/res/android"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
-                    android:stretchColumns="0">
+                    android:layout_marginRight="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="10dp"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    card_view:cardCornerRadius="8dp"
+                    card_view:cardElevation="6dp"
+                    >
 
-                    <TableRow android:layout_margin="8dp">
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical">
+                    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:stretchColumns="0">
 
+                        <TableRow android:layout_marginTop="8dp"
+                            android:layout_marginLeft="8dp"
+                            android:layout_marginRight="8dp">
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:orientation="horizontal">
+                                android:orientation="vertical">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
 
 
-                                <ImageView
-                                    android:layout_width="30dp"
-                                    android:layout_height="30dp"
-                                    android:src="@drawable/ic_battery"
-                                    android:id="@+id/user_icon" />
+                                    <ImageView
+                                        android:layout_width="30dp"
+                                        android:layout_height="30dp"
+                                        android:src="@drawable/ic_battery"
+                                        android:id="@+id/user_icon" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:text="授权账户"
+                                        android:gravity="center_vertical"
+                                        android:textSize="8pt"
+                                        android:id="@+id/user_name" />
+
+                                </LinearLayout>
 
                                 <TextView
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:text="授权账户"
-                                    android:gravity="center_vertical"
-                                    android:textSize="8pt"
-                                    android:id="@+id/user_name" />
-
-                            </LinearLayout>
-
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="授权企业：深圳比克"
-                                android:textSize="7pt"
-                                android:id="@+id/user_company" />
-
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="操作员工：0003"
-                                android:textSize="7pt"
-                                android:id="@+id/user_staff" />
-
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="操作日期：2016年8月3日 "
-                                android:textSize="7pt"
-                                android:id="@+id/data" />
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal">
+                                    android:layout_height="wrap_content"
+                                    android:text="授权企业：深圳比克"
+                                    android:textSize="7pt"
+                                    android:id="@+id/user_company" />
 
                                 <TextView
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="操作类型："
+                                    android:text="操作员工：0003"
                                     android:textSize="7pt"
-                                    android:id="@+id/operation" />
+                                    android:id="@+id/user_staff" />
 
-                                <RadioGroup
-                                    android:layout_width="wrap_content"
+                                <TextView
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:id="@+id/company_RadioGroup"
-                                    android:orientation="horizontal"
-                                    android:layout_gravity="center_horizontal">
+                                    android:text="操作日期：2016年8月3日 "
+                                    android:textSize="7pt"
+                                    android:id="@+id/data" />
 
-                                    <RadioButton
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+
+                                    <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="入库"
+                                        android:layout_gravity="center_vertical"
+                                        android:text="操作类型："
                                         android:textSize="7pt"
-                                        android:checked="true"
-                                        android:id="@+id/import_radioButton" />
+                                        android:id="@+id/operation" />
 
-                                    <RadioButton
+                                    <RadioGroup
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="出库"
-                                        android:textSize="7pt"
-                                        android:id="@+id/export_radioButton" />
+                                        android:id="@+id/company_RadioGroup"
+                                        android:orientation="horizontal"
+                                        android:layout_gravity="center_horizontal">
 
-                                </RadioGroup>
+                                        <RadioButton
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="入库"
+                                            android:textSize="7pt"
+                                            android:checked="true"
+                                            android:id="@+id/import_radioButton" />
+
+                                        <RadioButton
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="出库"
+                                            android:textSize="7pt"
+                                            android:id="@+id/export_radioButton" />
+
+                                    </RadioGroup>
+
+                                </LinearLayout>
 
                             </LinearLayout>
 
-                        </LinearLayout>
+                            <ImageView
+                                android:layout_width="50pt"
+                                android:layout_height="50pt"
+                                android:layout_gravity="center"
+                                android:id="@+id/user_company_Image"
+                                android:src="@drawable/user_head" />
 
-                        <ImageView
-                            android:layout_width="50pt"
-                            android:layout_height="50pt"
-                            android:layout_gravity="center"
-                            android:id="@+id/user_company_Image"
-                            android:src="@drawable/user_head" />
+                        </TableRow>
 
-                    </TableRow>
+                        <TextView
+                            android:id="@+id/scan_button"
+                            style="@style/AutoWrapTv"
+                            android:textSize="7pt"
+                            android:text="开始扫描" />
 
-                    <TextView
-                        android:id="@+id/scan_button"
-                        style="@style/AutoWrapTv"
-                        android:textSize="7pt"
-                        android:text="开始扫描" />
+                    </TableLayout>
 
-                </TableLayout>
+                </android.support.v7.widget.CardView>
 
-            </android.support.v7.widget.CardView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="7dp"
+                android:background="@color/colorPrimary"></LinearLayout>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/import_export_recycleView"
@@ -172,127 +220,148 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
             android:id="@+id/deal_4s_layout">
 
-            <android.support.v7.widget.CardView
-                xmlns:card_view="http://schemas.android.com/apk/res-auto"
-                xmlns:android="http://schemas.android.com/apk/res/android"
+            <LinearLayout
+                android:orientation="vertical"
+                android:background="@drawable/deal_background"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:foreground="?android:attr/selectableItemBackground"
-                card_view:cardCornerRadius="0dp"
-                card_view:cardElevation="4dp"
-                >
+                android:layout_height="247dp">
 
-                <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                <TextView
+                    android:layout_margin="6dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:textSize="14pt"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:text="Battery"/>
+
+                <android.support.v7.widget.CardView
+                    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                    xmlns:android="http://schemas.android.com/apk/res/android"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
-                    android:stretchColumns="0">
+                    android:layout_marginRight="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="10dp"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    card_view:cardCornerRadius="8dp"
+                    card_view:cardElevation="6dp"
+                    >
 
-                    <TableRow
-                        android:layout_margin="8dp">
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical">
+                    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:stretchColumns="0">
 
+                        <TableRow
+                            android:layout_marginTop="8dp"
+                            android:layout_marginRight="8dp"
+                            android:layout_marginLeft="8dp">
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:orientation="horizontal">
+                                android:orientation="vertical">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
 
 
-                                <ImageView
-                                    android:layout_width="30dp"
-                                    android:layout_height="30dp"
-                                    android:src="@drawable/ic_battery"
-                                    android:id="@+id/user_4s_icon" />
+                                    <ImageView
+                                        android:layout_width="30dp"
+                                        android:layout_height="30dp"
+                                        android:src="@drawable/ic_battery"
+                                        android:id="@+id/user_4s_icon" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:text="授权账户"
+                                        android:gravity="center_vertical"
+                                        android:textSize="8pt"
+                                        android:id="@+id/user_4s_name" />
+
+                                </LinearLayout>
 
                                 <TextView
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:text="授权账户"
-                                    android:gravity="center_vertical"
-                                    android:textSize="8pt"
-                                    android:id="@+id/user_4s_name" />
+                                    android:layout_height="wrap_content"
+                                    android:text="授权企业：深圳比克"
+                                    android:textSize="7pt"
+                                    android:id="@+id/user_4s_company" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="操作员工：0003"
+                                    android:textSize="7pt"
+                                    android:id="@+id/user_4s_staff" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="操作日期：2016年8月3日 "
+                                    android:textSize="7pt"
+                                    android:id="@+id/data_4s" />
 
                             </LinearLayout>
 
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="授权企业：深圳比克"
-                                android:textSize="7pt"
-                                android:id="@+id/user_4s_company" />
+                            <ImageView
+                                android:layout_width="50pt"
+                                android:layout_height="50pt"
+                                android:layout_gravity="center"
+                                android:id="@+id/Image_4s"
+                                android:src="@drawable/user_head" />
 
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="操作员工：0003"
-                                android:textSize="7pt"
-                                android:id="@+id/user_4s_staff" />
+                        </TableRow>
 
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="操作日期：2016年8月3日 "
-                                android:textSize="7pt"
-                                android:id="@+id/data_4s" />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="8dp"
+                            android:layout_marginRight="8dp"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:layout_marginBottom="8dp"
+                                android:background="@drawable/input_border_layout"
+                                android:layout_weight="1"
+                                android:layout_width="0dp"
+                                android:gravity="center_vertical"
+                                android:layout_height="40dp">
+
+                                <EditText
+                                    android:layout_marginLeft="8dp"
+                                    android:layout_marginRight="8dp"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:background="@color/white"
+                                    android:hint="点击此处输入车架号"
+                                    android:textColorHint="@color/custom_gray"
+                                    android:textSize="7pt"
+                                    android:id="@+id/car_editText"
+                                    android:layout_weight="1" />
+                            </LinearLayout>
 
                         </LinearLayout>
 
-                        <ImageView
-                            android:layout_width="50pt"
-                            android:layout_height="50pt"
-                            android:layout_gravity="center"
-                            android:id="@+id/Image_4s"
-                            android:src="@drawable/user_head" />
+                    </TableLayout>
 
-                    </TableRow>
+                </android.support.v7.widget.CardView>
 
-                </TableLayout>
-
-            </android.support.v7.widget.CardView>
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:orientation="horizontal">
+                android:layout_height="7dp"
+                android:background="@color/colorPrimary"></LinearLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:text="出售车架号："
-                    android:textSize="7pt"
-                    android:id="@+id/car_textView" />
-
-                <LinearLayout
-                    android:layout_margin="10dp"
-                    android:background="@drawable/input_border_layout"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:gravity="center_vertical"
-                    android:layout_height="40dp">
-
-                    <EditText
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="8dp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@color/white"
-                        android:hint="请输入车架号"
-                        android:textColorHint="@color/custom_gray"
-                        android:textSize="7pt"
-                        android:id="@+id/car_editText"
-                        android:layout_weight="1" />
-                </LinearLayout>
-
-            </LinearLayout>
 
             <ImageView
                 android:layout_width="300dp"
@@ -304,16 +373,15 @@
 
             <TextView
                 android:id="@+id/photo_button"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_width="200dp"
+                android:layout_gravity="center_horizontal"
                 style="@style/AutoWrapTv"
                 android:textSize="7pt"
                 android:text="开始拍摄合同" />
 
             <TextView
                 android:id="@+id/confirm_button"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_width="200dp"
                 style="@style/AutoWrapTv"
                 android:text="确定提交"
                 android:textSize="7pt"
