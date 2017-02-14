@@ -32,7 +32,7 @@
                     android:textSize="14pt"
                     android:textColor="@color/white"
                     android:textStyle="bold"
-                    android:text="Battery"/>
+                    android:text="交易"/>
 
 
 
@@ -70,7 +70,7 @@
                     android:textSize="14pt"
                     android:textColor="@color/white"
                     android:textStyle="bold"
-                    android:text="Battery"/>
+                    android:text="交易"/>
 
                 <android.support.v7.widget.CardView
                     xmlns:card_view="http://schemas.android.com/apk/res-auto"
@@ -238,7 +238,7 @@
                     android:textSize="14pt"
                     android:textColor="@color/white"
                     android:textStyle="bold"
-                    android:text="Battery"/>
+                    android:text="交易"/>
 
                 <android.support.v7.widget.CardView
                     xmlns:card_view="http://schemas.android.com/apk/res-auto"

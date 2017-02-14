@@ -32,6 +32,7 @@ public class fragment_main extends Fragment implements MyItemClickListener{
 
     private View view;
     private Banner banner;
+    private String baseUrl = "http://192.168.191.1:3000/";
 
     //设置Item内组件资源
     private ArrayList<HashMap<String,Object>> listItem = new ArrayList<>();
@@ -55,9 +56,10 @@ public class fragment_main extends Fragment implements MyItemClickListener{
     }
 
     private void initList() {
+        String url = baseUrl + "search_history_item";
         OkHttpUtils
                 .get()//
-                .url("http://192.168.191.1:3000/search_history_item")//
+                .url(url)//
                 .build()//
                 .execute(new ListMainSearchHistoryItemCallback()//
                 {
@@ -80,8 +82,8 @@ public class fragment_main extends Fragment implements MyItemClickListener{
                                 map.put("ItemText5", "最近流通地点：" + response.get(i).getLatest_logistics_place());
                                 map.put("ItemImage", response.get(i).getModule_image());
                                 listItem.add(map);
-                                initView();
                             }
+                            initView();
                             Log.i("Tag", "ListMainSearchHistoryItemCallback Success");
 
                         } else {
@@ -111,9 +113,10 @@ public class fragment_main extends Fragment implements MyItemClickListener{
     }
 
     private void initBanner() {
+        String url = baseUrl + "banner_image_url";
         OkHttpUtils
                 .get()//
-                .url("http://192.168.191.1:3000/banner_image_url")//
+                .url(url)//
                 .build()//
                 .execute(new ListBannerImageUrlCallback()//
                 {
@@ -132,9 +135,9 @@ public class fragment_main extends Fragment implements MyItemClickListener{
                             for (int i = 0; i < response.size(); i++)
                             {
                                 Banner_image_url.add(response.get(i));
-                                //设置banner广告图样式
-                                initBannerStyle();
                             }
+                            //设置banner广告图样式
+                            initBannerStyle();
                             Log.i("Tag", "ListBannerImageUrlCallback Success");
 
                         }else

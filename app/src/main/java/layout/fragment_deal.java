@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.novadata.batteryapp.DealDetailActivity;
 import com.novadata.batteryapp.MainActivity;
 import com.novadata.batteryapp.R;
 import com.novadata.batteryapp.ScanActivity;
@@ -37,11 +38,13 @@ import Bean.Import_Export_Item;
 import Callback.ListImportExportItemCallback;
 import Callback.MyStringCallback;
 import adapter.ImportExportItemAdapter;
+import adapter.MyItemClickListener;
 import okhttp3.Call;
 import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import utils.PhotoSaver;
 
-public class fragment_deal extends Fragment implements View.OnClickListener, RadioGroup.OnCheckedChangeListener {
+public class fragment_deal extends Fragment implements View.OnClickListener, RadioGroup.OnCheckedChangeListener, MyItemClickListener {
 
 
     private View view;
@@ -55,7 +58,9 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
     private RecyclerView rv;
     private ImportExportItemAdapter ieItemAdapter;
     private ArrayList<HashMap<String,Object>> listItem = new ArrayList<HashMap<String,Object>>();
-    private Import_Export_Item latestImportExportItem;
+    private String zxingResult;
+    private List<Import_Export_Item> currentIEItemList;
+    private Import_Export_Item unExportItem;
 
     int login_status = -1;
     int status_IO;
@@ -63,6 +68,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
     static final int DEFAULT_STATUS = -1, USER_4S = 1, USER_COMPANY = 0;
     final static int REQUEST_PHOTO = 0, REQUEST_SCAN = 1;
     private static final String PATH = "/sdcard/battery/photos";
+    private String baseUrl = "http://192.168.191.1:3000/";
 
     @Nullable
     @Override
@@ -222,13 +228,9 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
             Bundle bundle=data.getExtras();
 
             if (requestCode == REQUEST_SCAN){
-                String result= bundle.getString("result");//获得扫描的二维码信息
-                if ((latestImportExportItem == null) && (status_IO == IMPORT))
-                {
-                    Toast.makeText(getActivity(), "ERROR：未找到出库信息，无法完成入库！", Toast.LENGTH_SHORT).show();
-                }//TODO 条件判断完善
-                //TODO 将结果展示
-                initList();
+                zxingResult = bundle.getString("result");//获得扫描的二维码信息
+                String company = "深圳比克汽车公司";//TODO 在完成登录功能后此处应为登录账户的身份
+                initList(status_IO, zxingResult, company);
             }
             if (requestCode == REQUEST_PHOTO){
                 bitmap=(Bitmap) bundle.get("data");//从附加值中获取返回的图像
@@ -240,30 +242,54 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
             }
 
         } if(resultCode == getActivity().RESULT_CANCELED) {
-            Toast.makeText(getActivity(), "扫描结束", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getActivity(), "扫描结束", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void initList() {
-        //先POST到json server
-        OkHttpUtils
-                .postString()
-                .url("http://192.168.191.1:3000/Import_Export_Item")
-                .mediaType(MediaType.parse("application/json; charset=utf-8"))
-                .content(new Gson().toJson(new Import_Export_Item("模组：11A2FMZABCDEF1212345AB...", "深圳比克电池厂", "深圳比克汽车厂")))
-                /*TODO 此处应根据出入库radioButton的响应事件来决定是出库还是入库
-                       根据出入库的状态决定当前账户的身份应作为 出发地 还是 目的地*/
-                .build()
-                .execute(new MyStringCallback());
-        //再GET整个出入库扫描信息
-        getList();
+    private void initList(int status_IO, String zxingResult, String company) {
+        String url = baseUrl + "Import_Export_Item";
+        if (status_IO == IMPORT)
+        {
+            for (int i = 0; i < currentIEItemList.size(); i++)
+            {
+                if (currentIEItemList.get(i).getItem_module_id().equals(zxingResult))
+                {
+                    if (currentIEItemList.get(i).getLogistics_destination().equals("待入库"))
+                    {
+                        String sourceCompany = currentIEItemList.get(i).getLogistics_source();
+                        OkHttpUtils
+                                .put()
+                                .url(url + "/" + (i+1))//将id为i+1的数据进行更改
+                                .requestBody(RequestBody.create(MediaType.parse("application/json; charset=utf-8"), new Gson().toJson(new Import_Export_Item(zxingResult, sourceCompany, company))))//
+                                .build()//
+                                .execute(new MyStringCallback());
+                        //再GET整个出入库扫描信息
+                        getList();
+                    }
+                }
+            }
+        }
+        if (status_IO == EXPORT)//TODO 待完善，没有考虑重复扫描出库的情况 2017.2.13
+        {
+            //先POST到json server
+            OkHttpUtils
+                    .postString()
+                    .url(url)
+                    .mediaType(MediaType.parse("application/json; charset=utf-8"))
+                    .content(new Gson().toJson(new Import_Export_Item(zxingResult, company, "待入库")))
+                    .build()
+                    .execute(new MyStringCallback());
+            //再GET整个出入库扫描信息
+            getList();
+        }
     }
 
 
     public void getList() {
+        String url = baseUrl + "Import_Export_Item";
         OkHttpUtils
                 .get()//
-                .url("http://192.168.191.1:3000/Import_Export_Item")//
+                .url(url)//
                 .build()//
                 .execute(new ListImportExportItemCallback()//
                 {
@@ -275,17 +301,17 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
                     @Override
                     public void onResponse(List<Import_Export_Item> response, int id) {
                         if (response.size() > 0) {
+                            currentIEItemList = response;
                             listItem.removeAll(listItem);
                             for (int i = 0; i < response.size(); i++) {
                                 HashMap<String, Object> map = new HashMap<>();
-                                map.put("item_module_id", response.get(i).getItem_module_id());
+                                map.put("item_module_id", "模组：" + response.get(i).getItem_module_id());
                                 map.put("logistics_source", response.get(i).getLogistics_source());
                                 map.put("logistics_destination", response.get(i).getLogistics_destination());
                                 listItem.add(map);
-                                initView();
                             }
+                            initView();
                             Log.i("Tag", "ListImportExportItemCallback Success");
-                            latestImportExportItem = response.get(response.size() - 1);
                         } else {
                             Log.i("Tag", "ListImportExportItemCallback Empty");
                         }
@@ -296,6 +322,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
     public void initView(){
         //为ListView绑定适配器
         ieItemAdapter = new ImportExportItemAdapter(getActivity(), listItem);
+        ieItemAdapter.setOnItemClickListener(this);
 
         rv = (RecyclerView) view.findViewById(R.id.import_export_recycleView);
         rv.setAdapter(ieItemAdapter);
@@ -311,6 +338,17 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
         //设置Item之间的间距
         int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.item_space);
         rv.addItemDecoration(new SpaceItemDecoration(spacingInPixels));
+    }
+
+    @Override
+    public void onItemClick(View view, int position) {//点击事件的回调函数
+        String battery_code;
+        battery_code = currentIEItemList.get(position).getItem_module_id();
+        Intent intent = new Intent(MainActivity.mainActivity, DealDetailActivity.class);
+        Bundle bundle=new Bundle();
+        bundle.putString("battery_code", battery_code);
+        intent.putExtras(bundle);
+        startActivityForResult(intent, 2);
     }
 
 }

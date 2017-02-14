@@ -29,6 +29,7 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
     RecyclerView search_result_Rv;
     private ArrayList<HashMap<String,Object>> listItem = new ArrayList<HashMap<String,Object>>();
     private SearchResultAdapter srAdapter;
+    private String baseUrl = "http://192.168.191.1:3000/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,9 +44,10 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
     }
 
     private void initList() {
+        String url = baseUrl + "search_result_item";
         OkHttpUtils
                 .get()//
-                .url("http://192.168.191.1:3000/search_result_item")//
+                .url(url)//
                 .build()//
                 .execute(new ListSearchResultItemCallback()//
                 {
@@ -67,9 +69,9 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
                                 map.put("ItemText4", response.get(i).getText3());
                                 map.put("ItemText5", response.get(i).getService_phone());
                                 listItem.add(map);
-                                initView();
-                                initData();
                             }
+                            initView();
+                            initData();
                             Log.i("Tag", "ListSearchResultItemCallback Success");
 
                         } else {
