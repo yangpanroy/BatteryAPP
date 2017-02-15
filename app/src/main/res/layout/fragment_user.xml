@@ -1,53 +1,260 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
     android:orientation="vertical">
 
     <LinearLayout
-        android:orientation="vertical"
+        android:id="@+id/user_surface"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="visible">
 
-        <TextView
-            android:gravity="center"
+        <LinearLayout
+            android:orientation="vertical"
+            android:background="@drawable/banner_background"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="8pt"
-            android:text="请选择登录状态"/>
+            android:layout_height="247dp">
 
-        <RadioGroup
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/login_status_rg"
-            android:layout_gravity="center_horizontal">
-
-            <RadioButton
+            <TextView
+                android:layout_margin="6dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="默认未登录状态"
+                android:layout_gravity="center_horizontal"
+                android:textSize="14pt"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:text="我"/>
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:id="@+id/userHead_imageView"
+                android:src="@drawable/user_head_white"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="30dp" />
+
+            <TextView
+                android:id="@+id/logIn_button"
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="25dp"
+                android:background="@drawable/selector_btn_light"
+                android:text="点击登录"
                 android:textSize="8pt"
-                android:checked="true"
-                android:id="@+id/default_radioButton"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:clickable="true"
                 android:layout_gravity="center_horizontal" />
 
-            <RadioButton
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#bfbfbf">
+            </LinearLayout>
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/setting_item"
+                android:layout_marginBottom="1dp"
+                android:elevation="1dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_alignParentLeft="true"
+                        android:id="@+id/setting_icon"
+                        android:src="@drawable/setting"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="8dp"
+                        android:text="设置"
+                        android:textSize="8pt"
+                        android:layout_toEndOf="@+id/setting_icon" />
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_alignParentRight="true"
+                        android:src="@drawable/next" />
+
+                </RelativeLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="1dp"
+                android:id="@+id/debug_item"
+                android:elevation="1dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_alignParentLeft="true"
+                        android:id="@+id/debug_icon"
+                        android:src="@drawable/debug"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="8dp"
+                        android:text="调试"
+                        android:textSize="8pt"
+                        android:layout_toEndOf="@+id/debug_icon" />
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_alignParentRight="true"
+                        android:src="@drawable/next" />
+
+                </RelativeLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/info_item"
+                android:elevation="1dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_alignParentLeft="true"
+                        android:id="@+id/info_icon"
+                        android:src="@drawable/info"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="8dp"
+                        android:text="关于"
+                        android:textSize="8pt"
+                        android:layout_toEndOf="@+id/info_icon" />
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_alignParentRight="true"
+                        android:src="@drawable/next" />
+
+                </RelativeLayout>
+
+            </android.support.v7.widget.CardView>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/dev_surface"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:visibility="visible">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="8pt"
+                android:text="请选择登录状态"/>
+
+            <RadioGroup
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="企业用户登录状态"
-                android:textSize="8pt"
-                android:id="@+id/user_company_radioButton"
-                android:layout_gravity="center_horizontal" />
+                android:id="@+id/login_status_rg"
+                android:layout_gravity="center_horizontal">
 
-            <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="4S店用户登录状态"
-                android:textSize="8pt"
-                android:id="@+id/user_4s_radioButton"
-                android:layout_gravity="center_horizontal" />
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="默认未登录状态"
+                    android:textSize="8pt"
+                    android:checked="true"
+                    android:id="@+id/default_radioButton"
+                    android:layout_gravity="center_horizontal" />
 
-        </RadioGroup>
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="企业用户登录状态"
+                    android:textSize="8pt"
+                    android:id="@+id/user_company_radioButton"
+                    android:layout_gravity="center_horizontal" />
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="4S店用户登录状态"
+                    android:textSize="8pt"
+                    android:id="@+id/user_4s_radioButton"
+                    android:layout_gravity="center_horizontal" />
+
+            </RadioGroup>
+
+            <TextView
+                android:id="@+id/back2userSurface"
+                android:layout_width="200dp"
+                android:layout_height="32dp"
+                android:layout_marginTop="30dp"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:text="退出调试界面"
+                android:textSize="8pt"
+                android:textColor="@color/white"
+                android:background="@drawable/selector_btn"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 

@@ -33,6 +33,7 @@ import com.zhy.http.okhttp.OkHttpUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import Bean.Import_Export_Item;
 import Callback.ListImportExportItemCallback;
@@ -43,6 +44,9 @@ import okhttp3.Call;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import utils.PhotoSaver;
+
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
 
 public class fragment_deal extends Fragment implements View.OnClickListener, RadioGroup.OnCheckedChangeListener, MyItemClickListener {
 
@@ -57,10 +61,9 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
     private EditText carEt;
     private RecyclerView rv;
     private ImportExportItemAdapter ieItemAdapter;
-    private ArrayList<HashMap<String,Object>> listItem = new ArrayList<HashMap<String,Object>>();
+    private ArrayList<HashMap<String,Object>> listItem = new ArrayList<>();
     private String zxingResult;
     private List<Import_Export_Item> currentIEItemList;
-    private Import_Export_Item unExportItem;
 
     int login_status = -1;
     int status_IO;
@@ -182,7 +185,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
                 startActivityForResult(intent2, REQUEST_PHOTO);//开启相机，传入上面的Intent对象
                 break;
             case R.id.confirm_button:
-                if (carEt.getText().toString()!=""){
+                if (!Objects.equals(carEt.getText().toString(), "")){
                     if (bitmap != null){
                         String photoName = PhotoSaver.createPhotoName();
                         PhotoSaver.savePhoto2SDCard(PATH, photoName, bitmap);
@@ -224,7 +227,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == getActivity().RESULT_OK){
+        if (resultCode == RESULT_OK){
             Bundle bundle=data.getExtras();
 
             if (requestCode == REQUEST_SCAN){
@@ -241,14 +244,14 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
                 }
             }
 
-        } if(resultCode == getActivity().RESULT_CANCELED) {
+        } if(resultCode == RESULT_CANCELED) {
 //            Toast.makeText(getActivity(), "扫描结束", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void initList(int status_IO, String zxingResult, String company) {
         String url = baseUrl + "Import_Export_Item";
-        if (status_IO == IMPORT)
+        if (status_IO == IMPORT)//入库
         {
             for (int i = 0; i < currentIEItemList.size(); i++)
             {
@@ -265,12 +268,26 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
                                 .execute(new MyStringCallback());
                         //再GET整个出入库扫描信息
                         getList();
+                        return;
                     }
                 }
             }
+            Toast.makeText(getActivity(), "无法完成入库操作！", Toast.LENGTH_SHORT).show();
         }
-        if (status_IO == EXPORT)//TODO 待完善，没有考虑重复扫描出库的情况 2017.2.13
+        if (status_IO == EXPORT)//出库
         {
+            for (int i = 0; i < currentIEItemList.size(); i++)
+            {
+                if (currentIEItemList.get(i).getItem_module_id().equals(zxingResult))
+                {
+                    if (currentIEItemList.get(i).getLogistics_destination().equals("待入库"))
+                    {
+                       Toast.makeText(getActivity(), "模组已出库，请勿重复操作！", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
+            }
+
             //先POST到json server
             OkHttpUtils
                     .postString()
@@ -332,8 +349,6 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
         layoutManager.setReverseLayout(true);//列表翻转
         rv.setLayoutManager(layoutManager);
         rv.setHasFixedSize(true);
-        //Rv.addItemDecoration(new DividerItemDecoration(getActivity(), layoutManager.getOrientation()));//用类设置分割线
-        //Rv.addItemDecoration(new DividerItemDecoration(this, R.drawable.list_divider)); //用已有图片设置分割线
 
         //设置Item之间的间距
         int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.item_space);
