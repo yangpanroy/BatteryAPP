@@ -59,11 +59,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         search_tab = mTabLayout.getTabAt(2);
         user_tab = mTabLayout.getTabAt(3);
 
-        //设置Tab的图标
+        /*//设置Tab的图标
         main_tab.setIcon(R.drawable.ic_home_selector);
         deal_tab.setIcon(R.drawable.ic_deal_selector);
         search_tab.setIcon(R.drawable.ic_search_selector);
-        user_tab.setIcon(R.drawable.ic_user_selector);
+        user_tab.setIcon(R.drawable.ic_user_selector);*/
 
     }
 

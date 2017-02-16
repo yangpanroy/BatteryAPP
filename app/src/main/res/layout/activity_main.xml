@@ -7,21 +7,69 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/viewPager"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
+        <Toolbar
+            app:layout_scrollFlags="scroll|enterAlways"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary">
 
-    <android.support.design.widget.TabLayout
+            <LinearLayout
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/main_userHead"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/user_head_white"/>
+
+                <TextView
+                    android:id="@+id/main_userName"
+                    android:layout_marginLeft="16dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="未登录"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:textSize="18sp"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/main_info"
+                    android:layout_marginRight="16dp"
+                    android:layout_gravity="end"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/info_white"/>
+
+            </LinearLayout>
+
+        </Toolbar>
+
+        <android.support.design.widget.TabLayout
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
-            android:layout_height="30pt"
-            app:tabIndicatorHeight="0px"
+            android:layout_height="wrap_content"
+            app:tabIndicatorColor="@color/white"
             app:tabTextColor="@color/colorTabText"
             app:tabSelectedTextColor="@color/colorSelectedTabText"
             app:tabMode="fixed"
-            app:tabBackground="@color/colorPrimaryDark"
+            app:tabBackground="@color/colorPrimary"
             app:tabTextAppearance="@style/TextAppearance.Design.Tab"/>
+
+        <android.support.v4.view.ViewPager
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
 
 </LinearLayout>
