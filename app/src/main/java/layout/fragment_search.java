@@ -162,6 +162,7 @@ public class fragment_search extends Fragment implements View.OnClickListener {
     }
 
     public void doSearch(String record) {
+        searchContentEt.setText(null);//清空搜索框内的字符串
         //判断数据库中是否存在该记录
         if (!recordsDao.isHasRecord(record)) {
             tempList.add(record);
