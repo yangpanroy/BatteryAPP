@@ -24,7 +24,7 @@ public class DealDetailActivity extends AppCompatActivity {
     private RecyclerView rv;
     private ArrayList<HashMap<String,Object>> listItem = new ArrayList<HashMap<String,Object>>();
     private DealDetailItemAdapter ddiAdapter;
-    private String baseUrl = "http://192.168.191.1:3000/";
+    private String baseUrl = MainActivity.getBaseUrl();
     private List<Import_Export_Item> currentIEItemList;
 
     @Override

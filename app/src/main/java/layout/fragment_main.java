@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.novadata.batteryapp.MainActivity;
 import com.novadata.batteryapp.R;
 import com.youth.banner.Banner;
 import com.zhy.http.okhttp.OkHttpUtils;
@@ -32,7 +33,7 @@ public class fragment_main extends Fragment implements MyItemClickListener{
 
     private View view;
     private Banner banner;
-    private String baseUrl = "http://192.168.191.1:3000/";
+    private String baseUrl = MainActivity.getBaseUrl();
 
     //设置Item内组件资源
     private ArrayList<HashMap<String,Object>> listItem = new ArrayList<>();

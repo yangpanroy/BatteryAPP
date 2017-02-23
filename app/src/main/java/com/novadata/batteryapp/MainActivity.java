@@ -1,10 +1,17 @@
 package com.novadata.batteryapp;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
@@ -17,9 +24,16 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     private static final int REQUEST_CODE_QRCODE_PERMISSIONS = 1;
 
+    private static final String baseUrl = "http://192.168.191.1:3000/";
+
+    public static String getBaseUrl() {
+        return baseUrl;
+    }
+
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
     private MyFragmentPagerAdapter myFragmentPagerAdapter;
+    private TextView main_username;
     public static MainActivity mainActivity;
 
     private TabLayout.Tab main_tab;
@@ -41,6 +55,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     }
 
+    public void setMain_username(String username)
+    {
+        main_username.setText(username);
+    }
+
     private void initViews() {
 
         //使用适配器将ViewPager与Fragment绑定在一起
@@ -58,6 +77,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         deal_tab = mTabLayout.getTabAt(1);
         search_tab = mTabLayout.getTabAt(2);
         user_tab = mTabLayout.getTabAt(3);
+
+        main_username = (TextView)findViewById(R.id.main_userName);
 
         /*//设置Tab的图标
         main_tab.setIcon(R.drawable.ic_home_selector);

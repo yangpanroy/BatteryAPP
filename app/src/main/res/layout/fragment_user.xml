@@ -4,7 +4,6 @@
     android:orientation="vertical">
 
     <LinearLayout
-        android:id="@+id/user_surface"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -34,12 +33,15 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:id="@+id/user_name"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="未登录"
-                    android:textSize="10pt"/>
+                    android:textStyle="bold"
+                    android:textSize="7pt"/>
 
                 <TextView
+                    android:id="@+id/user_detail"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="登陆后可查看详细信息"
@@ -48,13 +50,12 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:gravity="center"
-                android:orientation="vertical"
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
                 <TextView
+                    android:layout_gravity="center"
                     android:id="@+id/logIn_button"
                     android:layout_width="80dp"
                     android:layout_height="30dp"
@@ -65,7 +66,19 @@
                     android:gravity="center"
                     android:clickable="true" />
 
-            </LinearLayout>
+                <TextView
+                    android:layout_gravity="center"
+                    android:id="@+id/logOut_button"
+                    android:layout_width="80dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/selector_btn_light"
+                    android:text="退出登录"
+                    android:textSize="7pt"
+                    android:textColor="@color/white"
+                    android:gravity="center"
+                    android:clickable="true" />
+
+            </FrameLayout>
 
         </LinearLayout>
 
@@ -176,74 +189,6 @@
                     android:src="@drawable/next" />
 
             </RelativeLayout>
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/dev_surface"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:visibility="visible">
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:gravity="center"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="8pt"
-                android:text="请选择登录状态"/>
-
-            <RadioGroup
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/login_status_rg"
-                android:layout_gravity="center_horizontal">
-
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="默认未登录状态"
-                    android:textSize="8pt"
-                    android:checked="true"
-                    android:id="@+id/default_radioButton"
-                    android:layout_gravity="center_horizontal" />
-
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="企业用户登录状态"
-                    android:textSize="8pt"
-                    android:id="@+id/user_company_radioButton"
-                    android:layout_gravity="center_horizontal" />
-
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="4S店用户登录状态"
-                    android:textSize="8pt"
-                    android:id="@+id/user_4s_radioButton"
-                    android:layout_gravity="center_horizontal" />
-
-            </RadioGroup>
-
-            <TextView
-                android:id="@+id/back2userSurface"
-                android:layout_width="200dp"
-                android:layout_height="32dp"
-                android:layout_marginTop="30dp"
-                android:layout_gravity="center_horizontal"
-                android:gravity="center"
-                android:text="退出调试界面"
-                android:textSize="8pt"
-                android:textColor="@color/white"
-                android:background="@drawable/selector_btn"/>
 
         </LinearLayout>
 

@@ -29,7 +29,7 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
     RecyclerView search_result_Rv;
     private ArrayList<HashMap<String,Object>> listItem = new ArrayList<HashMap<String,Object>>();
     private SearchResultAdapter srAdapter;
-    private String baseUrl = "http://192.168.191.1:3000/";
+    private String baseUrl = MainActivity.getBaseUrl();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

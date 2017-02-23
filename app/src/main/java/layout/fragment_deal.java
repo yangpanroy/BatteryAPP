@@ -62,16 +62,17 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
     private RecyclerView rv;
     private ImportExportItemAdapter ieItemAdapter;
     private ArrayList<HashMap<String,Object>> listItem = new ArrayList<>();
-    private String zxingResult;
+    private String zxingResult, companyName;
     private List<Import_Export_Item> currentIEItemList;
+    private TextView userCompany, user4SCompany;
 
     int login_status = -1;
     int status_IO;
     static final int IMPORT = 0, EXPORT = 1;
-    static final int DEFAULT_STATUS = -1, USER_4S = 1, USER_COMPANY = 0;
+    static final int DEFAULT_STATUS = -1, USER_4S = 1, USER_COMPANY_IP = 0, USER_COMPANY_EP = 2;
     final static int REQUEST_PHOTO = 0, REQUEST_SCAN = 1;
     private static final String PATH = "/sdcard/battery/photos";
-    private String baseUrl = "http://192.168.191.1:3000/";
+    private String baseUrl = MainActivity.getBaseUrl();
 
     @Nullable
     @Override
@@ -83,8 +84,6 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
         view = inflater.inflate(deal_layout, container, false);
 
         checkLayout(login_status);
-        initCompanyView();
-        init4SView();
 
         return view;
     }
@@ -94,9 +93,12 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
         confirm_Tv = (TextView) view.findViewById(R.id.confirm_button);
         photo_Iv = (ImageView) view.findViewById(R.id.photo);
         carEt = (EditText) view.findViewById(R.id.car_editText);
+        user4SCompany = (TextView) view.findViewById(R.id.user_4s_company);
 
         photo_Tv.setVisibility(View.VISIBLE);
         confirm_Tv.setVisibility(View.GONE);
+
+        user4SCompany.setText("授权企业：" + companyName);
 
         photo_Tv.setOnClickListener(this);
         confirm_Tv.setOnClickListener(this);
@@ -105,6 +107,9 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
     private void initCompanyView() {
         start2Scan_Tv = (TextView) view.findViewById(R.id.scan_button);
         rg = (RadioGroup) view.findViewById(R.id.company_RadioGroup);
+        userCompany = (TextView) view.findViewById(R.id.user_company);
+
+        userCompany.setText("授权企业：" + companyName);
 
         getList();//GET整个出入库扫描信息
 
@@ -118,13 +123,25 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
         the_4s_layout = (LinearLayout) view.findViewById(R.id.deal_4s_layout);
 
         switch (login_status){
-            case USER_COMPANY:{
-                Log.i("Tag", "USER_COMPANY has received");
+            case USER_COMPANY_IP:{
+                Log.i("Tag", "USER_COMPANY_IP has received");
+                companyName = fragment_user.importCompany;
+                initCompanyView();
+                default_layout.setVisibility(View.GONE);
+                the_4s_layout.setVisibility(View.GONE);
+                break;
+            }
+            case USER_COMPANY_EP:{
+                companyName = fragment_user.exportCompany;
+                initCompanyView();
+                Log.i("Tag", "USER_COMPANY_EP has received");
                 default_layout.setVisibility(View.GONE);
                 the_4s_layout.setVisibility(View.GONE);
                 break;
             }
             case USER_4S:{
+                companyName = fragment_user.fourSCompany;
+                init4SView();
                 Log.i("Tag", "USER_4S has received");
                 default_layout.setVisibility(View.GONE);
                 company_layout.setVisibility(View.GONE);
@@ -229,11 +246,9 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK){
             Bundle bundle=data.getExtras();
-
             if (requestCode == REQUEST_SCAN){
                 zxingResult = bundle.getString("result");//获得扫描的二维码信息
-                String company = "深圳比克汽车公司";//TODO 在完成登录功能后此处应为登录账户的身份
-                initList(status_IO, zxingResult, company);
+                initList(status_IO, zxingResult, companyName);
             }
             if (requestCode == REQUEST_PHOTO){
                 bitmap=(Bitmap) bundle.get("data");//从附加值中获取返回的图像

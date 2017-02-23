@@ -49,6 +49,7 @@ public class RecordsDao {
         }
         //关闭数据库
         recordsDb.close();
+        cursor.close();
         return isHasRecord;
     }
 
@@ -63,6 +64,7 @@ public class RecordsDao {
         }
         //关闭数据库
         recordsDb.close();
+        cursor.close();
         return recordsList;
     }
 
@@ -76,6 +78,7 @@ public class RecordsDao {
             String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
             similarRecords.add(name);
         }
+        cursor.close();
         return similarRecords;
     }
 
