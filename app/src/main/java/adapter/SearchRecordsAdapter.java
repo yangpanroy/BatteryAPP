@@ -43,7 +43,7 @@ public class SearchRecordsAdapter extends BaseAdapter {
         ViewHolder viewHolder;
         if(null == convertView){
             viewHolder = new ViewHolder();
-            convertView = inflater.inflate(R.layout.saerch_records_list_item,null);
+            convertView = inflater.inflate(R.layout.search_records_list_item,null);
             viewHolder.recordTv = (TextView) convertView.findViewById(R.id.search_content_tv);
 
             convertView.setTag(viewHolder);

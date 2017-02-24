@@ -15,8 +15,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import Bean.Search_Result_Item;
-import Callback.ListSearchResultItemCallback;
+import Bean.Scan;
+import Bean.Package;
+import Callback.ListScanCallback;
+import Callback.PackageCallback;
 import adapter.MyItemClickListener;
 import adapter.SearchResultAdapter;
 import layout.SpaceItemDecoration;
@@ -24,9 +26,10 @@ import okhttp3.Call;
 
 public class SearchResultActivity extends AppCompatActivity implements MyItemClickListener{
 
-    String battery_code;
-    TextView module_code, battery_match_head;
-    RecyclerView search_result_Rv;
+    private static final int RESULT_EMPTY = 2;
+    private String battery_code, carId;
+    private TextView module_code, manufacturer, date, type, battery_match_head, phone;
+    private RecyclerView search_result_Rv;
     private ArrayList<HashMap<String,Object>> listItem = new ArrayList<HashMap<String,Object>>();
     private SearchResultAdapter srAdapter;
     private String baseUrl = MainActivity.getBaseUrl();
@@ -40,51 +43,93 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
         Bundle bundle=this.getIntent().getExtras();
         battery_code = bundle.getString("battery_code");
 
+        module_code = (TextView) findViewById(R.id.searchResult_head_text1);
+        manufacturer = (TextView) findViewById(R.id.searchResult_head_text2);
+        date = (TextView) findViewById(R.id.searchResult_head_text3);
+        type = (TextView) findViewById(R.id.searchResult_head_text5);
+        battery_match_head = (TextView) findViewById(R.id.searchResult_head_text6);
+        phone = (TextView) findViewById(R.id.searchResult_head_text7);
+
         initList();
     }
 
     private void initList() {
-        String url = baseUrl + "search_result_item";
+        String url = baseUrl + "packages/" + battery_code;
         OkHttpUtils
                 .get()//
                 .url(url)//
                 .build()//
-                .execute(new ListSearchResultItemCallback()//
+                .execute(new PackageCallback()//
                 {
                     @Override
                     public void onError(Call call, Exception e, int id) {
-                        Log.i("Tag", "ListSearchResultItemCallback Error");
+
+                        SearchResultActivity.this.setResult(RESULT_EMPTY, SearchResultActivity.this.getIntent());
+                        SearchResultActivity.this.finish();
+
+                        Log.i("Tag", "PackageCallback Error");
                     }
 
                     @Override
-                    public void onResponse(List<Search_Result_Item> response, int id) {
-                        if (response.size() > 0) {
-                            listItem.removeAll(listItem);
-                            for (int i = 0; i < response.size(); i++) {
-                                HashMap<String, Object> map = new HashMap<>();
-                                map.put("ItemTitle", response.get(i).getTitle());
-                                map.put("ItemText1", response.get(i).getDate());
-                                map.put("ItemText2", response.get(i).getText1());
-                                map.put("ItemText3", response.get(i).getText2());
-                                map.put("ItemText4", response.get(i).getText3());
-                                map.put("ItemText5", response.get(i).getService_phone());
-                                listItem.add(map);
-                            }
-                            initView();
-                            initData();
-                            Log.i("Tag", "ListSearchResultItemCallback Success");
+                    public void onResponse(Package response, int id) {
 
-                        } else {
-                            Log.i("Tag", "ListSearchResultItemCallback Empty");
+                        module_code.setText("编号：" + response.getId());
+                        manufacturer.setText("生产企业：" + response.getManufacturer());
+                        date.setText("生产日期：" + response.getTimestamp().getDate());
+                        type.setText("参数：" + response.getPackageSpec());
+                        battery_match_head.setText("匹配：" + response.getId());
+                        phone.setText("售后电话：" + response.getPhone());
+
+                        carId = response.getCarId();
+
+                        initScans();
+
+                        Log.i("Tag", "PackageCallback Success");
+                    }
+                });
+
+    }
+
+    private void initScans() {
+        String url = baseUrl + "scans";
+        OkHttpUtils
+                .get()
+                .url(url)
+                .build()
+                .execute(new ListScanCallback() {
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
+                        Log.i("Tag", "ListScanCallback Error");
+                    }
+
+                    @Override
+                    public void onResponse(List<Scan> response, int id) {
+
+                        listItem.removeAll(listItem);
+                        for (int i = 0; i < response.size(); i++) {
+                            HashMap<String, Object> map = new HashMap<>();
+                            map.put("ItemTitle", response.get(i).getScanner() + response.get(i).getScanBranch());
+                            map.put("ItemText1", "交付日期：" + response.get(i).getTimestamp().getDate());
+                            map.put("ItemText2", "电池包：" + battery_code);
+                            map.put("ItemText4", "匹配车架号：" + carId);
+                            if (carId == null)
+                            {
+                                map.put("ItemText3", "汽车匹配状态：未匹配");
+                            }
+                            else
+                            {
+                                map.put("ItemText3", "汽车匹配状态：已匹配");
+                            }
+                            listItem.add(map);
                         }
+                        initView();
+
+                        Log.i("Tag", "ListScanCallback Success");
                     }
                 });
     }
 
     private void initView() {
-        module_code = (TextView) findViewById(R.id.searchResult_head_text1);
-        battery_match_head = (TextView) findViewById(R.id.searchResult_head_text6);
-
         srAdapter = new SearchResultAdapter(this, listItem);
         srAdapter.setOnItemClickListener(this);
 
@@ -99,12 +144,6 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
 
         int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.item_space);
         search_result_Rv.addItemDecoration(new SpaceItemDecoration(spacingInPixels));
-
-    }
-
-    private void initData() {
-        module_code.setText("模组编号：" + battery_code);
-        battery_match_head.setText("电池包匹配：" + battery_code);
 
     }
 

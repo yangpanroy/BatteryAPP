@@ -26,7 +26,7 @@ public class SearchResultAdapter extends RecyclerView.Adapter{
     //定义RecyclerView的ViewHolder
     class Holder extends RecyclerView.ViewHolder {
 
-        TextView searchResult_Itemtitle, searchResult_Itemtext1, searchResult_Itemtext2, searchResult_Itemtext3, searchResult_Itemtext4, searchResult_Itemtext5;
+        TextView searchResult_Itemtitle, searchResult_Itemtext1, searchResult_Itemtext2, searchResult_Itemtext3, searchResult_Itemtext4;
 
         public Holder(View itemView) {
             super(itemView);
@@ -36,7 +36,6 @@ public class SearchResultAdapter extends RecyclerView.Adapter{
             searchResult_Itemtext2 = (TextView) itemView.findViewById(R.id.searchResult_Itemtext2);
             searchResult_Itemtext3 = (TextView) itemView.findViewById(R.id.searchResult_Itemtext3);
             searchResult_Itemtext4 = (TextView) itemView.findViewById(R.id.searchResult_Itemtext4);
-            searchResult_Itemtext5 = (TextView) itemView.findViewById(R.id.searchResult_Itemtext5);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -63,7 +62,6 @@ public class SearchResultAdapter extends RecyclerView.Adapter{
             ((Holder) holder).searchResult_Itemtext2.setText((String) listItem.get(position).get("ItemText2"));
             ((Holder) holder).searchResult_Itemtext3.setText((String) listItem.get(position).get("ItemText3"));
             ((Holder) holder).searchResult_Itemtext4.setText((String) listItem.get(position).get("ItemText4"));
-            ((Holder) holder).searchResult_Itemtext5.setText((String) listItem.get(position).get("ItemText5"));
         }
     }//在这里绑定数据到ViewHolder里面
 

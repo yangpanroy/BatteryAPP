@@ -32,6 +32,7 @@ import utils.RecordsDao;
 
 public class fragment_search extends Fragment implements View.OnClickListener {
 
+    private static final int RESULT_EMPTY = 2;
     private View view;
     private EditText searchContentEt;
     private SearchRecordsAdapter recordsAdapter;
@@ -81,7 +82,7 @@ public class fragment_search extends Fragment implements View.OnClickListener {
         //显示历史记录lv
         recordsListLv = (ListView) recordsHistoryView.findViewById(R.id.search_records_lv);
         //清除搜索历史记录
-        clearAllRecordsTv = (TextView) recordsHistoryView.findViewById(R.id.clear_all_records_tv);
+        clearAllRecordsTv = (TextView) view.findViewById(R.id.clear_all_records_tv);
     }
 
 
@@ -178,7 +179,7 @@ public class fragment_search extends Fragment implements View.OnClickListener {
         //跳转到搜索结果页面
         Intent intent = new Intent(MainActivity.mainActivity, SearchResultActivity.class);
         Bundle bundle=new Bundle();
-        bundle.putString("battery_code", searchContentEt.getText().toString());
+        bundle.putString("battery_code", record);
         intent.putExtras(bundle);
         startActivityForResult(intent, 2);
     }
@@ -226,6 +227,13 @@ public class fragment_search extends Fragment implements View.OnClickListener {
             String record = searchContentEt.getText().toString();
             //开始搜索
             doSearch(record);
+        }
+        if (resultCode == RESULT_EMPTY)
+        {
+            if (requestCode == 2)
+            {
+                Toast.makeText(getActivity(), "未查询到该结果", Toast.LENGTH_LONG).show();
+            }
         }
     }
 

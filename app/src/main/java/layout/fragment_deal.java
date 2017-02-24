@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +31,8 @@ import com.novadata.batteryapp.R;
 import com.novadata.batteryapp.ScanActivity;
 import com.zhy.http.okhttp.OkHttpUtils;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,7 +53,6 @@ import static android.app.Activity.RESULT_OK;
 
 public class fragment_deal extends Fragment implements View.OnClickListener, RadioGroup.OnCheckedChangeListener, MyItemClickListener {
 
-
     private View view;
     private LocalBroadcastManager broadcastManager;
     private LinearLayout default_layout, company_layout, the_4s_layout;
@@ -65,12 +67,14 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
     private String zxingResult, companyName;
     private List<Import_Export_Item> currentIEItemList;
     private TextView userCompany, user4SCompany;
+    private TextView completeButton;
+    private ArrayList<String> listProductIds;
 
     int login_status = -1;
     int status_IO;
     static final int IMPORT = 0, EXPORT = 1;
     static final int DEFAULT_STATUS = -1, USER_4S = 1, USER_COMPANY_IP = 0, USER_COMPANY_EP = 2;
-    final static int REQUEST_PHOTO = 0, REQUEST_SCAN = 1;
+    final static int REQUEST_PHOTO = 0, REQUEST_SCAN = 1, REQUEST_DETAIL = 2, REQUEST_DEAL = 3;
     private static final String PATH = "/sdcard/battery/photos";
     private String baseUrl = MainActivity.getBaseUrl();
 
@@ -108,11 +112,13 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
         start2Scan_Tv = (TextView) view.findViewById(R.id.scan_button);
         rg = (RadioGroup) view.findViewById(R.id.company_RadioGroup);
         userCompany = (TextView) view.findViewById(R.id.user_company);
+        completeButton = (TextView) view.findViewById(R.id.complete_button);
 
         userCompany.setText("授权企业：" + companyName);
 
         getList();//GET整个出入库扫描信息
 
+        completeButton.setOnClickListener(this);
         start2Scan_Tv.setOnClickListener(this);
         rg.setOnCheckedChangeListener(this);
     }
@@ -190,6 +196,22 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
     @Override
     public void onClick(View v) {
         switch (v.getId()){
+            case R.id.complete_button:
+                if (status_IO == IMPORT)
+                {
+                    //TODO 买家生成交易二维码
+                    //listProductIds数组记录了这批待交易的电池包的二维码
+                }
+                if (status_IO == EXPORT)
+                {
+                    //卖家扫描买家生成的交易二维码
+                    Intent intent = new Intent(MainActivity.mainActivity, ScanActivity.class);
+                    Bundle bundle=new Bundle();
+                    bundle.putString("result", "result");
+                    intent.putExtras(bundle);
+                    startActivityForResult(intent, REQUEST_DEAL);
+                }
+                break;
             case R.id.scan_button://点击扫描二维码按钮
                 Intent intent = new Intent(MainActivity.mainActivity, ScanActivity.class);
                 Bundle bundle=new Bundle();
@@ -211,6 +233,8 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
                         confirm_Tv.setVisibility(View.GONE);
                         photo_Iv.setImageDrawable(getResources().getDrawable(R.drawable.contract));
                         //TODO 将车架号和合同照片共同上传
+                        //将bitmap处理成Base64字符串
+                        String base64 = bitmapToBase64(bitmap);
 
                     }
                     else {
@@ -223,6 +247,41 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
 
                 break;
         }
+    }
+
+    /**
+     * bitmap转为base64
+     * @param bitmap
+     * @return
+     */
+    public static String bitmapToBase64(Bitmap bitmap) {
+
+        String result = null;
+        ByteArrayOutputStream baos = null;
+        try {
+            if (bitmap != null) {
+                baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+
+                baos.flush();
+                baos.close();
+
+                byte[] bitmapBytes = baos.toByteArray();
+                result = Base64.encodeToString(bitmapBytes, Base64.DEFAULT);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (baos != null) {
+                    baos.flush();
+                    baos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
     }
 
     @Override
@@ -248,6 +307,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
             Bundle bundle=data.getExtras();
             if (requestCode == REQUEST_SCAN){
                 zxingResult = bundle.getString("result");//获得扫描的二维码信息
+                listProductIds.add(zxingResult);
                 initList(status_IO, zxingResult, companyName);
             }
             if (requestCode == REQUEST_PHOTO){
@@ -257,6 +317,12 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
                     photo_Tv.setVisibility(View.GONE);
                     confirm_Tv.setVisibility(View.VISIBLE);
                 }
+            }
+            if (requestCode == REQUEST_DEAL)
+            {
+                String deal2DCode = bundle.getString("result"); //获得扫描的交易二维码的信息
+                //TODO 处理交易二维码内的信息并上报
+                //二维码信息中包括买方签名、交易时间和一批电池包的二维码数组
             }
 
         } if(resultCode == RESULT_CANCELED) {
@@ -378,7 +444,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
         Bundle bundle=new Bundle();
         bundle.putString("battery_code", battery_code);
         intent.putExtras(bundle);
-        startActivityForResult(intent, 2);
+        startActivityForResult(intent, REQUEST_DETAIL);
     }
 
 }
