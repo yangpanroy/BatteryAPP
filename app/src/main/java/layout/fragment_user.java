@@ -24,7 +24,11 @@ public class fragment_user extends Fragment implements  View.OnClickListener {
     int login_status = -1;
 
     static final int DEFAULT_STATUS = -1, USER_4S = 1, USER_COMPANY_IP = 0, USER_COMPANY_EP = 2;
-    public static String importCompany = "深圳比克汽车公司", exportCompany = "上海腾飞汽车公司", fourSCompany = "北京速驰4S店";
+    public static String importCompany = "深圳比克汽车公司", exportCompany = "上海腾飞汽车公司", fourSCompany = "jksdafhjkdsf";
+    public static String importCompanyId = "0001", exportCompanyId = "0002", fourSCompanyId = "0003";
+    public static String importCompanyBranch = "第一分公司", exportCompanyBranch = "第二分公司", fourSCompanyBranch = "dsfsdfsf";
+
+    //TODO 实现登录功能
 
     @Nullable
     @Override

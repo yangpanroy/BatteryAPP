@@ -26,14 +26,12 @@ public class ImportExportItemAdapter extends RecyclerView.Adapter{
     //定义RecyclerView的ViewHolder
     class Holder extends RecyclerView.ViewHolder {
 
-        TextView item_module_id, logistics_source, logistics_destination;
+        TextView item_module_id;
 
         public Holder(View itemView) {
             super(itemView);
 
-            item_module_id = (TextView) itemView.findViewById(R.id.item_module_id);
-            logistics_source = (TextView) itemView.findViewById(R.id.logistics_source);
-            logistics_destination = (TextView) itemView.findViewById(R.id.logistics_destination);
+            item_module_id = (TextView) itemView.findViewById(R.id.scanned_code);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -49,7 +47,7 @@ public class ImportExportItemAdapter extends RecyclerView.Adapter{
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View layout = LayoutInflater.from(parent.getContext()).inflate(R.layout.import_export_item, parent, false);
+        View layout = LayoutInflater.from(parent.getContext()).inflate(R.layout.scanned_codes_item, parent, false);
         return new Holder(layout);
     }
 
@@ -57,8 +55,6 @@ public class ImportExportItemAdapter extends RecyclerView.Adapter{
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         if(holder instanceof Holder) {
             ((Holder) holder).item_module_id.setText((String) listItem.get(position).get("item_module_id"));
-            ((Holder) holder).logistics_source.setText((String) listItem.get(position).get("logistics_source"));
-            ((Holder) holder).logistics_destination.setText((String) listItem.get(position).get("logistics_destination"));
         }
     }//在这里绑定数据到ViewHolder里面
 

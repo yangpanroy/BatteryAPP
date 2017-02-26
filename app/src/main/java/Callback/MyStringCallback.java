@@ -13,22 +13,13 @@ public class MyStringCallback extends StringCallback
     @Override
     public void onError(Call call, Exception e, int id)
     {
+        Log.i("Tag", "POST Error");
         e.printStackTrace();
     }
 
     @Override
     public void onResponse(String response, int id)
     {
-        Log.i("Tag", "MyStringCallback success");
-
-        switch (id)
-        {
-            case 100:
-                Log.i("http", "http callback success");
-                break;
-            case 101:
-                Log.i("https", "https callback success");
-                break;
-        }
+        Log.i("Tag", "POST success");
     }
 }

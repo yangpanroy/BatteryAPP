@@ -17,17 +17,11 @@ public class Scan {
     public Scan() {
     }
 
-    public Scan(String id, String _created, String _modified, String scannerId, String scanner, String scanBranch, String barcode, Timestamp timestamp, double longitude, double latitude) {
-        this.id = id;
-        this._created = _created;
-        this._modified = _modified;
+    public Scan(String scannerId, String scanner, String scanBranch, String barcode) {
         this.scannerId = scannerId;
         this.scanner = scanner;
         this.scanBranch = scanBranch;
         this.barcode = barcode;
-        this.timestamp = timestamp;
-        this.longitude = longitude;
-        this.latitude = latitude;
     }
 
     public String getId() {
@@ -110,19 +104,19 @@ public class Scan {
         this.latitude = latitude;
     }
 
-    @Override
-    public String toString() {
-        return "Scan{" +
-                "id='" + id + '\'' +
-                ", _created='" + _created + '\'' +
-                ", _modified='" + _modified + '\'' +
-                ", scannerId='" + scannerId + '\'' +
-                ", scanner='" + scanner + '\'' +
-                ", scanBranch='" + scanBranch + '\'' +
-                ", barcode='" + barcode + '\'' +
-                ", timestamp=" + timestamp +
-                ", longitude=" + longitude +
-                ", latitude=" + latitude +
-                '}';
-    }
+//    @Override
+//    public String toString() {
+//        return "Scan{" +
+//                "id='" + id + '\'' +
+//                ", _created='" + _created + '\'' +
+//                ", _modified='" + _modified + '\'' +
+//                ", scannerId='" + scannerId + '\'' +
+//                ", scanner='" + scanner + '\'' +
+//                ", scanBranch='" + scanBranch + '\'' +
+//                ", barcode='" + barcode + '\'' +
+//                ", timestamp=" + timestamp +
+//                ", longitude=" + longitude +
+//                ", latitude=" + latitude +
+//                '}';
+//    }
 }

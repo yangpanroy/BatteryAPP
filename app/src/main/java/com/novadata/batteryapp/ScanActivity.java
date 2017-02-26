@@ -59,6 +59,7 @@ public class ScanActivity extends AppCompatActivity implements QRCodeView.Delega
         vibrate();
         Bundle bundle=this.getIntent().getExtras();
         bundle.putString("result", result);
+        bundle.putString("deal2DCodeContentRecv", result);
         this.getIntent().putExtras(bundle);
         ScanActivity.this.setResult(RESULT_OK, this.getIntent());
         ScanActivity.this.finish();

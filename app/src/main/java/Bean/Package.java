@@ -7,7 +7,7 @@ import java.util.ArrayList;
  */
 public class Package {
 
-    String id;
+    String packageId;
     String _created;
     String _modified;
     String packageSpec;
@@ -20,8 +20,8 @@ public class Package {
     public Package() {
     }
 
-    public Package(String id, String _created, String _modified, String packageSpec, String manufacturer, ArrayList<Module> modules, Timestamp timestamp, String phone, String carId) {
-        this.id = id;
+    public Package(String packageId, String _created, String _modified, String packageSpec, String manufacturer, ArrayList<Module> modules, Timestamp timestamp, String phone, String carId) {
+        this.packageId = packageId;
         this._created = _created;
         this._modified = _modified;
         this.packageSpec = packageSpec;
@@ -32,12 +32,12 @@ public class Package {
         this.carId = carId;
     }
 
-    public String getId() {
-        return id;
+    public String getPackageId() {
+        return packageId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setPackageId(String packageId) {
+        this.packageId = packageId;
     }
 
     public String get_created() {
@@ -104,18 +104,4 @@ public class Package {
         this.carId = carId;
     }
 
-    @Override
-    public String toString() {
-        return "Package{" +
-                "id='" + id + '\'' +
-                ", _created='" + _created + '\'' +
-                ", _modified='" + _modified + '\'' +
-                ", packageSpec='" + packageSpec + '\'' +
-                ", manufacturer='" + manufacturer + '\'' +
-                ", phone='" + phone + '\'' +
-                ", carId='" + carId + '\'' +
-                ", modules=" + modules +
-                ", timestamp=" + timestamp +
-                '}';
-    }
 }

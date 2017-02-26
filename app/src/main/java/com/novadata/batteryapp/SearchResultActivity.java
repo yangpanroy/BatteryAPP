@@ -73,11 +73,11 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
                     @Override
                     public void onResponse(Package response, int id) {
 
-                        module_code.setText("编号：" + response.getId());
+                        module_code.setText("编号：" + response.getPackageId());
                         manufacturer.setText("生产企业：" + response.getManufacturer());
                         date.setText("生产日期：" + response.getTimestamp().getDate());
                         type.setText("参数：" + response.getPackageSpec());
-                        battery_match_head.setText("匹配：" + response.getId());
+                        battery_match_head.setText("匹配：" + response.getPackageId());
                         phone.setText("售后电话：" + response.getPhone());
 
                         carId = response.getCarId();
@@ -100,6 +100,7 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
                     @Override
                     public void onError(Call call, Exception e, int id) {
                         Log.i("Tag", "ListScanCallback Error");
+                        Toast.makeText(SearchResultActivity.this, "未找到扫描记录", Toast.LENGTH_LONG).show();
                     }
 
                     @Override
@@ -149,9 +150,7 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
 
     @Override
     public void onItemClick(View view, int postion) {//点击事件的回调函数
-        //TODO 定义Item的点击响应事件
-        System.out.println("点击了第" + postion + "行");
-        Toast.makeText(this, "点击了第" + postion + "行信息", Toast.LENGTH_SHORT).show();
+
     }
 
 }

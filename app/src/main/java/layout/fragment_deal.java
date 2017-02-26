@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -25,7 +26,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.novadata.batteryapp.DealDetailActivity;
+import com.google.gson.reflect.TypeToken;
+import com.novadata.batteryapp.GenerateDeal2DCodeActivity;
 import com.novadata.batteryapp.MainActivity;
 import com.novadata.batteryapp.R;
 import com.novadata.batteryapp.ScanActivity;
@@ -34,49 +36,46 @@ import com.zhy.http.okhttp.OkHttpUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
 
-import Bean.Import_Export_Item;
-import Callback.ListImportExportItemCallback;
+import Bean.Deal2DCode;
+import Bean.Scan;
+import Bean.Trade;
 import Callback.MyStringCallback;
 import adapter.ImportExportItemAdapter;
 import adapter.MyItemClickListener;
 import okhttp3.Call;
 import okhttp3.MediaType;
-import okhttp3.RequestBody;
 import utils.PhotoSaver;
 
-import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
 public class fragment_deal extends Fragment implements View.OnClickListener, RadioGroup.OnCheckedChangeListener, MyItemClickListener {
 
     private View view;
     private LocalBroadcastManager broadcastManager;
-    private LinearLayout default_layout, company_layout, the_4s_layout;
     private TextView start2Scan_Tv, photo_Tv, confirm_Tv;
     private ImageView photo_Iv;
-    private RadioGroup rg;
     private Bitmap bitmap;
-    private EditText carEt;
+    private EditText carEt, consumerNameEt, consumerIdEt;
     private RecyclerView rv;
     private ImportExportItemAdapter ieItemAdapter;
     private ArrayList<HashMap<String,Object>> listItem = new ArrayList<>();
-    private String zxingResult, companyName;
-    private List<Import_Export_Item> currentIEItemList;
-    private TextView userCompany, user4SCompany;
+    private String zxingResult, companyName, companyId, companyBranch;
     private TextView completeButton;
-    private ArrayList<String> listProductIds;
+    public ArrayList<String> listProductIds = new ArrayList<>();
+    TextView initHint;
+    LinearLayout scannedList;
 
     int login_status = -1;
     int status_IO;
     static final int IMPORT = 0, EXPORT = 1;
     static final int DEFAULT_STATUS = -1, USER_4S = 1, USER_COMPANY_IP = 0, USER_COMPANY_EP = 2;
-    final static int REQUEST_PHOTO = 0, REQUEST_SCAN = 1, REQUEST_DETAIL = 2, REQUEST_DEAL = 3;
+    final static int REQUEST_PHOTO = 0, REQUEST_SCAN = 1, REQUEST_DETAIL = 2, REQUEST_DEAL = 3, REQUEST_GENERATE = 4;
     private static final String PATH = "/sdcard/battery/photos";
     private String baseUrl = MainActivity.getBaseUrl();
+    private String deal2DCodeContent;
 
     @Nullable
     @Override
@@ -97,7 +96,9 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
         confirm_Tv = (TextView) view.findViewById(R.id.confirm_button);
         photo_Iv = (ImageView) view.findViewById(R.id.photo);
         carEt = (EditText) view.findViewById(R.id.car_editText);
-        user4SCompany = (TextView) view.findViewById(R.id.user_4s_company);
+        consumerNameEt = (EditText) view.findViewById(R.id.consumer_name_editText);
+        consumerIdEt = (EditText) view.findViewById(R.id.consumer_id_editText);
+        TextView user4SCompany = (TextView) view.findViewById(R.id.user_4s_company);
 
         photo_Tv.setVisibility(View.VISIBLE);
         confirm_Tv.setVisibility(View.GONE);
@@ -110,13 +111,17 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
 
     private void initCompanyView() {
         start2Scan_Tv = (TextView) view.findViewById(R.id.scan_button);
-        rg = (RadioGroup) view.findViewById(R.id.company_RadioGroup);
-        userCompany = (TextView) view.findViewById(R.id.user_company);
+        RadioGroup rg = (RadioGroup) view.findViewById(R.id.company_RadioGroup);
+        TextView userCompany = (TextView) view.findViewById(R.id.user_company);
         completeButton = (TextView) view.findViewById(R.id.complete_button);
+        initHint = (TextView) view.findViewById(R.id.init_hint);
+        scannedList = (LinearLayout) view.findViewById(R.id.scanned_list);
 
         userCompany.setText("授权企业：" + companyName);
 
-        getList();//GET整个出入库扫描信息
+//        getList();//GET整个出入库扫描信息
+        initHint.setVisibility(View.VISIBLE);
+        scannedList.setVisibility(View.GONE);
 
         completeButton.setOnClickListener(this);
         start2Scan_Tv.setOnClickListener(this);
@@ -124,21 +129,27 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
     }
 
     private void checkLayout(int login_status) {
-        default_layout = (LinearLayout) view.findViewById(R.id.deal_default_layout);
-        company_layout = (LinearLayout) view.findViewById(R.id.deal_company_layout);
-        the_4s_layout = (LinearLayout) view.findViewById(R.id.deal_4s_layout);
+        LinearLayout default_layout = (LinearLayout) view.findViewById(R.id.deal_default_layout);
+        LinearLayout company_layout = (LinearLayout) view.findViewById(R.id.deal_company_layout);
+        LinearLayout the_4s_layout = (LinearLayout) view.findViewById(R.id.deal_4s_layout);
 
         switch (login_status){
             case USER_COMPANY_IP:{
                 Log.i("Tag", "USER_COMPANY_IP has received");
+                //TODO 实现登录功能后更改这里
                 companyName = fragment_user.importCompany;
+                companyBranch = fragment_user.importCompanyBranch;
+                companyId = fragment_user.importCompanyId;
                 initCompanyView();
                 default_layout.setVisibility(View.GONE);
                 the_4s_layout.setVisibility(View.GONE);
                 break;
             }
             case USER_COMPANY_EP:{
+                //TODO 实现登录功能后更改这里
                 companyName = fragment_user.exportCompany;
+                companyBranch = fragment_user.exportCompanyBranch;
+                companyId = fragment_user.exportCompanyId;
                 initCompanyView();
                 Log.i("Tag", "USER_COMPANY_EP has received");
                 default_layout.setVisibility(View.GONE);
@@ -146,7 +157,10 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
                 break;
             }
             case USER_4S:{
+                //TODO 实现登录功能后更改这里
                 companyName = fragment_user.fourSCompany;
+                companyBranch = fragment_user.fourSCompanyBranch;
+                companyId = fragment_user.fourSCompanyId;
                 init4SView();
                 Log.i("Tag", "USER_4S has received");
                 default_layout.setVisibility(View.GONE);
@@ -199,15 +213,31 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
             case R.id.complete_button:
                 if (status_IO == IMPORT)
                 {
-                    //TODO 买家生成交易二维码
-                    //listProductIds数组记录了这批待交易的电池包的二维码
+                    //买家生成交易二维码
+                    //listProductIds数组记录了这批待交易的电池包的二维码，先将其排序以便比对
+                    Collections.sort(listProductIds);
+                    //将信息序列化
+                    Gson gson = new Gson();
+                    //TODO 更新签名 增加block和transaction传入
+                    deal2DCodeContent = gson.toJson(new Deal2DCode(companyName, companyId, companyBranch, "toSignature", listProductIds));
+                    //清空记录的模组号
+                    listProductIds.clear();
+                    initList(listProductIds);
+                    initHint.setVisibility(View.VISIBLE);
+                    scannedList.setVisibility(View.GONE);
+                    //跳转到生成交易二维码界面
+                    Intent intent = new Intent(MainActivity.mainActivity, GenerateDeal2DCodeActivity.class);
+                    Bundle bundle=new Bundle();
+                    bundle.putString("deal2DCodeContent", deal2DCodeContent);
+                    intent.putExtras(bundle);
+                    startActivityForResult(intent, REQUEST_GENERATE);
                 }
                 if (status_IO == EXPORT)
                 {
                     //卖家扫描买家生成的交易二维码
                     Intent intent = new Intent(MainActivity.mainActivity, ScanActivity.class);
                     Bundle bundle=new Bundle();
-                    bundle.putString("result", "result");
+                    bundle.putString("deal2DCodeContentRecv", "deal2DCodeContentRecv");
                     intent.putExtras(bundle);
                     startActivityForResult(intent, REQUEST_DEAL);
                 }
@@ -224,25 +254,49 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
                 startActivityForResult(intent2, REQUEST_PHOTO);//开启相机，传入上面的Intent对象
                 break;
             case R.id.confirm_button:
-                if (!Objects.equals(carEt.getText().toString(), "")){
+                if (carEt.getText().toString().isEmpty() || consumerNameEt.getText().toString().isEmpty() || consumerIdEt.getText().toString().isEmpty()){
+                    Toast.makeText(getActivity(), "请输入购车信息后再确认提交", Toast.LENGTH_SHORT).show();
+                }
+                else {
                     if (bitmap != null){
+                        //先将合同照片存储下来
                         String photoName = PhotoSaver.createPhotoName();
                         PhotoSaver.savePhoto2SDCard(PATH, photoName, bitmap);
                         Toast.makeText(getActivity(), "照片存储成功！路径为 " + PATH, Toast.LENGTH_SHORT).show();
                         photo_Tv.setVisibility(View.VISIBLE);
                         confirm_Tv.setVisibility(View.GONE);
                         photo_Iv.setImageDrawable(getResources().getDrawable(R.drawable.contract));
-                        //TODO 将车架号和合同照片共同上传
+                        //将车架号、购车人姓名、购车人身份证号码和合同照片共同上传
                         //将bitmap处理成Base64字符串
                         String base64 = bitmapToBase64(bitmap);
+                        //将车架号加到productId数组里
+                        String carId = carEt.getText().toString();
+                        listProductIds.removeAll(listProductIds);
+                        listProductIds.add(carId);
+                        //获得消费者姓名和身份证号码
+                        String consumerName = consumerNameEt.getText().toString();
+                        String consumerId = consumerIdEt.getText().toString();
+                        //生成要上传的trade信息
+                        //TODO 更新签名 增加block和transaction传入
+                        Trade trade = new Trade(companyId, companyName, companyBranch, "fromSignature",
+                                consumerId, consumerName, consumerName, "",
+                                base64, listProductIds);//新建一个trade并POST attachment要换成base64字符串
+                        //POST trade信息
+                        String url = baseUrl + "trades";
+                        Log.i("Tag", new Gson().toJson(trade));
+
+                                OkHttpUtils
+                                        .postString()
+                                        .url(url)
+                                        .mediaType(MediaType.parse("application/json; charset=utf-8"))
+                                        .content(new Gson().toJson(trade))
+                                        .build()
+                                        .execute(new MyStringCallback());
 
                     }
                     else {
                         Toast.makeText(getActivity(), "请拍摄合同照片后再确认提交", Toast.LENGTH_SHORT).show();
                     }
-                }
-                else {
-                    Toast.makeText(getActivity(), "请输入车架号信息后再确认提交", Toast.LENGTH_SHORT).show();
                 }
 
                 break;
@@ -307,8 +361,25 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
             Bundle bundle=data.getExtras();
             if (requestCode == REQUEST_SCAN){
                 zxingResult = bundle.getString("result");//获得扫描的二维码信息
+                //TODO BUG 若先用4S店用户完成交易，此处会有bug，不仅显示扫描后的二维码，还显示之前4S店交易EditText填写的信息
+                //更新UI
                 listProductIds.add(zxingResult);
-                initList(status_IO, zxingResult, companyName);
+                initList(listProductIds);
+                //上传扫描记录
+                Scan scan = new Scan(companyId, companyName, companyBranch, zxingResult);
+                String url = baseUrl + "scans";
+
+                String s = new Gson().toJson(scan);
+
+                Log.i("TAG", s);
+
+                OkHttpUtils
+                        .postString()
+                        .url(url)
+                        .mediaType(MediaType.parse("application/json; charset=utf-8"))
+                        .content(new Gson().toJson(scan))
+                        .build()
+                        .execute(new MyStringCallback());
             }
             if (requestCode == REQUEST_PHOTO){
                 bitmap=(Bitmap) bundle.get("data");//从附加值中获取返回的图像
@@ -320,101 +391,68 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
             }
             if (requestCode == REQUEST_DEAL)
             {
-                String deal2DCode = bundle.getString("result"); //获得扫描的交易二维码的信息
-                //TODO 处理交易二维码内的信息并上报
+                String deal2DCodeContent = bundle.getString("deal2DCodeContentRecv"); //获得扫描的交易二维码的信息
+
+                //处理交易二维码内的信息并上报
                 //二维码信息中包括买方签名、交易时间和一批电池包的二维码数组
+                //比对二维码中的数组和自己扫描的数组，一致后才上传
+                Deal2DCode deal2DCode = new Gson().fromJson(deal2DCodeContent, new TypeToken<Deal2DCode>() {}.getType());
+                Collections.sort(listProductIds);
+                assert deal2DCode != null;
+                if ( listProductIds.equals(deal2DCode.getProductIds()))
+                {
+                    //TODO 更新签名 增加block和transaction传入
+                    Trade trade = new Trade(companyId, companyName, companyBranch, "fromSignature",
+                            deal2DCode.getToId(), deal2DCode.getTo(), deal2DCode.getToBranch(), deal2DCode.getToSignature(),
+                            "", deal2DCode.getProductIds());//新建一个trade并POST
+                    //POST trade信息
+                    String url = baseUrl + "trades";
+
+                    OkHttpUtils
+                            .postString()
+                            .url(url)
+                            .mediaType(MediaType.parse("application/json; charset=utf-8"))
+                            .content(new Gson().toJson(trade))
+                            .build()
+                            .execute(new MyStringCallback(){
+                                @Override
+                                public void onError(Call call, Exception e, int id) {
+                                    super.onError(call, e, id);
+                                    Toast.makeText(getActivity(), "交易失败请重试！", Toast.LENGTH_LONG).show();
+                                }
+
+                                @Override
+                                public void onResponse(String response, int id) {
+                                    super.onResponse(response, id);
+                                    Toast.makeText(getActivity(), "交易成功！", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                }
+                else
+                {
+                    Toast.makeText(getActivity(), "交易不匹配，请重新扫描", Toast.LENGTH_LONG).show();
+                }
+                //清空扫描的模组号
+                listProductIds.clear();
+                initList(listProductIds);
+                initHint.setVisibility(View.VISIBLE);
+                scannedList.setVisibility(View.GONE);
             }
 
-        } if(resultCode == RESULT_CANCELED) {
-//            Toast.makeText(getActivity(), "扫描结束", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void initList(int status_IO, String zxingResult, String company) {
-        String url = baseUrl + "Import_Export_Item";
-        if (status_IO == IMPORT)//入库
-        {
-            for (int i = 0; i < currentIEItemList.size(); i++)
-            {
-                if (currentIEItemList.get(i).getItem_module_id().equals(zxingResult))
-                {
-                    if (currentIEItemList.get(i).getLogistics_destination().equals("待入库"))
-                    {
-                        String sourceCompany = currentIEItemList.get(i).getLogistics_source();
-                        OkHttpUtils
-                                .put()
-                                .url(url + "/" + (i+1))//将id为i+1的数据进行更改
-                                .requestBody(RequestBody.create(MediaType.parse("application/json; charset=utf-8"), new Gson().toJson(new Import_Export_Item(zxingResult, sourceCompany, company))))//
-                                .build()//
-                                .execute(new MyStringCallback());
-                        //再GET整个出入库扫描信息
-                        getList();
-                        return;
-                    }
-                }
-            }
-            Toast.makeText(getActivity(), "无法完成入库操作！", Toast.LENGTH_SHORT).show();
+    private void initList(ArrayList<String> listProductIds) {
+        initHint.setVisibility(View.GONE);
+        scannedList.setVisibility(View.VISIBLE);
+
+        listItem.removeAll(listItem);
+        for (int i = 0; i < listProductIds.size(); i++) {
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("item_module_id", listProductIds.get(i));
+            listItem.add(map);
         }
-        if (status_IO == EXPORT)//出库
-        {
-            for (int i = 0; i < currentIEItemList.size(); i++)
-            {
-                if (currentIEItemList.get(i).getItem_module_id().equals(zxingResult))
-                {
-                    if (currentIEItemList.get(i).getLogistics_destination().equals("待入库"))
-                    {
-                       Toast.makeText(getActivity(), "模组已出库，请勿重复操作！", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                }
-            }
-
-            //先POST到json server
-            OkHttpUtils
-                    .postString()
-                    .url(url)
-                    .mediaType(MediaType.parse("application/json; charset=utf-8"))
-                    .content(new Gson().toJson(new Import_Export_Item(zxingResult, company, "待入库")))
-                    .build()
-                    .execute(new MyStringCallback());
-            //再GET整个出入库扫描信息
-            getList();
-        }
-    }
-
-
-    public void getList() {
-        String url = baseUrl + "Import_Export_Item";
-        OkHttpUtils
-                .get()//
-                .url(url)//
-                .build()//
-                .execute(new ListImportExportItemCallback()//
-                {
-                    @Override
-                    public void onError(Call call, Exception e, int id) {
-                        Log.i("Tag", "ListImportExportItemCallback Error");
-                    }
-
-                    @Override
-                    public void onResponse(List<Import_Export_Item> response, int id) {
-                        if (response.size() > 0) {
-                            currentIEItemList = response;
-                            listItem.removeAll(listItem);
-                            for (int i = 0; i < response.size(); i++) {
-                                HashMap<String, Object> map = new HashMap<>();
-                                map.put("item_module_id", "模组：" + response.get(i).getItem_module_id());
-                                map.put("logistics_source", response.get(i).getLogistics_source());
-                                map.put("logistics_destination", response.get(i).getLogistics_destination());
-                                listItem.add(map);
-                            }
-                            initView();
-                            Log.i("Tag", "ListImportExportItemCallback Success");
-                        } else {
-                            Log.i("Tag", "ListImportExportItemCallback Empty");
-                        }
-                    }
-                });
+        initView();
     }
 
     public void initView(){
@@ -438,13 +476,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
 
     @Override
     public void onItemClick(View view, int position) {//点击事件的回调函数
-        String battery_code;
-        battery_code = currentIEItemList.get(position).getItem_module_id();
-        Intent intent = new Intent(MainActivity.mainActivity, DealDetailActivity.class);
-        Bundle bundle=new Bundle();
-        bundle.putString("battery_code", battery_code);
-        intent.putExtras(bundle);
-        startActivityForResult(intent, REQUEST_DETAIL);
+
     }
 
 }

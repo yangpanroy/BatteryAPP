@@ -14,8 +14,7 @@ public abstract class PackageCallback extends Callback<Package> {
     @Override
     public Package parseNetworkResponse(Response response, int id) throws Exception {
         String string = response.body().string();
-        Package aPackage = new Gson().fromJson(string, new TypeToken<Package>() {
-        }.getType());
+        Package aPackage = new Gson().fromJson(string, new TypeToken<Package>() {}.getType());
         return aPackage;
     }
 }
