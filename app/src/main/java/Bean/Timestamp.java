@@ -43,14 +43,14 @@ public class Timestamp {
 
     public String getDate(){
 //        Long time=newLong(445555555);
-        SimpleDateFormat format =  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat format =  new SimpleDateFormat("yyyy-MM-dd");
         String date = format.format(seconds);
         return date;
     }
 
     public long getTimestamp(String time) throws ParseException {
         //        String time="1970-01-06 11:45:55";
-        SimpleDateFormat format =  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat format =  new SimpleDateFormat("yyyy-MM-dd");
         Date date = format.parse(time);
         return date.getTime()/1000; //getTime()返回的是毫秒级别，除以1000变成秒级别并返回，与Unix时间统一
     }

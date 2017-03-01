@@ -1,46 +1,31 @@
 package com.novadata.batteryapp;
 
 import android.Manifest;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
 import adapter.MyFragmentPagerAdapter;
-import pub.devrel.easypermissions.EasyPermissions;
 import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
 
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks{
 
     private static final int REQUEST_CODE_QRCODE_PERMISSIONS = 1;
 
 //    private static final String baseUrl = "http://192.168.191.1:3000/";
-    private static final String baseUrl = "http://222.199.193.83:9000/v1/";
+    private static final String baseUrl = "http://222.199.193.110:9000/v1/";
 
     public static String getBaseUrl() {
         return baseUrl;
     }
 
-    private TabLayout mTabLayout;
-    private ViewPager mViewPager;
-    private MyFragmentPagerAdapter myFragmentPagerAdapter;
     private TextView main_username;
     public static MainActivity mainActivity;
-
-    private TabLayout.Tab main_tab;
-    private TabLayout.Tab deal_tab;
-    private TabLayout.Tab search_tab;
-    private TabLayout.Tab user_tab;
 
 
     @Override
@@ -48,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         super.onCreate(savedInstanceState);
         mainActivity = this;
 
+        assert getSupportActionBar() != null;
         getSupportActionBar().hide();//隐藏掉整个ActionBar
         setContentView(R.layout.activity_main);
 
@@ -64,20 +50,21 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private void initViews() {
 
         //使用适配器将ViewPager与Fragment绑定在一起
-        mViewPager= (ViewPager) findViewById(R.id.viewPager);
-        myFragmentPagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
+        ViewPager mViewPager = (ViewPager) findViewById(R.id.viewPager);
+        MyFragmentPagerAdapter myFragmentPagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
+        assert mViewPager != null;
         mViewPager.setAdapter(myFragmentPagerAdapter);
 
         //将TabLayout与ViewPager绑定在一起
-        mTabLayout = (TabLayout) findViewById(R.id.tabLayout);
+        TabLayout mTabLayout = (TabLayout) findViewById(R.id.tabLayout);
         assert mTabLayout != null;
         mTabLayout.setupWithViewPager(mViewPager);
 
         //指定Tab的位置
-        main_tab = mTabLayout.getTabAt(0);
-        deal_tab = mTabLayout.getTabAt(1);
-        search_tab = mTabLayout.getTabAt(2);
-        user_tab = mTabLayout.getTabAt(3);
+        TabLayout.Tab main_tab = mTabLayout.getTabAt(0);
+        TabLayout.Tab deal_tab = mTabLayout.getTabAt(1);
+        TabLayout.Tab search_tab = mTabLayout.getTabAt(2);
+        TabLayout.Tab user_tab = mTabLayout.getTabAt(3);
 
         main_username = (TextView)findViewById(R.id.main_userName);
 
@@ -93,7 +80,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     protected void onStart() {
         super.onStart();
         requestCodeQRCodePermissions();
-        Toast.makeText(this, "交易功能需要在 “我” 标签页登录后使用",Toast.LENGTH_SHORT);
     }
 
     @Override

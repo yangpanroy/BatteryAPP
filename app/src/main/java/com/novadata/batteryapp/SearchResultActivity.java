@@ -29,9 +29,7 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
     private static final int RESULT_EMPTY = 2;
     private String battery_code, carId;
     private TextView module_code, manufacturer, date, type, battery_match_head, phone;
-    private RecyclerView search_result_Rv;
-    private ArrayList<HashMap<String,Object>> listItem = new ArrayList<HashMap<String,Object>>();
-    private SearchResultAdapter srAdapter;
+    private ArrayList<HashMap<String,Object>> listItem = new ArrayList<>();
     private String baseUrl = MainActivity.getBaseUrl();
 
     @Override
@@ -73,12 +71,20 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
                     @Override
                     public void onResponse(Package response, int id) {
 
-                        module_code.setText("编号：" + response.getPackageId());
-                        manufacturer.setText("生产企业：" + response.getManufacturer());
-                        date.setText("生产日期：" + response.getTimestamp().getDate());
-                        type.setText("参数：" + response.getPackageSpec());
-                        battery_match_head.setText("匹配：" + response.getPackageId());
-                        phone.setText("售后电话：" + response.getPhone());
+                        String tempString;
+
+                        tempString = "编号：" + response.getPackageId();
+                        module_code.setText(tempString);
+                        tempString = "生产企业：" + response.getManufacturer();
+                        manufacturer.setText(tempString);
+                        tempString = "生产日期：" + response.getTimestamp().getDate();
+                        date.setText(tempString);
+                        tempString = "参数：" + response.getPackageSpec();
+                        type.setText(tempString);
+                        tempString = "匹配：" + response.getPackageId();
+                        battery_match_head.setText(tempString);
+                        tempString = "售后电话：" + response.getPhone();
+                        phone.setText(tempString);
 
                         carId = response.getCarId();
 
@@ -106,7 +112,7 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
                     @Override
                     public void onResponse(List<Scan> response, int id) {
 
-                        listItem.removeAll(listItem);
+                        listItem.clear();
                         for (int i = 0; i < response.size(); i++) {
                             HashMap<String, Object> map = new HashMap<>();
                             map.put("ItemTitle", response.get(i).getScanner() + response.get(i).getScanBranch());
@@ -131,10 +137,10 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
     }
 
     private void initView() {
-        srAdapter = new SearchResultAdapter(this, listItem);
+        SearchResultAdapter srAdapter = new SearchResultAdapter(this, listItem);
         srAdapter.setOnItemClickListener(this);
 
-        search_result_Rv = (RecyclerView) findViewById(R.id.search_result_recycleView);
+        RecyclerView search_result_Rv = (RecyclerView) findViewById(R.id.search_result_recycleView);
 
         assert search_result_Rv != null;
         search_result_Rv.setAdapter(srAdapter);

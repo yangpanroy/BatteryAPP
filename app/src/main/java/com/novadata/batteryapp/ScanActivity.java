@@ -22,6 +22,7 @@ public class ScanActivity extends AppCompatActivity implements QRCodeView.Delega
         this.setTitle("扫描二维码");
 
         mQRCodeView = (ZXingView) findViewById(R.id.zxingview);
+        assert mQRCodeView != null;
         mQRCodeView.setDelegate(this);
     }
 

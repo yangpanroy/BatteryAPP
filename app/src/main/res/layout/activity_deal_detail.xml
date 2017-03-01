@@ -3,14 +3,137 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     tools:context="com.novadata.batteryapp.DealDetailActivity">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/deal_detail_recycleView"
+    <FrameLayout
+        android:background="@color/colorBackground"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:scrollbars="horizontal"
-        android:paddingTop="6dp"
-        />
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/deal_detail_recycleView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="horizontal"
+            android:paddingTop="150dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="75dp"
+            android:background="@color/colorPrimary"/>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="10dp"
+            android:foreground="?android:attr/selectableItemBackground"
+            card_view:cardCornerRadius="8dp"
+            card_view:cardElevation="6dp">
+
+            <LinearLayout
+                android:layout_margin="8dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="开始时间"
+                        android:textSize="9pt" />
+
+                    <LinearLayout
+                        android:layout_width="80dp"
+                        android:layout_height="0dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="截止时间"
+                        android:textSize="9pt"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_weight="2"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+
+                    <LinearLayout
+                        android:background="@drawable/input_border_layout"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="36dp">
+
+                        <ImageView
+                            android:padding="5dp"
+                            android:layout_gravity="center_vertical"
+                            android:layout_width="24dp"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/time"/>
+
+                        <TextView
+                            android:id="@+id/start_time"
+                            android:textSize="6pt"
+                            android:singleLine="true"
+                            android:layout_gravity="center_vertical"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="点击选择开始时间"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_margin="8dp"
+                        android:background="@drawable/input_border_layout"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="36dp">
+
+                        <ImageView
+                            android:padding="5dp"
+                            android:layout_gravity="center_vertical"
+                            android:layout_width="24dp"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/time"/>
+
+                        <TextView
+                            android:id="@+id/end_time"
+                            android:textSize="6pt"
+                            android:singleLine="true"
+                            android:layout_gravity="center_vertical"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="点击选择截止时间"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/filter_button"
+                    android:layout_width="match_parent"
+                    android:text="筛选"
+                    android:layout_height="40dp"
+                    android:background="@drawable/selector_btn"
+                    android:textSize="7pt"
+                    android:textColor="@color/white"
+                    android:gravity="center"
+                    android:layout_gravity="center_horizontal" />
+
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+    </FrameLayout>
 
 </RelativeLayout>

@@ -8,8 +8,10 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.novadata.batteryapp.DealDetailActivity;
 import com.novadata.batteryapp.LoginActivity;
 import com.novadata.batteryapp.MainActivity;
 import com.novadata.batteryapp.R;
@@ -24,9 +26,9 @@ public class fragment_user extends Fragment implements  View.OnClickListener {
     int login_status = -1;
 
     static final int DEFAULT_STATUS = -1, USER_4S = 1, USER_COMPANY_IP = 0, USER_COMPANY_EP = 2;
-    public static String importCompany = "深圳比克汽车公司", exportCompany = "上海腾飞汽车公司", fourSCompany = "jksdafhjkdsf";
+    public static String importCompany = "深圳比克汽车公司", exportCompany = "上海腾飞汽车公司", fourSCompany = "北京速驰4S店";
     public static String importCompanyId = "0001", exportCompanyId = "0002", fourSCompanyId = "0003";
-    public static String importCompanyBranch = "第一分公司", exportCompanyBranch = "第二分公司", fourSCompanyBranch = "dsfsdfsf";
+    public static String importCompanyBranch = "第一分公司", exportCompanyBranch = "第二分公司", fourSCompanyBranch = "海淀分店";
 
     //TODO 实现登录功能
 
@@ -43,8 +45,11 @@ public class fragment_user extends Fragment implements  View.OnClickListener {
         user_name = (TextView) view.findViewById(R.id.user_name);
         user_detail = (TextView) view.findViewById(R.id.user_detail);
 
+        RelativeLayout myDeal_item = (RelativeLayout) view.findViewById(R.id.myDeal_item);
+
         loginButton.setOnClickListener(this);
         logoutButton.setOnClickListener(this);
+        myDeal_item.setOnClickListener(this);
 
         doLogIn(login_status);
 
@@ -64,6 +69,16 @@ public class fragment_user extends Fragment implements  View.OnClickListener {
             case R.id.logOut_button:
                 login_status = DEFAULT_STATUS;
                 doLogOut();
+                break;
+            case R.id.myDeal_item:
+                if (login_status != DEFAULT_STATUS)
+                {
+                    Intent intent2 = new Intent(MainActivity.mainActivity, DealDetailActivity.class);
+                    Bundle bundle2=new Bundle();
+                    bundle2.putString("companyName", user_name.getText().toString());
+                    intent2.putExtras(bundle2);
+                    startActivity(intent2);
+                }
                 break;
         }
     }

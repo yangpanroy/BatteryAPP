@@ -89,6 +89,41 @@
             android:orientation="vertical">
 
             <RelativeLayout
+                android:id="@+id/myDeal_item"
+                android:background="@color/white"
+                android:elevation="1dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:layout_marginBottom="4dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_alignParentLeft="true"
+                    android:id="@+id/myDeal_icon"
+                    android:src="@drawable/deal_gray"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="8dp"
+                    android:text="我的交易记录"
+                    android:textSize="8pt"
+                    android:layout_toEndOf="@+id/myDeal_icon" />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentRight="true"
+                    android:src="@drawable/next" />
+
+            </RelativeLayout>
+
+
+            <RelativeLayout
                 android:id="@+id/setting_item"
                 android:background="@color/white"
                 android:elevation="1dp"
@@ -113,40 +148,6 @@
                     android:text="设置"
                     android:textSize="8pt"
                     android:layout_toEndOf="@+id/setting_icon" />
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_alignParentRight="true"
-                    android:src="@drawable/next" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/debug_item"
-                android:background="@color/white"
-                android:elevation="1dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:layout_marginBottom="4dp"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_alignParentLeft="true"
-                    android:id="@+id/debug_icon"
-                    android:src="@drawable/debug"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="8dp"
-                    android:text="调试"
-                    android:textSize="8pt"
-                    android:layout_toEndOf="@+id/debug_icon" />
 
                 <ImageView
                     android:layout_width="24dp"

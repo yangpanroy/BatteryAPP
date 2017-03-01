@@ -13,26 +13,26 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class DealDetailItemAdapter extends RecyclerView.Adapter{
-    private LayoutInflater inflater;
     private ArrayList<HashMap<String, Object>> listItem;
     private MyItemClickListener myItemClickListener;
 
     public DealDetailItemAdapter(Context context, ArrayList<HashMap<String, Object>> listItem) {
-        inflater = LayoutInflater.from(context);
+        LayoutInflater inflater = LayoutInflater.from(context);
         this.listItem = listItem;
     }//构造函数，传入数据
 
     //定义RecyclerView的ViewHolder
     class Holder extends RecyclerView.ViewHolder {
 
-        TextView detail_item_module_id, detail_logistics_source, detail_logistics_destination;
+        TextView detail_item_module_date, detail_logistics_source, detail_logistics_destination, detail_item_module_id;
 
         public Holder(View itemView) {
             super(itemView);
 
-            detail_item_module_id = (TextView) itemView.findViewById(R.id.detail_item_module_id);
+            detail_item_module_date = (TextView) itemView.findViewById(R.id.detail_item_module_date);
             detail_logistics_source = (TextView) itemView.findViewById(R.id.detail_logistics_source);
             detail_logistics_destination = (TextView) itemView.findViewById(R.id.detail_logistics_destination);
+            detail_item_module_id = (TextView) itemView.findViewById(R.id.detail_item_module_id);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -55,9 +55,10 @@ public class DealDetailItemAdapter extends RecyclerView.Adapter{
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         if(holder instanceof Holder) {
-            ((Holder) holder).detail_item_module_id.setText((String) listItem.get(position).get("detail_item_module_id"));
+            ((Holder) holder).detail_item_module_date.setText((String) listItem.get(position).get("detail_item_module_date"));
             ((Holder) holder).detail_logistics_source.setText((String) listItem.get(position).get("detail_logistics_source"));
             ((Holder) holder).detail_logistics_destination.setText((String) listItem.get(position).get("detail_logistics_destination"));
+            ((Holder) holder).detail_item_module_id.setText((String) listItem.get(position).get("detail_item_module_id"));
         }
     }//在这里绑定数据到ViewHolder里面
 

@@ -1,5 +1,6 @@
 package layout;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -220,7 +221,7 @@ public class fragment_search extends Fragment implements View.OnClickListener {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == getActivity().RESULT_OK){
+        if (resultCode == Activity.RESULT_OK){
             Bundle bundle=data.getExtras();
             String result= bundle.getString("result");
             searchContentEt.setText(result);

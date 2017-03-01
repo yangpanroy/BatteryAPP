@@ -72,7 +72,7 @@ public class fragment_main extends Fragment implements MyItemClickListener{
                     @Override
                     public void onResponse(List<Main_Search_History_Item> response, int id) {
                         if (response.size() > 0) {
-                            listItem.removeAll(listItem);
+                            listItem.clear();
                             for (int i = 0; i < response.size(); i++) {
                                 HashMap<String, Object> map = new HashMap<>();
                                 map.put("ItemTitle", response.get(i).getTitle());
@@ -105,8 +105,6 @@ public class fragment_main extends Fragment implements MyItemClickListener{
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         rv.setLayoutManager(layoutManager);
         rv.setHasFixedSize(true);
-        //Rv.addItemDecoration(new DividerItemDecoration(getActivity(), layoutManager.getOrientation()));//用类设置分割线
-        //Rv.addItemDecoration(new DividerItemDecoration(this, R.drawable.list_divider)); //用已有图片设置分割线
 
         //设置Item之间的间距
         int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.item_space);
@@ -114,7 +112,7 @@ public class fragment_main extends Fragment implements MyItemClickListener{
     }
 
     private void initBanner() {
-        String url = baseUrl + "banner_image_url";
+       /* String url = baseUrl + "banner_image_url";
         OkHttpUtils
                 .get()//
                 .url(url)//
@@ -132,7 +130,7 @@ public class fragment_main extends Fragment implements MyItemClickListener{
                     {
                         if (response.size() > 0)
                         {
-                            Banner_image_url.removeAll(Banner_image_url);
+                            Banner_image_url.clear();
                             for (int i = 0; i < response.size(); i++)
                             {
                                 Banner_image_url.add(response.get(i));
@@ -147,7 +145,15 @@ public class fragment_main extends Fragment implements MyItemClickListener{
                         }
 
                     }
-                });
+                });*/
+
+        Banner_image_url.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1487839011&di=1e19ddf9f8f6d96c2df4b6662108d373&imgtype=jpg&er=1&src=http%3A%2F%2Fpic.90sjimg.com%2Fback_pic%2F00%2F00%2F69%2F40%2Fe1546306ce3a9e5e90ec38d1d95da605.jpg");
+        Banner_image_url.add("https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1854960094,2162562040&fm=23&gp=0.jpg");
+        Banner_image_url.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1487243928533&di=db15db68751f916558142ce9b328a96e&imgtype=0&src=http%3A%2F%2Fpic.90sjimg.com%2Fback_pic%2Fqk%2Fback_origin_pic%2F00%2F02%2F71%2Ff74c80cf3ee713147771aadeeedb9197.jpg");
+        Banner_image_url.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1487838668&di=d27a50599257c06ead92d8b616cd0894&imgtype=jpg&er=1&src=http%3A%2F%2Fpic.90sjimg.com%2Fback_pic%2Fqk%2Fback_origin_pic%2F00%2F02%2F72%2F299fab7a8ed92c76103bf0e90f983b31.jpg");
+
+        //设置banner广告图样式
+        initBannerStyle();
     }
 
     private void initBannerStyle() {

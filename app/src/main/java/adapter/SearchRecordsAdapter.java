@@ -51,7 +51,13 @@ public class SearchRecordsAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
+
         String content = searchRecordsList.get(position);
+        //剪切超过60字符的字符串,添加省略号
+        if (content.length() > 40)
+        {
+            content = content.substring(0, 40) + "...";
+        }
         viewHolder.recordTv.setText(content);
 
         return convertView;

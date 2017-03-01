@@ -3,34 +3,31 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <LinearLayout
-        android:layout_margin="8dp"
-        android:orientation="horizontal"
+    <android.support.v7.widget.CardView
+        android:layout_marginBottom="8dp"
+        android:elevation="1dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ImageView
-            android:layout_gravity="center_vertical"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:src="@drawable/finish"/>
-
         <LinearLayout
-            android:layout_margin="8dp"
+            android:gravity="center_horizontal"
+            android:layout_margin="16dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/detail_item_module_id"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="模组：11A2FMZABCDEF1212345AB..."
+                android:id="@+id/detail_item_module_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2017年2月27日"
                 android:textSize="7pt"/>
 
             <LinearLayout
+                android:layout_marginTop="8dp"
+                android:gravity="center"
                 android:orientation="horizontal"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
                 <TextView
@@ -56,15 +53,17 @@
 
             </LinearLayout>
 
+            <TextView
+                android:layout_marginTop="8dp"
+                android:id="@+id/detail_item_module_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ID：161dsf516516sd1f516"
+                android:textSize="7pt"/>
+
         </LinearLayout>
 
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_gravity="center_horizontal"
-        android:layout_width="300dp"
-        android:layout_height="1dp"
-        android:background="#cacaca">
-    </LinearLayout>
+    </android.support.v7.widget.CardView>
 
 </LinearLayout>
+

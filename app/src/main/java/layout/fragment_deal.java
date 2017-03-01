@@ -55,27 +55,26 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
 
     private View view;
     private LocalBroadcastManager broadcastManager;
-    private TextView start2Scan_Tv, photo_Tv, confirm_Tv;
+    private TextView photo_Tv;
+    private TextView confirm_Tv;
     private ImageView photo_Iv;
     private Bitmap bitmap;
     private EditText carEt, consumerNameEt, consumerIdEt;
-    private RecyclerView rv;
-    private ImportExportItemAdapter ieItemAdapter;
     private ArrayList<HashMap<String,Object>> listItem = new ArrayList<>();
-    private String zxingResult, companyName, companyId, companyBranch;
-    private TextView completeButton;
+    private String companyName;
+    private String companyId;
+    private String companyBranch;
     public ArrayList<String> listProductIds = new ArrayList<>();
     TextView initHint;
-    LinearLayout scannedList;
+    RecyclerView rv;
 
     int login_status = -1;
     int status_IO;
     static final int IMPORT = 0, EXPORT = 1;
     static final int DEFAULT_STATUS = -1, USER_4S = 1, USER_COMPANY_IP = 0, USER_COMPANY_EP = 2;
-    final static int REQUEST_PHOTO = 0, REQUEST_SCAN = 1, REQUEST_DETAIL = 2, REQUEST_DEAL = 3, REQUEST_GENERATE = 4;
-    private static final String PATH = "/sdcard/battery/photos";
+    final static int REQUEST_PHOTO = 0, REQUEST_SCAN = 1, REQUEST_DEAL = 3, REQUEST_GENERATE = 4;
+    private static final String PATH = Environment.getExternalStorageDirectory().getPath()+"/battery/photos";
     private String baseUrl = MainActivity.getBaseUrl();
-    private String deal2DCodeContent;
 
     @Nullable
     @Override
@@ -103,25 +102,27 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
         photo_Tv.setVisibility(View.VISIBLE);
         confirm_Tv.setVisibility(View.GONE);
 
-        user4SCompany.setText("授权企业：" + companyName);
+        String user4SCompanyText = "授权企业：" + companyName;
+        user4SCompany.setText(user4SCompanyText);
 
         photo_Tv.setOnClickListener(this);
         confirm_Tv.setOnClickListener(this);
     }
 
     private void initCompanyView() {
-        start2Scan_Tv = (TextView) view.findViewById(R.id.scan_button);
+        TextView start2Scan_Tv = (TextView) view.findViewById(R.id.scan_button);
         RadioGroup rg = (RadioGroup) view.findViewById(R.id.company_RadioGroup);
         TextView userCompany = (TextView) view.findViewById(R.id.user_company);
-        completeButton = (TextView) view.findViewById(R.id.complete_button);
+        TextView completeButton = (TextView) view.findViewById(R.id.complete_button);
         initHint = (TextView) view.findViewById(R.id.init_hint);
-        scannedList = (LinearLayout) view.findViewById(R.id.scanned_list);
+        rv = (RecyclerView) view.findViewById(R.id.import_export_recycleView);
 
-        userCompany.setText("授权企业：" + companyName);
+        String userCompanyText = "授权企业：" + companyName;
+        userCompany.setText(userCompanyText);
 
 //        getList();//GET整个出入库扫描信息
         initHint.setVisibility(View.VISIBLE);
-        scannedList.setVisibility(View.GONE);
+        rv.setVisibility(View.GONE);
 
         completeButton.setOnClickListener(this);
         start2Scan_Tv.setOnClickListener(this);
@@ -210,7 +211,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.complete_button:
+            case R.id.complete_button://点击厂商交易界面完成交易按钮
                 if (status_IO == IMPORT)
                 {
                     //买家生成交易二维码
@@ -219,12 +220,12 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
                     //将信息序列化
                     Gson gson = new Gson();
                     //TODO 更新签名 增加block和transaction传入
-                    deal2DCodeContent = gson.toJson(new Deal2DCode(companyName, companyId, companyBranch, "toSignature", listProductIds));
+                    String deal2DCodeContent = gson.toJson(new Deal2DCode(companyName, companyId, companyBranch, "toSignature", listProductIds));
                     //清空记录的模组号
                     listProductIds.clear();
                     initList(listProductIds);
                     initHint.setVisibility(View.VISIBLE);
-                    scannedList.setVisibility(View.GONE);
+                    rv.setVisibility(View.GONE);
                     //跳转到生成交易二维码界面
                     Intent intent = new Intent(MainActivity.mainActivity, GenerateDeal2DCodeActivity.class);
                     Bundle bundle=new Bundle();
@@ -249,11 +250,11 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
                 intent.putExtras(bundle);
                 startActivityForResult(intent, REQUEST_SCAN);
                 break;
-            case R.id.photo_button:
+            case R.id.photo_button://点击拍照合同按钮
                 Intent intent2 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//实例化Intent对象,使用MediaStore的ACTION_IMAGE_CAPTURE常量调用系统相机
                 startActivityForResult(intent2, REQUEST_PHOTO);//开启相机，传入上面的Intent对象
                 break;
-            case R.id.confirm_button:
+            case R.id.confirm_button://点击4S店交易确认提交按钮
                 if (carEt.getText().toString().isEmpty() || consumerNameEt.getText().toString().isEmpty() || consumerIdEt.getText().toString().isEmpty()){
                     Toast.makeText(getActivity(), "请输入购车信息后再确认提交", Toast.LENGTH_SHORT).show();
                 }
@@ -271,7 +272,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
                         String base64 = bitmapToBase64(bitmap);
                         //将车架号加到productId数组里
                         String carId = carEt.getText().toString();
-                        listProductIds.removeAll(listProductIds);
+                        listProductIds.clear();
                         listProductIds.add(carId);
                         //获得消费者姓名和身份证号码
                         String consumerName = consumerNameEt.getText().toString();
@@ -291,8 +292,21 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
                                         .mediaType(MediaType.parse("application/json; charset=utf-8"))
                                         .content(new Gson().toJson(trade))
                                         .build()
-                                        .execute(new MyStringCallback());
+                                        .execute(new MyStringCallback(){
+                                            @Override
+                                            public void onError(Call call, Exception e, int id) {
+                                                super.onError(call, e, id);
+                                                Log.i("Tag", "4S店交易界面 POST /trades 失败！");
+                                            }
 
+                                            @Override
+                                            public void onResponse(String response, int id) {
+                                                super.onResponse(response, id);
+                                                Log.i("Tag", "4S店交易界面 POST /trades 成功！");
+                                            }
+                                        });
+                        //提交完成后清空数组
+                        listProductIds.clear();
                     }
                     else {
                         Toast.makeText(getActivity(), "请拍摄合同照片后再确认提交", Toast.LENGTH_SHORT).show();
@@ -305,8 +319,6 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
 
     /**
      * bitmap转为base64
-     * @param bitmap
-     * @return
      */
     public static String bitmapToBase64(Bitmap bitmap) {
 
@@ -360,8 +372,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
         if (resultCode == RESULT_OK){
             Bundle bundle=data.getExtras();
             if (requestCode == REQUEST_SCAN){
-                zxingResult = bundle.getString("result");//获得扫描的二维码信息
-                //TODO BUG 若先用4S店用户完成交易，此处会有bug，不仅显示扫描后的二维码，还显示之前4S店交易EditText填写的信息
+                String zxingResult = bundle.getString("result");
                 //更新UI
                 listProductIds.add(zxingResult);
                 initList(listProductIds);
@@ -379,7 +390,19 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
                         .mediaType(MediaType.parse("application/json; charset=utf-8"))
                         .content(new Gson().toJson(scan))
                         .build()
-                        .execute(new MyStringCallback());
+                        .execute(new MyStringCallback(){
+                            @Override
+                            public void onResponse(String response, int id) {
+                                super.onResponse(response, id);
+                                Log.i("Tag", "POST /scans 失败！");
+                            }
+
+                            @Override
+                            public void onError(Call call, Exception e, int id) {
+                                super.onError(call, e, id);
+                                Log.i("Tag", "POST /scans 成功！");
+                            }
+                        });
             }
             if (requestCode == REQUEST_PHOTO){
                 bitmap=(Bitmap) bundle.get("data");//从附加值中获取返回的图像
@@ -419,12 +442,14 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
                                 public void onError(Call call, Exception e, int id) {
                                     super.onError(call, e, id);
                                     Toast.makeText(getActivity(), "交易失败请重试！", Toast.LENGTH_LONG).show();
+                                    Log.i("Tag", "厂商交易界面 POST /trades 失败！");
                                 }
 
                                 @Override
                                 public void onResponse(String response, int id) {
                                     super.onResponse(response, id);
                                     Toast.makeText(getActivity(), "交易成功！", Toast.LENGTH_LONG).show();
+                                    Log.i("Tag", "厂商交易界面 POST /trades 失败！");
                                 }
                             });
                 }
@@ -436,7 +461,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
                 listProductIds.clear();
                 initList(listProductIds);
                 initHint.setVisibility(View.VISIBLE);
-                scannedList.setVisibility(View.GONE);
+                rv.setVisibility(View.GONE);
             }
 
         }
@@ -444,9 +469,9 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
 
     private void initList(ArrayList<String> listProductIds) {
         initHint.setVisibility(View.GONE);
-        scannedList.setVisibility(View.VISIBLE);
+        rv.setVisibility(View.VISIBLE);
 
-        listItem.removeAll(listItem);
+        listItem.clear();
         for (int i = 0; i < listProductIds.size(); i++) {
             HashMap<String, Object> map = new HashMap<>();
             map.put("item_module_id", listProductIds.get(i));
@@ -457,10 +482,9 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
 
     public void initView(){
         //为ListView绑定适配器
-        ieItemAdapter = new ImportExportItemAdapter(getActivity(), listItem);
+        ImportExportItemAdapter ieItemAdapter = new ImportExportItemAdapter(getActivity(), listItem);
         ieItemAdapter.setOnItemClickListener(this);
 
-        rv = (RecyclerView) view.findViewById(R.id.import_export_recycleView);
         rv.setAdapter(ieItemAdapter);
         //使用线性布局
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());

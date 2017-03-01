@@ -1,6 +1,7 @@
 package Bean;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Base64;
 
 import java.io.ByteArrayOutputStream;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
  */
 public class Trade {
 
+    String id;
     String fromId;
     String from;
     String fromBranch;
@@ -43,6 +45,14 @@ public class Trade {
         this.toSignature = toSignature;
         this.attachment = attachment;
         this.productIds = productIds;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getFromId() {
@@ -194,10 +204,21 @@ public class Trade {
         this.transcation = transcation;
     }
 
+    public Bitmap attachmentToBitmap(){
+
+        byte[] decode = Base64.decode(attachment, Base64.DEFAULT);
+
+        Bitmap bitmap = BitmapFactory.decodeByteArray(decode, 0, decode.length);
+
+        return bitmap;
+    }
+
+
     @Override
     public String toString() {
         return "Trade{" +
-                "fromId='" + fromId + '\'' +
+                "id='" + id + '\'' +
+                ", fromId='" + fromId + '\'' +
                 ", from='" + from + '\'' +
                 ", fromBranch='" + fromBranch + '\'' +
                 ", fromSignature='" + fromSignature + '\'' +
