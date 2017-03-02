@@ -117,7 +117,7 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
                         for (int i = 0; i < response.size(); i++) {
                             HashMap<String, Object> map = new HashMap<>();
                             map.put("ItemTitle", response.get(i).getScanner() + response.get(i).getScanBranch());
-                            map.put("ItemText1", "交付日期：" + response.get(i).getTimestamp().getDate());
+                            map.put("ItemText1", "交付日期：" + response.get(i).createTime);
                             map.put("ItemText2", "电池包：" + battery_code);
                             map.put("ItemText4", "匹配车架号：" + carId);
                             if (carId == null)
@@ -133,6 +133,7 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
                         initView();
 
                         Log.i("Tag", "ListScanCallback 成功");
+                        Log.i("Tag", response.toString());
                     }
                 });
     }

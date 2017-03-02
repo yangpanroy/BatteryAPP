@@ -16,6 +16,9 @@ public class Module {
     }
 
     public String getid() {
+        if (id == null){
+            id = "";
+        }
         return id;
     }
 
@@ -24,6 +27,9 @@ public class Module {
     }
 
     public String getModuleSpec() {
+        if (moduleSpec == null){
+            moduleSpec = "";
+        }
         return moduleSpec;
     }
 
@@ -32,6 +38,9 @@ public class Module {
     }
 
     public String getManufacturer() {
+        if (manufacturer == null){
+            manufacturer = "";
+        }
         return manufacturer;
     }
 

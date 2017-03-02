@@ -186,6 +186,7 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
                                 @Override
                                 public void onError(Call call, Exception e, int id) {
                                     Log.i("Tag", "GET 筛选后的出库交易信息失败");
+                                    Log.i("Tag", e.getMessage());
                                 }
 
                                 @Override
@@ -196,7 +197,7 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
                                         map.put("detail_item_module_date", response.get(i).createTime);
                                         map.put("detail_logistics_source", response.get(i).getFrom() + response.get(i).getFromBranch());
                                         map.put("detail_logistics_destination", response.get(i).getTo() + response.get(i).getToBranch());
-                                        map.put("detail_item_module_id", response.get(i).getId());
+                                        map.put("detail_item_module_id",  "ID：" + response.get(i).getId());
                                         listItem.add(map);
                                     }
                                     Log.i("Tag", "GET 筛选后的出库交易信息成功");
@@ -217,6 +218,7 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
                                 @Override
                                 public void onError(Call call, Exception e, int id) {
                                     Log.i("Tag", "GET 筛选后的入库交易信息失败");
+                                    Log.i("Tag", e.getMessage());
                                 }
 
                                 @Override
@@ -226,7 +228,7 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
                                         map.put("detail_item_module_date", response.get(i).createTime);
                                         map.put("detail_logistics_source", response.get(i).getFrom() + response.get(i).getFromBranch());
                                         map.put("detail_logistics_destination", response.get(i).getTo() + response.get(i).getToBranch());
-                                        map.put("detail_item_module_id", response.get(i).getId());
+                                        map.put("detail_item_module_id",  "ID：" + response.get(i).getId());
                                         listItem.add(map);
                                     }
                                     Log.i("Tag", "GET 筛选后的入库交易信息成功");
@@ -322,7 +324,10 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
 
     @Override
     public void onItemClick(View view, int postion) {
-        String selectedId = listItem.get(postion).get("detail_item_module_id").toString().substring(3);
+
+        String selectedId;
+
+        selectedId = listItem.get(postion).get("detail_item_module_id").toString().substring(3);
 
         Intent intent = new Intent(MainActivity.mainActivity, SingleTradeActivity.class);
         Bundle bundle=new Bundle();
