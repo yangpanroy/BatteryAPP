@@ -28,7 +28,8 @@
         <activity android:name=".LoginActivity" />
         <activity android:name=".GenerateDeal2DCodeActivity" />
         <activity android:name=".DealDtailActivity" />
-        <activity android:name=".SingleTradeActivity"></activity>
+        <activity android:name=".SingleTradeActivity" />
+        <activity android:name=".UrlSettingActivity"></activity>
     </application>
 
 </manifest>

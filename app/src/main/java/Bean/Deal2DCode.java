@@ -11,17 +11,17 @@ public class Deal2DCode {
     String toId;
     String toBranch;
     String toSignature;
-    ArrayList<String> productIds;
+    ArrayList<Package> packages;
 
     public Deal2DCode() {
     }
 
-    public Deal2DCode(String to, String toId, String toBranch, String toSignature, ArrayList<String> productIds) {
+    public Deal2DCode(String to, String toId, String toBranch, String toSignature, ArrayList<Package> packages) {
         this.to = to;
         this.toId = toId;
         this.toBranch = toBranch;
         this.toSignature = toSignature;
-        this.productIds = productIds;
+        this.packages = packages;
     }
 
     public String getTo() {
@@ -56,12 +56,12 @@ public class Deal2DCode {
         this.toSignature = toSignature;
     }
 
-    public ArrayList<String> getProductIds() {
-        return productIds;
+    public ArrayList<Package> getpackages() {
+        return packages;
     }
 
-    public void setProductIds(ArrayList<String> productIds) {
-        this.productIds = productIds;
+    public void setpackages(ArrayList<Package> packages) {
+        this.packages = packages;
     }
 
     @Override
@@ -71,7 +71,7 @@ public class Deal2DCode {
                 ", toId='" + toId + '\'' +
                 ", toBranch='" + toBranch + '\'' +
                 ", toSignature='" + toSignature + '\'' +
-                ", productIds=" + productIds +
+                ", packages=" + packages +
                 '}';
     }
 }

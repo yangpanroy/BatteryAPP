@@ -10,7 +10,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,11 +24,8 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
-import Bean.Import_Export_Item;
 import Bean.Trade;
-import Callback.ListImportExportItemCallback;
 import Callback.ListTradeCallback;
-import Callback.TradeCallback;
 import adapter.DealDetailItemAdapter;
 import adapter.MyItemClickListener;
 import layout.SpaceItemDecoration;
@@ -60,6 +56,7 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
         companyName = bundle.getString("companyName");
         //对企业名进行URL编码
         companyName = URLEncoder.encode(companyName);
+        Log.i("NOTICE companyName", companyName);
 
         startTime = (TextView) findViewById(R.id.start_time);
         endTime = (TextView) findViewById(R.id.end_time);
@@ -79,7 +76,7 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
 
     private void initList() {
         //构建filters 获取出库信息
-        filters = "?filters=%7Bfrom%3A%20%7B%24regex%3A%20%23%7D%7D&params='." + companyName + ".'&offset=0";
+        filters = "?filters=%7Bfrom%3A%20%7B%24regex%3A%20%23%7D%7D&params=" + companyName + "&limit=10&offset=0";
         String url = baseUrl + "trades" + filters;
         OkHttpUtils
                 .get()//
@@ -89,26 +86,29 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
                 {
                     @Override
                     public void onError(Call call, Exception e, int id) {
-                        Log.i("Tag", "GET 交易信息失败");
+                        Log.i("Tag", "GET from交易信息失败");
+                        Log.i("NOTICE", e.toString());
                     }
 
                     @Override
                     public void onResponse(List<Trade> response, int id) {
                         listItem.clear();
+                        Log.i("GET from交易信息 NOTICE", response.toString());
                         for (int i = 0; i < response.size(); i++) {
                             HashMap<String, Object> map = new HashMap<>();
-                            map.put("detail_item_module_date", response.get(i).getTimestamp().getDate());
+                            map.put("detail_item_module_date", response.get(i).get_created());
                             map.put("detail_logistics_source", response.get(i).getFrom() + response.get(i).getFromBranch());
                             map.put("detail_logistics_destination", response.get(i).getTo() + response.get(i).getToBranch());
                             map.put("detail_item_module_id", "ID：" + response.get(i).getId());
                             listItem.add(map);
                         }
-                        Log.i("Tag", "GET 交易信息成功");
+                        Log.i("Tag", "GET from交易信息成功");
+                        initView();
                     }
                 });
 
         //构建filters 获取入库信息
-        filters = "?filters=%7Bto%3A%20%7B%24regex%3A%20%23%7D%7D&params='." + companyName + ".'&offset=0";
+        filters = "?filters=%7Bto%3A%20%7B%24regex%3A%20%23%7D%7D&params=" + companyName + "&limit=10&offset=0";
         url = baseUrl + "trades" + filters;
         OkHttpUtils
                 .get()//
@@ -118,27 +118,28 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
                 {
                     @Override
                     public void onError(Call call, Exception e, int id) {
-                        Log.i("Tag", "GET 交易信息失败");
+                        Log.i("Tag", "GET to交易信息失败");
                     }
 
                     @Override
                     public void onResponse(List<Trade> response, int id) {
+                        Log.i("GET to交易信息 NOTICE", response.toString());
                         for (int i = 0; i < response.size(); i++) {
                             HashMap<String, Object> map = new HashMap<>();
-                            map.put("detail_item_module_date", response.get(i).getTimestamp().getDate());
+                            map.put("detail_item_module_date", response.get(i).get_created());
                             map.put("detail_logistics_source", response.get(i).getFrom() + response.get(i).getFromBranch());
                             map.put("detail_logistics_destination", response.get(i).getTo() + response.get(i).getToBranch());
                             map.put("detail_item_module_id", "ID：" + response.get(i).getId());
                             listItem.add(map);
                         }
-                        Log.i("Tag", "GET 交易信息成功");
+                        Log.i("Tag", "GET to交易信息成功");
+                        initView();
                     }
                 });
-
-        initView();
     }
 
     private void initView() {
+        Log.i("ListItem",listItem.toString());
         ddiAdapter = new DealDetailItemAdapter(this, listItem);
         ddiAdapter.setOnItemClickListener(this);
 
@@ -173,7 +174,7 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
                     String s1 = startTime.getText().toString();
                     String s2 = endTime.getText().toString();
                     //TODO 构建filters
-                    filters = "?filters=%7Bfrom%3A%20%7B%24regex%3A%20%23%7D%2C_created%3A%7B%24gte%3A%23%7D%2C_created%3A%7B%24lte%3A%23%7D%7D&params='." + companyName + ".'%2C'" + s1 + "'%2C'" + s2 + "'&offset=0";
+                    filters = "?filters=%7Bfrom%3A%20%7B%24regex%3A%20%23%7D%2C_created%3A%7B%24gte%3A%23%7D%2C_created%3A%7B%24lte%3A%23%7D%7D&params=" + companyName + "%2C" + s1 + "%2C" + s2 + "&limit=10&offset=0";
 
                     String url = baseUrl + "trades" + filters;
 
@@ -192,17 +193,19 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
                                     listItem.clear();
                                     for (int i = 0; i < response.size(); i++) {
                                         HashMap<String, Object> map = new HashMap<>();
-                                        map.put("detail_item_module_date", response.get(i).getTimestamp().getDate());
+                                        map.put("detail_item_module_date", response.get(i).get_created());
                                         map.put("detail_logistics_source", response.get(i).getFrom() + response.get(i).getFromBranch());
                                         map.put("detail_logistics_destination", response.get(i).getTo() + response.get(i).getToBranch());
                                         map.put("detail_item_module_id", response.get(i).getId());
                                         listItem.add(map);
                                     }
                                     Log.i("Tag", "GET 筛选后的出库交易信息成功");
+                                    Log.i("GET from交易信息 NOTICE", response.toString());
+                                    initView();
                                 }
                             });
 
-                    filters = "?filters=%7Bto%3A%20%7B%24regex%3A%20%23%7D%2C_created%3A%7B%24gte%3A%23%7D%2C_created%3A%7B%24lte%3A%23%7D%7D&params='." + companyName + ".'%2C'" + s1 + "'%2C'" + s2 + "'&offset=0";
+                    filters = "?filters=%7Bto%3A%20%7B%24regex%3A%20%23%7D%2C_created%3A%7B%24gte%3A%23%7D%2C_created%3A%7B%24lte%3A%23%7D%7D&params=" + companyName + "%2C" + s1 + "%2C" + s2 + "&offset=0";
 
                     url = baseUrl + "trades" + filters;
 
@@ -220,17 +223,18 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
                                 public void onResponse(List<Trade> response, int id) {
                                     for (int i = 0; i < response.size(); i++) {
                                         HashMap<String, Object> map = new HashMap<>();
-                                        map.put("detail_item_module_date", response.get(i).getTimestamp().getDate());
+                                        map.put("detail_item_module_date", response.get(i).get_created());
                                         map.put("detail_logistics_source", response.get(i).getFrom() + response.get(i).getFromBranch());
                                         map.put("detail_logistics_destination", response.get(i).getTo() + response.get(i).getToBranch());
                                         map.put("detail_item_module_id", response.get(i).getId());
                                         listItem.add(map);
                                     }
                                     Log.i("Tag", "GET 筛选后的入库交易信息成功");
+                                    Log.i("GET to交易信息 NOTICE", response.toString());
+                                    initView();
                                 }
                             });
 
-                    initView();
                 }
                 break;
         }
@@ -318,7 +322,7 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
 
     @Override
     public void onItemClick(View view, int postion) {
-        String selectedId = listItem.get(postion).get("detail_item_module_id").toString();
+        String selectedId = listItem.get(postion).get("detail_item_module_id").toString().substring(3);
 
         Intent intent = new Intent(MainActivity.mainActivity, SingleTradeActivity.class);
         Bundle bundle=new Bundle();

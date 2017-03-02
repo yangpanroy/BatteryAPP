@@ -7,37 +7,30 @@ import java.util.ArrayList;
  */
 public class Package {
 
-    String packageId;
+    String id;
     String _created;
     String _modified;
     String packageSpec;
     String manufacturer;
     String phone;
-    String carId;
+    String vin;
     ArrayList<Module> modules;
     Timestamp timestamp;
 
     public Package() {
     }
 
-    public Package(String packageId, String _created, String _modified, String packageSpec, String manufacturer, ArrayList<Module> modules, Timestamp timestamp, String phone, String carId) {
-        this.packageId = packageId;
-        this._created = _created;
-        this._modified = _modified;
-        this.packageSpec = packageSpec;
-        this.manufacturer = manufacturer;
+    public Package(String id, ArrayList<Module> modules) {
+        this.id = id;
         this.modules = modules;
-        this.timestamp = timestamp;
-        this.phone = phone;
-        this.carId = carId;
     }
 
-    public String getPackageId() {
-        return packageId;
+    public String getid() {
+        return id;
     }
 
-    public void setPackageId(String packageId) {
-        this.packageId = packageId;
+    public void setid(String id) {
+        this.id = id;
     }
 
     public String get_created() {
@@ -96,12 +89,26 @@ public class Package {
         this.phone = phone;
     }
 
-    public String getCarId() {
-        return carId;
+    public String getVin() {
+        return vin;
     }
 
-    public void setCarId(String carId) {
-        this.carId = carId;
+    public void setVin(String vin) {
+        this.vin = vin;
     }
 
+    @Override
+    public String toString() {
+        return "Package{" +
+                "id='" + id + '\'' +
+                ", manufacturer='" + manufacturer + '\'' +
+                ", phone='" + phone + '\'' +
+                ", vin='" + vin + '\'' +
+                ", modules=" + modules +
+                ", timestamp=" + timestamp +
+                ", _created='" + _created + '\'' +
+                ", _modified='" + _modified + '\'' +
+                ", packageSpec='" + packageSpec + '\'' +
+                '}';
+    }
 }

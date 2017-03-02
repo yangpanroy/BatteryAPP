@@ -73,7 +73,7 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
 
                         String tempString;
 
-                        tempString = "编号：" + response.getPackageId();
+                        tempString = "编号：" + response.getid();
                         module_code.setText(tempString);
                         tempString = "生产企业：" + response.getManufacturer();
                         manufacturer.setText(tempString);
@@ -81,12 +81,12 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
                         date.setText(tempString);
                         tempString = "参数：" + response.getPackageSpec();
                         type.setText(tempString);
-                        tempString = "匹配：" + response.getPackageId();
+                        tempString = "匹配：" + response.getid();
                         battery_match_head.setText(tempString);
                         tempString = "售后电话：" + response.getPhone();
                         phone.setText(tempString);
 
-                        carId = response.getCarId();
+                        carId = response.getVin();
 
                         initScans();
 

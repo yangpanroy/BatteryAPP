@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -30,6 +31,8 @@ public class SingleTradeActivity extends AppCompatActivity {
         Bundle bundle=this.getIntent().getExtras();
         selectedId = bundle.getString("selectedId");
 
+        Log.i("NOTICE selectedId", selectedId);
+
         initView();
 
     }
@@ -44,6 +47,8 @@ public class SingleTradeActivity extends AppCompatActivity {
         tradeTime = (TextView) findViewById(R.id.tradeTime);
         tradeAttachment = (ImageView) findViewById(R.id.tradeAttachment);
         productsIds_LinearLayout = (LinearLayout) findViewById(R.id.productsIds_LinearLayout);
+
+        tradeAttachment.setVisibility(View.GONE);
 
         doGET();
 
@@ -76,21 +81,32 @@ public class SingleTradeActivity extends AppCompatActivity {
                         toId.setText(temp);
                         temp = "买方：" + response.getTo() + response.getToBranch();
                         to.setText(temp);
-                        temp = "交易时间" + response.getTimestamp().getDate();
+                        temp = "交易时间：" + response.get_created();
                         tradeTime.setText(temp);
 
                         if (response.getAttachment() != ""){
                             Bitmap bitmap = response.attachmentToBitmap();
                             tradeAttachment.setImageBitmap(bitmap);
+                            tradeAttachment.setVisibility(View.VISIBLE);
+                            temp = "买方：" + response.getTo();
+                            to.setText(temp);
                         }
 
-                        for (int i = 0; i < response.getProductIds().size(); i++)
+                        //TODO 更改接口
+                        for (int i = 0; i < response.getPackages().size(); i++)
                         {
-                            TextView productId = new TextView(SingleTradeActivity.this);
-                            temp = response.getProductIds().get(i);
-                            productId.setText("产品编号：" + temp);
-                            productId.setTextSize(14);
-                            productsIds_LinearLayout.addView(productId);
+                            TextView packagesId = new TextView(SingleTradeActivity.this);
+                            temp = response.getPackages().get(i).getid();
+                            packagesId.setText("电池包编号：" + temp);
+                            packagesId.setTextSize(17);
+                            productsIds_LinearLayout.addView(packagesId);
+                            for (int j = 0; j < response.getPackages().get(i).getModules().size(); j++){
+                                TextView moduleId = new TextView(SingleTradeActivity.this);
+                                temp = response.getPackages().get(i).getModules().get(j).getid();
+                                moduleId.setText("----电池模组编号：" + temp);
+                                moduleId.setTextSize(15);
+                                productsIds_LinearLayout.addView(moduleId);
+                            }
                         }
 
                         Log.i("Tag", "GET 详细交易信息成功");

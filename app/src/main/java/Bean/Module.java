@@ -5,25 +5,22 @@ package Bean;
  */
 public class Module {
 
-    String moduleId, moduleSpec, manufacturer;
+    String id, _created, _modified, packageId, moduleSpec, manufacturer;
     Timestamp timestamp;
 
     public Module() {
     }
 
-    public Module(String moduleId, String moduleSpec, String manufacturer, Timestamp timestamp) {
-        this.moduleId = moduleId;
-        this.moduleSpec = moduleSpec;
-        this.manufacturer = manufacturer;
-        this.timestamp = timestamp;
+    public Module(String id) {
+        this.id = id;
     }
 
-    public String getModuleId() {
-        return moduleId;
+    public String getid() {
+        return id;
     }
 
-    public void setModuleId(String moduleId) {
-        this.moduleId = moduleId;
+    public void setid(String id) {
+        this.id = id;
     }
 
     public String getModuleSpec() {
@@ -53,7 +50,10 @@ public class Module {
     @Override
     public String toString() {
         return "Module{" +
-                "moduleId='" + moduleId + '\'' +
+                "id='" + id + '\'' +
+                ", _created='" + _created + '\'' +
+                ", _modified='" + _modified + '\'' +
+                ", packageId='" + packageId + '\'' +
                 ", moduleSpec='" + moduleSpec + '\'' +
                 ", manufacturer='" + manufacturer + '\'' +
                 ", timestamp=" + timestamp +

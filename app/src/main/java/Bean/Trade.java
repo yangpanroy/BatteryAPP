@@ -6,7 +6,10 @@ import android.util.Base64;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by Administrator on 2017/2/24.
@@ -14,6 +17,8 @@ import java.util.ArrayList;
 public class Trade {
 
     String id;
+    Date _created;
+    Date _modified;
     String fromId;
     String from;
     String fromBranch;
@@ -24,7 +29,7 @@ public class Trade {
     String toSignature;
     String attachment; //存储Base64图片字符串
     double longitude, latitude;
-    ArrayList<String> productIds;
+    ArrayList<Package> packages;
     Timestamp timestamp;
     Block block;
     Transcation transcation;
@@ -34,7 +39,7 @@ public class Trade {
 
     public Trade(String fromId, String from, String fromBranch, String fromSignature,
                  String toId, String to, String toBranch, String toSignature,
-                 String attachment, ArrayList<String> productIds) {
+                 String attachment, ArrayList<Package> packages) {
         this.fromId = fromId;
         this.from = from;
         this.fromBranch = fromBranch;
@@ -44,7 +49,29 @@ public class Trade {
         this.toBranch = toBranch;
         this.toSignature = toSignature;
         this.attachment = attachment;
-        this.productIds = productIds;
+        this.packages = packages;
+//        this.block = block;
+    }
+
+    public String get_created() {
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        String date = "";
+        if (this._created != null){
+            date = df.format(this._created);
+        }
+        return date;
+    }
+
+    public void set_created(Date _created) {
+        this._created = _created;
+    }
+
+    public Date get_modified() {
+        return _modified;
+    }
+
+    public void set_modified(Date _modified) {
+        this._modified = _modified;
     }
 
     public String getId() {
@@ -172,12 +199,12 @@ public class Trade {
         this.latitude = latitude;
     }
 
-    public ArrayList<String> getProductIds() {
-        return productIds;
+    public ArrayList<Package> getPackages() {
+        return packages;
     }
 
-    public void setProductIds(ArrayList<String> productIds) {
-        this.productIds = productIds;
+    public void setPackages(ArrayList<Package> packages) {
+        this.packages = packages;
     }
 
     public Timestamp getTimestamp() {
@@ -218,6 +245,8 @@ public class Trade {
     public String toString() {
         return "Trade{" +
                 "id='" + id + '\'' +
+                ", _created=" + _created +
+                ", _modified=" + _modified +
                 ", fromId='" + fromId + '\'' +
                 ", from='" + from + '\'' +
                 ", fromBranch='" + fromBranch + '\'' +
@@ -229,7 +258,7 @@ public class Trade {
                 ", attachment='" + attachment + '\'' +
                 ", longitude=" + longitude +
                 ", latitude=" + latitude +
-                ", productIds=" + productIds +
+                ", packages=" + packages +
                 ", timestamp=" + timestamp +
                 ", block=" + block +
                 ", transcation=" + transcation +

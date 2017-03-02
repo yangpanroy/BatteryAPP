@@ -15,6 +15,7 @@ import com.novadata.batteryapp.DealDetailActivity;
 import com.novadata.batteryapp.LoginActivity;
 import com.novadata.batteryapp.MainActivity;
 import com.novadata.batteryapp.R;
+import com.novadata.batteryapp.UrlSettingActivity;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -46,10 +47,12 @@ public class fragment_user extends Fragment implements  View.OnClickListener {
         user_detail = (TextView) view.findViewById(R.id.user_detail);
 
         RelativeLayout myDeal_item = (RelativeLayout) view.findViewById(R.id.myDeal_item);
+        RelativeLayout setting_item = (RelativeLayout) view.findViewById(R.id.setting_item);
 
         loginButton.setOnClickListener(this);
         logoutButton.setOnClickListener(this);
         myDeal_item.setOnClickListener(this);
+        setting_item.setOnClickListener(this);
 
         doLogIn(login_status);
 
@@ -79,6 +82,9 @@ public class fragment_user extends Fragment implements  View.OnClickListener {
                     intent2.putExtras(bundle2);
                     startActivity(intent2);
                 }
+                break;
+            case R.id.setting_item:
+                startActivity(new Intent(MainActivity.mainActivity, UrlSettingActivity.class));
                 break;
         }
     }

@@ -66,7 +66,7 @@
                     android:layout_gravity="center"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="请选择 出库/入库 后开始扫描"
+                    android:text="请先扫描模组，再扫描所属的电池包"
                     android:textSize="10pt"
                     android:textColor="@color/custom_gray"/>
 
@@ -189,11 +189,21 @@
 
                         </TableRow>
 
-                        <TextView
-                            android:id="@+id/scan_button"
-                            style="@style/AutoWrapTv"
-                            android:textSize="7pt"
-                            android:text="开始扫描" />
+                        <LinearLayout>
+
+                            <TextView
+                                android:id="@+id/scanPackage_button"
+                                style="@style/AutoWrapTv"
+                                android:textSize="7pt"
+                                android:text="扫描电池包" />
+
+                            <TextView
+                                android:id="@+id/scanModule_button"
+                                style="@style/AutoWrapTv"
+                                android:textSize="7pt"
+                                android:text="扫描模组" />
+
+                        </LinearLayout>
 
                     </TableLayout>
 

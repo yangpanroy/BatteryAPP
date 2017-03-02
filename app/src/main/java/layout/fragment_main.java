@@ -147,6 +147,7 @@ public class fragment_main extends Fragment implements MyItemClickListener{
                     }
                 });*/
 
+        Banner_image_url.clear();
         Banner_image_url.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1487839011&di=1e19ddf9f8f6d96c2df4b6662108d373&imgtype=jpg&er=1&src=http%3A%2F%2Fpic.90sjimg.com%2Fback_pic%2F00%2F00%2F69%2F40%2Fe1546306ce3a9e5e90ec38d1d95da605.jpg");
         Banner_image_url.add("https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1854960094,2162562040&fm=23&gp=0.jpg");
         Banner_image_url.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1487243928533&di=db15db68751f916558142ce9b328a96e&imgtype=0&src=http%3A%2F%2Fpic.90sjimg.com%2Fback_pic%2Fqk%2Fback_origin_pic%2F00%2F02%2F71%2Ff74c80cf3ee713147771aadeeedb9197.jpg");

@@ -22,42 +22,42 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="ID：3151sdf51sf53f23s1f351"
-                android:textSize="7pt"/>
+                android:textSize="8pt"/>
 
             <TextView
                 android:id="@+id/fromId"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="卖方ID：fromID"
-                android:textSize="7pt"/>
+                android:textSize="8pt"/>
 
             <TextView
                 android:id="@+id/from"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="卖方：from"
-                android:textSize="7pt"/>
+                android:textSize="8pt"/>
 
             <TextView
                 android:id="@+id/toId"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="买方ID：toID"
-                android:textSize="7pt"/>
+                android:textSize="8pt"/>
 
             <TextView
                 android:id="@+id/to"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="买方：to"
-                android:textSize="7pt"/>
+                android:textSize="8pt"/>
 
             <TextView
                 android:id="@+id/tradeTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="交易时间：2017-02-27"
-                android:textSize="7pt"/>
+                android:textSize="8pt"/>
 
             <ImageView
                 android:id="@+id/tradeAttachment"
@@ -67,6 +67,8 @@
                 android:layout_height="320dp" />
 
             <LinearLayout
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
                 android:id="@+id/productsIds_LinearLayout"
                 android:orientation="vertical"
                 android:layout_width="match_parent"

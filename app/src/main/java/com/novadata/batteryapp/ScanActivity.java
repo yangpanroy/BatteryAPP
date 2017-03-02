@@ -56,7 +56,6 @@ public class ScanActivity extends AppCompatActivity implements QRCodeView.Delega
     @Override
     public void onScanQRCodeSuccess(String result) {
         Log.i(TAG, "result:" + result);
-        Toast.makeText(this, "已扫描到" + result, Toast.LENGTH_SHORT).show();
         vibrate();
         Bundle bundle=this.getIntent().getExtras();
         bundle.putString("result", result);
