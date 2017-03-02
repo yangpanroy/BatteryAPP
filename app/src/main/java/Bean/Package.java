@@ -26,6 +26,9 @@ public class Package {
     }
 
     public String getid() {
+        if (id == null){
+            id = "";
+        }
         return id;
     }
 
@@ -50,6 +53,9 @@ public class Package {
     }
 
     public String getPackageSpec() {
+        if (packageSpec == null){
+            packageSpec = "";
+        }
         return packageSpec;
     }
 
@@ -58,6 +64,9 @@ public class Package {
     }
 
     public String getManufacturer() {
+        if (manufacturer == null){
+            manufacturer = "";
+        }
         return manufacturer;
     }
 
@@ -82,6 +91,9 @@ public class Package {
     }
 
     public String getPhone() {
+        if (phone == null){
+            phone = "";
+        }
         return phone;
     }
 
@@ -90,6 +102,9 @@ public class Package {
     }
 
     public String getVin() {
+        if (vin == null){
+            vin = "";
+        }
         return vin;
     }
 

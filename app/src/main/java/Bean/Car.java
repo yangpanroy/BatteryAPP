@@ -7,7 +7,7 @@ import java.util.ArrayList;
  */
 public class Car {
 
-    String id, carSpec, manufacturer;
+    String id, carSpec, manufacturer, vin;
     ArrayList<Package> packages;
     Timestamp timestamp;
 
@@ -28,6 +28,9 @@ public class Car {
     }
 
     public String getCarSpec() {
+        if (carSpec != null){
+            carSpec = "";
+        }
         return carSpec;
     }
 
@@ -35,7 +38,21 @@ public class Car {
         this.carSpec = carSpec;
     }
 
+    public String getVin() {
+        if (vin == null){
+            vin = "";
+        }
+        return vin;
+    }
+
+    public void setVin(String vin) {
+        this.vin = vin;
+    }
+
     public String getManufacturer() {
+        if (manufacturer != null){
+            manufacturer = "";
+        }
         return manufacturer;
     }
 

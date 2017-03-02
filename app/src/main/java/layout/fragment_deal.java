@@ -64,7 +64,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
     private String companyName;
     private String companyId;
     private String companyBranch;
-    private String packageId;
+    private String companyCreditCode;
     public ArrayList<String> listProductIds = new ArrayList<>();
     private ArrayList<Package> listPackage = new ArrayList<>();
     TextView initHint;
@@ -77,6 +77,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
     final static int REQUEST_PHOTO = 0, REQUEST_SCAN_PACKAGE = 1, REQUEST_SCAN_MODULE = 2, REQUEST_DEAL = 3, REQUEST_GENERATE = 4;
     private static final String PATH = Environment.getExternalStorageDirectory().getPath()+"/battery/photos";
     private String baseUrl = MainActivity.getBaseUrl();
+
 
     @Nullable
     @Override
@@ -145,6 +146,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
                 companyName = fragment_user.importCompany;
                 companyBranch = fragment_user.importCompanyBranch;
                 companyId = fragment_user.importCompanyId;
+                companyCreditCode = fragment_user.creditCode_IP;
                 initCompanyView();
                 default_layout.setVisibility(View.GONE);
                 the_4s_layout.setVisibility(View.GONE);
@@ -155,6 +157,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
                 companyName = fragment_user.exportCompany;
                 companyBranch = fragment_user.exportCompanyBranch;
                 companyId = fragment_user.exportCompanyId;
+                companyCreditCode = fragment_user.creditCode_EP;
                 initCompanyView();
                 Log.i("Tag", "USER_COMPANY_EP has received");
                 default_layout.setVisibility(View.GONE);
@@ -166,6 +169,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
                 companyName = fragment_user.fourSCompany;
                 companyBranch = fragment_user.fourSCompanyBranch;
                 companyId = fragment_user.fourSCompanyId;
+                companyCreditCode = fragment_user.creditCode_4S;
                 init4SView();
                 Log.i("Tag", "USER_4S has received");
                 default_layout.setVisibility(View.GONE);
@@ -223,7 +227,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
                         //将信息序列化
                         Gson gson = new Gson();
                         //TODO 更新签名 传入
-                        String deal2DCodeContent = gson.toJson(new Deal2DCode(companyName, companyId, companyBranch, "toSignature", listPackage));
+                        String deal2DCodeContent = gson.toJson(new Deal2DCode(companyCreditCode, "toSignature", true));
                         //清空记录的模组号\包号
                         listProductIds.clear();
                         initList(listProductIds);
@@ -331,6 +335,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
                                                     public void onResponse(String response, int id) {
                                                         super.onResponse(response, id);
                                                         Log.i("Tag", "4S店交易界面 POST /trades 成功！");
+                                                        Toast.makeText(getActivity(), "4S店交易成功", Toast.LENGTH_SHORT).show();
                                                     }
                                                 });
                                         //提交完成后清空数组
@@ -439,7 +444,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
                 }
                 if (requestCode == REQUEST_SCAN_PACKAGE)
                 {
-                    packageId = zxingResult;
+                    String packageId = zxingResult;
                     Toast.makeText(getActivity(), "已扫描到电池包：" + packageId, Toast.LENGTH_LONG);
                     ArrayList<Module> listModule = new ArrayList<>();
                     //listProductIds数组记录了这批待交易的电池模组的二维码，先将其排序以便比对
@@ -472,14 +477,31 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
                 Deal2DCode deal2DCode = new Gson().fromJson(deal2DCodeContent, new TypeToken<Deal2DCode>() {}.getType());
                 assert deal2DCode != null;
                 Log.i("listPackage  NOTICE", listPackage.toString());
-                Log.i("deal2DCode   NOTICE", deal2DCode.getpackages().toString());
-                if ( listPackage.toString().equals(deal2DCode.getpackages().toString()))
+                Log.i("deal2DCodeContentNOTICE", deal2DCode.toString());
+                if ( deal2DCode.getIsCommon())
                 {
-                    listPackage.clear();
+                    String toId = "",to = "",toBranch = "";
+                    switch (deal2DCode.getCreditCode()){
+                        case fragment_user.creditCode_IP:
+                            toId = fragment_user.importCompanyId;
+                            to = fragment_user.importCompany;
+                            toBranch = fragment_user.importCompanyBranch;
+                            break;
+                        case fragment_user.creditCode_EP:
+                            toId = fragment_user.exportCompanyId;
+                            to = fragment_user.exportCompany;
+                            toBranch = fragment_user.exportCompanyBranch;
+                            break;
+                        case fragment_user.creditCode_4S:
+                            toId = fragment_user.fourSCompanyId;
+                            to = fragment_user.fourSCompany;
+                            toBranch = fragment_user.fourSCompanyBranch;
+                            break;
+                    }
                     //TODO 更新签名 传入
                     final Trade trade = new Trade(companyId, companyName, companyBranch, "fromSignature",
-                            deal2DCode.getToId(), deal2DCode.getTo(), deal2DCode.getToBranch(), deal2DCode.getToSignature(),
-                            "", deal2DCode.getpackages());//新建一个trade并POST
+                            toId, to, toBranch, deal2DCode.getToSignature(),
+                            "", listPackage);//新建一个trade并POST
                     //POST trade信息
                     String url = baseUrl + "trades";
 
@@ -505,6 +527,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
                                     Log.i("Tag", "厂商交易界面 POST /trades 成功！");
                                 }
                             });
+                    listPackage.clear();
                 }
                 else
                 {

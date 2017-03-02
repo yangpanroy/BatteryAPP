@@ -7,6 +7,7 @@ public class Scan {
     String id;
     String _created;
     String _modified;
+    public String createTime;
     String scannerId;
     String scanner;
     String scanBranch;
@@ -25,6 +26,9 @@ public class Scan {
     }
 
     public String getId() {
+        if (id == null){
+            id = "";
+        }
         return id;
     }
 
@@ -49,6 +53,9 @@ public class Scan {
     }
 
     public String getScannerId() {
+        if (scannerId == null){
+            scannerId = "";
+        }
         return scannerId;
     }
 
@@ -57,6 +64,9 @@ public class Scan {
     }
 
     public String getScanner() {
+        if (scanner == null){
+            scanner = "";
+        }
         return scanner;
     }
 
@@ -65,6 +75,9 @@ public class Scan {
     }
 
     public String getScanBranch() {
+        if (scanBranch == null){
+            scanBranch = "";
+        }
         return scanBranch;
     }
 
@@ -73,6 +86,9 @@ public class Scan {
     }
 
     public String getBarcode() {
+        if (barcode == null){
+            barcode = "";
+        }
         return barcode;
     }
 
@@ -104,19 +120,20 @@ public class Scan {
         this.latitude = latitude;
     }
 
-//    @Override
-//    public String toString() {
-//        return "Scan{" +
-//                "id='" + id + '\'' +
-//                ", _created='" + _created + '\'' +
-//                ", _modified='" + _modified + '\'' +
-//                ", scannerId='" + scannerId + '\'' +
-//                ", scanner='" + scanner + '\'' +
-//                ", scanBranch='" + scanBranch + '\'' +
-//                ", barcode='" + barcode + '\'' +
-//                ", timestamp=" + timestamp +
-//                ", longitude=" + longitude +
-//                ", latitude=" + latitude +
-//                '}';
-//    }
+    @Override
+    public String toString() {
+        return "Scan{" +
+                "id='" + id + '\'' +
+                ", createTime='" + createTime + '\'' +
+                ", scannerId='" + scannerId + '\'' +
+                ", scanner='" + scanner + '\'' +
+                ", scanBranch='" + scanBranch + '\'' +
+                ", barcode='" + barcode + '\'' +
+                ", timestamp=" + timestamp +
+                ", longitude=" + longitude +
+                ", latitude=" + latitude +
+                ", _created='" + _created + '\'' +
+                ", _modified='" + _modified + '\'' +
+                '}';
+    }
 }

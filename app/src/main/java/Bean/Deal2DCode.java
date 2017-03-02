@@ -7,45 +7,25 @@ import java.util.ArrayList;
  */
 public class Deal2DCode {
 
-    String to;
-    String toId;
-    String toBranch;
+    String creditCode;
     String toSignature;
-    ArrayList<Package> packages;
+    Boolean isCommon;
 
     public Deal2DCode() {
     }
 
-    public Deal2DCode(String to, String toId, String toBranch, String toSignature, ArrayList<Package> packages) {
-        this.to = to;
-        this.toId = toId;
-        this.toBranch = toBranch;
+    public Deal2DCode(String creditCode, String toSignature, Boolean isCommon) {
+        this.creditCode = creditCode;
         this.toSignature = toSignature;
-        this.packages = packages;
+        this.isCommon = isCommon;
     }
 
-    public String getTo() {
-        return to;
+    public String getCreditCode() {
+        return creditCode;
     }
 
-    public void setTo(String to) {
-        this.to = to;
-    }
-
-    public String getToId() {
-        return toId;
-    }
-
-    public void setToId(String toId) {
-        this.toId = toId;
-    }
-
-    public String getToBranch() {
-        return toBranch;
-    }
-
-    public void setToBranch(String toBranch) {
-        this.toBranch = toBranch;
+    public void setCreditCode(String creditCode) {
+        this.creditCode = creditCode;
     }
 
     public String getToSignature() {
@@ -56,22 +36,20 @@ public class Deal2DCode {
         this.toSignature = toSignature;
     }
 
-    public ArrayList<Package> getpackages() {
-        return packages;
+    public Boolean getIsCommon() {
+        return isCommon;
     }
 
-    public void setpackages(ArrayList<Package> packages) {
-        this.packages = packages;
+    public void setIsCommon(Boolean isCommon) {
+        this.isCommon = isCommon;
     }
 
     @Override
     public String toString() {
         return "Deal2DCode{" +
-                "to='" + to + '\'' +
-                ", toId='" + toId + '\'' +
-                ", toBranch='" + toBranch + '\'' +
+                "creditCode='" + creditCode + '\'' +
                 ", toSignature='" + toSignature + '\'' +
-                ", packages=" + packages +
+                ", isCommon=" + isCommon +
                 '}';
     }
 }
