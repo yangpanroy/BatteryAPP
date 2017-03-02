@@ -81,7 +81,7 @@ public class SingleTradeActivity extends AppCompatActivity {
                         toId.setText(temp);
                         temp = "买方：" + response.getTo() + response.getToBranch();
                         to.setText(temp);
-                        temp = "交易时间：" + response.get_created();
+                        temp = "交易时间：" + response.createTime;
                         tradeTime.setText(temp);
 
                         if (response.getAttachment() != ""){

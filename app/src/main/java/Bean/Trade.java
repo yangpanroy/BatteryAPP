@@ -17,8 +17,9 @@ import java.util.Date;
 public class Trade {
 
     String id;
-    Date _created;
-    Date _modified;
+    /*Date _created;
+    Date _modified;*/
+    public String createTime;
     String fromId;
     String from;
     String fromBranch;
@@ -53,13 +54,25 @@ public class Trade {
 //        this.block = block;
     }
 
-    public String get_created() {
+    /*public String getCreateTime() {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         String date = "";
-        if (this._created != null){
-            date = df.format(this._created);
+        if (this.createTime != null){
+            date = df.format(this.createTime);
         }
         return date;
+    }*/
+
+   /* public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }*/
+
+  /*  public Date get_created() {
+        return _created;
     }
 
     public void set_created(Date _created) {
@@ -72,7 +85,7 @@ public class Trade {
 
     public void set_modified(Date _modified) {
         this._modified = _modified;
-    }
+    }*/
 
     public String getId() {
         return id;
@@ -245,8 +258,9 @@ public class Trade {
     public String toString() {
         return "Trade{" +
                 "id='" + id + '\'' +
-                ", _created=" + _created +
-                ", _modified=" + _modified +
+              /*  ", _created=" + _created +
+                ", _modified=" + _modified +*/
+                ", createTime=" + createTime +
                 ", fromId='" + fromId + '\'' +
                 ", from='" + from + '\'' +
                 ", fromBranch='" + fromBranch + '\'' +

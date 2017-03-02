@@ -51,7 +51,7 @@ public class fragment_main extends Fragment implements MyItemClickListener{
         banner = (Banner) view.findViewById(R.id.banner);
 
         initBanner();
-        initList();
+//        initList();
 
         return view;
     }

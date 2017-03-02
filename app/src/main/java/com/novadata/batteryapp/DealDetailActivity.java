@@ -96,7 +96,7 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
                         Log.i("GET from交易信息 NOTICE", response.toString());
                         for (int i = 0; i < response.size(); i++) {
                             HashMap<String, Object> map = new HashMap<>();
-                            map.put("detail_item_module_date", response.get(i).get_created());
+                            map.put("detail_item_module_date", response.get(i).createTime);
                             map.put("detail_logistics_source", response.get(i).getFrom() + response.get(i).getFromBranch());
                             map.put("detail_logistics_destination", response.get(i).getTo() + response.get(i).getToBranch());
                             map.put("detail_item_module_id", "ID：" + response.get(i).getId());
@@ -126,7 +126,7 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
                         Log.i("GET to交易信息 NOTICE", response.toString());
                         for (int i = 0; i < response.size(); i++) {
                             HashMap<String, Object> map = new HashMap<>();
-                            map.put("detail_item_module_date", response.get(i).get_created());
+                            map.put("detail_item_module_date", response.get(i).createTime);
                             map.put("detail_logistics_source", response.get(i).getFrom() + response.get(i).getFromBranch());
                             map.put("detail_logistics_destination", response.get(i).getTo() + response.get(i).getToBranch());
                             map.put("detail_item_module_id", "ID：" + response.get(i).getId());
@@ -193,7 +193,7 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
                                     listItem.clear();
                                     for (int i = 0; i < response.size(); i++) {
                                         HashMap<String, Object> map = new HashMap<>();
-                                        map.put("detail_item_module_date", response.get(i).get_created());
+                                        map.put("detail_item_module_date", response.get(i).createTime);
                                         map.put("detail_logistics_source", response.get(i).getFrom() + response.get(i).getFromBranch());
                                         map.put("detail_logistics_destination", response.get(i).getTo() + response.get(i).getToBranch());
                                         map.put("detail_item_module_id", response.get(i).getId());
@@ -223,7 +223,7 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
                                 public void onResponse(List<Trade> response, int id) {
                                     for (int i = 0; i < response.size(); i++) {
                                         HashMap<String, Object> map = new HashMap<>();
-                                        map.put("detail_item_module_date", response.get(i).get_created());
+                                        map.put("detail_item_module_date", response.get(i).createTime);
                                         map.put("detail_logistics_source", response.get(i).getFrom() + response.get(i).getFromBranch());
                                         map.put("detail_logistics_destination", response.get(i).getTo() + response.get(i).getToBranch());
                                         map.put("detail_item_module_id", response.get(i).getId());

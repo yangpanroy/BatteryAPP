@@ -65,7 +65,7 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
                         SearchResultActivity.this.setResult(RESULT_EMPTY, SearchResultActivity.this.getIntent());
                         SearchResultActivity.this.finish();
 
-                        Log.i("Tag", "PackageCallback Error");
+                        Log.i("Tag", "PackageCallback 失败");
                     }
 
                     @Override
@@ -90,14 +90,15 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
 
                         initScans();
 
-                        Log.i("Tag", "PackageCallback Success");
+                        Log.i("Tag", "PackageCallback 成功");
+                        Log.i("Package {id}",response.toString());
                     }
                 });
 
     }
 
     private void initScans() {
-        String url = baseUrl + "scans";
+        String url = baseUrl + "scans?filters=%7B%22barcode%22%3A%22" + battery_code + "%22%7D&limit=10&offset=0";
         OkHttpUtils
                 .get()
                 .url(url)
@@ -105,7 +106,7 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
                 .execute(new ListScanCallback() {
                     @Override
                     public void onError(Call call, Exception e, int id) {
-                        Log.i("Tag", "ListScanCallback Error");
+                        Log.i("Tag", "ListScanCallback 失败" + e.getMessage());
                         Toast.makeText(SearchResultActivity.this, "未找到扫描记录", Toast.LENGTH_LONG).show();
                     }
 
@@ -131,7 +132,7 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
                         }
                         initView();
 
-                        Log.i("Tag", "ListScanCallback Success");
+                        Log.i("Tag", "ListScanCallback 成功");
                     }
                 });
     }
