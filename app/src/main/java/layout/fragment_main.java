@@ -1,5 +1,6 @@
 package layout;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.novadata.batteryapp.MainActivity;
 import com.novadata.batteryapp.R;
+import com.novadata.batteryapp.SearchResultActivity;
 import com.youth.banner.Banner;
 import com.zhy.http.okhttp.OkHttpUtils;
 
@@ -28,18 +30,23 @@ import Callback.ListMainSearchHistoryItemCallback;
 import adapter.MyItemClickListener;
 import adapter.SearchHistoryItemAdapter;
 import okhttp3.Call;
+import utils.HistorySQLite;
 
 public class fragment_main extends Fragment implements MyItemClickListener{
 
     private View view;
     private Banner banner;
     private String baseUrl = MainActivity.getBaseUrl();
+    public static fragment_main fragmentMain;
 
     //设置Item内组件资源
     private ArrayList<HashMap<String,Object>> listItem = new ArrayList<>();
 
     //设置图片资源:url或本地资源
     List<String> Banner_image_url = new ArrayList<>();
+    private List<Main_Search_History_Item> searchHistoryList;
+    private List<Main_Search_History_Item> tempList;
+
 
     @Nullable
     @Override
@@ -51,47 +58,41 @@ public class fragment_main extends Fragment implements MyItemClickListener{
         banner = (Banner) view.findViewById(R.id.banner);
 
         initBanner();
+        initData();
 //        initList();
 
         return view;
     }
 
+    private void initData() {
+        HistorySQLite historySQLite = new HistorySQLite(getActivity());
+        searchHistoryList = new ArrayList<>();
+        tempList = new ArrayList<>();
+        tempList.addAll(historySQLite.getHistoryList());
+
+        reversedList();
+    }
+
+    //颠倒list顺序，用户输入的信息会从上依次往下显示
+    private void reversedList(){
+        searchHistoryList.clear();
+        for(int i = tempList.size() - 1 ; i >= 0 ; i --){
+            searchHistoryList.add(tempList.get(i));
+        }
+    }
+
     private void initList() {
-        String url = baseUrl + "search_history_item";
-        OkHttpUtils
-                .get()//
-                .url(url)//
-                .build()//
-                .execute(new ListMainSearchHistoryItemCallback()//
-                {
-                    @Override
-                    public void onError(Call call, Exception e, int id) {
-                        Log.i("Tag", "ListMainSearchHistoryItemCallback Error");
-                    }
-
-                    @Override
-                    public void onResponse(List<Main_Search_History_Item> response, int id) {
-                        if (response.size() > 0) {
-                            listItem.clear();
-                            for (int i = 0; i < response.size(); i++) {
-                                HashMap<String, Object> map = new HashMap<>();
-                                map.put("ItemTitle", response.get(i).getTitle());
-                                map.put("ItemText1", "编号：" + response.get(i).getModule_num());
-                                map.put("ItemText2", "生产日期：" + response.get(i).getProduce_date());
-                                map.put("ItemText3", "生产企业：" + response.get(i).getProducer());
-                                map.put("ItemText4", "最近流通时间：" + response.get(i).getLatest_logistics_date());
-                                map.put("ItemText5", "最近流通地点：" + response.get(i).getLatest_logistics_place());
-                                map.put("ItemImage", response.get(i).getModule_image());
-                                listItem.add(map);
-                            }
-                            initView();
-                            Log.i("Tag", "ListMainSearchHistoryItemCallback Success");
-
-                        } else {
-                            Log.i("Tag", "ListMainSearchHistoryItemCallback Empty");
-                        }
-                    }
-                });
+        listItem.clear();
+        for (int i = 0; i < searchHistoryList.size(); i++) {
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("ItemText1", "编号：" + searchHistoryList.get(i).getModule_num());
+            map.put("ItemText2", "生产日期：" + searchHistoryList.get(i).getProduce_date());
+            map.put("ItemText3", "生产企业：" + searchHistoryList.get(i).getProducer());
+            map.put("ItemText4", "最近流通时间：" + searchHistoryList.get(i).getLatest_logistics_date());
+            map.put("ItemText5", "最近流通地点：" + searchHistoryList.get(i).getLatest_logistics_place());
+            listItem.add(map);
+        }
+        initView();
     }
 
     public void initView(){
@@ -206,9 +207,20 @@ public class fragment_main extends Fragment implements MyItemClickListener{
 
     @Override
     public void onItemClick(View view, int position) {//点击事件的回调函数
-        //TODO 定义Item的点击响应事件
-        System.out.println("点击了第" + position + "行");
-        Toast.makeText(getActivity(), "点击了第"+position+"行模组信息", Toast.LENGTH_SHORT).show();
+        String selectedId;
+
+        selectedId = listItem.get(position).get("ItemText1").toString().substring(3);
+
+        Intent intent = new Intent(MainActivity.mainActivity, SearchResultActivity.class);
+        Bundle bundle=new Bundle();
+        bundle.putString("battery_code", selectedId);
+        intent.putExtras(bundle);
+        startActivity(intent);
+    }
+
+    public void clearList(){
+        tempList.clear();
+        reversedList();
     }
 
 }

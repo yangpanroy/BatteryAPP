@@ -23,6 +23,7 @@ import adapter.MyItemClickListener;
 import adapter.SearchResultAdapter;
 import layout.SpaceItemDecoration;
 import okhttp3.Call;
+import utils.HistorySQLite;
 
 public class SearchResultActivity extends AppCompatActivity implements MyItemClickListener{
 
@@ -31,6 +32,7 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
     private TextView module_code, manufacturer, date, type, battery_match_head, phone;
     private ArrayList<HashMap<String,Object>> listItem = new ArrayList<>();
     private String baseUrl = MainActivity.getBaseUrl();
+    private String module_num, module_date, module_manufacturer, latest_date, latest_place;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,11 +75,14 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
 
                         String tempString;
 
-                        tempString = "编号：" + response.getid();
+                        module_num = response.getid();
+                        tempString = "编号：" + module_num;
                         module_code.setText(tempString);
-                        tempString = "生产企业：" + response.getManufacturer();
+                        module_manufacturer = response.getManufacturer();
+                        tempString = "生产企业：" + module_manufacturer;
                         manufacturer.setText(tempString);
-                        tempString = "生产日期：" + response.getTimestamp().getDate();
+                        module_date = response.getTimestamp().getDate();
+                        tempString = "生产日期：" + module_date;
                         date.setText(tempString);
                         tempString = "参数：" + response.getPackageSpec();
                         type.setText(tempString);
@@ -120,17 +125,19 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
                             map.put("ItemText1", "交付日期：" + response.get(i).createTime);
                             map.put("ItemText2", "电池包：" + battery_code);
                             map.put("ItemText4", "匹配车架号：" + carId);
-                            if (carId == null)
-                            {
+                            if (carId == null) {
                                 map.put("ItemText3", "汽车匹配状态：未匹配");
-                            }
-                            else
-                            {
+                            } else {
                                 map.put("ItemText3", "汽车匹配状态：已匹配");
                             }
                             listItem.add(map);
                         }
                         initView();
+
+                        latest_date = response.get(response.size() - 1).createTime;
+                        latest_place = response.get(response.size() - 1).getScanner() + response.get(response.size() - 1).getScanBranch();
+
+                        markSearchHistory(module_num, module_date, module_manufacturer, latest_date, latest_place);
 
                         Log.i("Tag", "ListScanCallback 成功");
                         Log.i("Tag", response.toString());
@@ -154,6 +161,12 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
         int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.item_space);
         search_result_Rv.addItemDecoration(new SpaceItemDecoration(spacingInPixels));
 
+    }
+
+    private void markSearchHistory(String module_num, String module_date, String module_manufacturer, String latest_date, String latest_place) {
+        //使用SQLite数据库存储本次的搜索信息
+        HistorySQLite historySQLite = new HistorySQLite(MainActivity.mainActivity);
+        historySQLite.addHistory(module_num, module_date, module_manufacturer, latest_date, latest_place);
     }
 
     @Override

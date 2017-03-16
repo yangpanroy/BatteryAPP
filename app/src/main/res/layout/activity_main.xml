@@ -7,7 +7,8 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-        <Toolbar
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolBar"
             app:layout_scrollFlags="scroll|enterAlways"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -52,7 +53,7 @@
 
             </LinearLayout>
 
-        </Toolbar>
+        </android.support.v7.widget.Toolbar>
 
         <android.support.design.widget.TabLayout
             android:id="@+id/tabLayout"

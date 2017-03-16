@@ -38,13 +38,12 @@ public class SearchHistoryItemAdapter extends RecyclerView.Adapter {
     //定义RecyclerView的ViewHolder
     class Holder extends RecyclerView.ViewHolder {
 
-        private TextView Title, Text1, Text2,Text3,Text4,Text5;
+        private TextView Text1, Text2,Text3,Text4,Text5;
         private ImageView ima;
 
         public Holder(View itemView) {
             super(itemView);
 
-            Title = (TextView) itemView.findViewById(R.id.Itemtitle);
             Text1 = (TextView) itemView.findViewById(R.id.Itemtext1);
             Text2 = (TextView) itemView.findViewById(R.id.Itemtext2);
             Text3 = (TextView) itemView.findViewById(R.id.Itemtext3);
@@ -60,10 +59,6 @@ public class SearchHistoryItemAdapter extends RecyclerView.Adapter {
 
             }//监听到点击就回调MainActivity的onItemClick函数
             );
-        }
-
-        public TextView getTitle() {
-            return Title;
         }
 
         public TextView getText1() {
@@ -93,16 +88,16 @@ public class SearchHistoryItemAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         if(holder instanceof Holder) {
-            ((Holder) holder).Title.setText((String) listItem.get(position).get("ItemTitle"));
             ((Holder) holder).Text1.setText((String) listItem.get(position).get("ItemText1"));
             ((Holder) holder).Text2.setText((String) listItem.get(position).get("ItemText2"));
             ((Holder) holder).Text3.setText((String) listItem.get(position).get("ItemText3"));
             ((Holder) holder).Text4.setText((String) listItem.get(position).get("ItemText4"));
             ((Holder) holder).Text5.setText((String) listItem.get(position).get("ItemText5"));
-            imageUrl = (String) listItem.get(position).get("ItemImage");
+            //下列代码用于读取电池包照片（待定功能）
+           /* imageUrl = (String) listItem.get(position).get("ItemImage");
             imageView = ((Holder) holder).ima;
             Thread imageViewHandler = new Thread(new NetImageHandler());
-            imageViewHandler.start();
+            imageViewHandler.start();*/
         }
     }//在这里绑定数据到ViewHolder里面
 

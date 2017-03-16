@@ -1,33 +1,21 @@
 package Bean;
 
 public class Main_Search_History_Item {
-    public String title;
     public String module_num;
     public String produce_date;
     public String producer;
     public String latest_logistics_date;
     public String latest_logistics_place;
-    public String module_image;
 
     public Main_Search_History_Item() {
     }
 
-    public Main_Search_History_Item(String title, String module_num, String produce_date, String producer, String latest_logistics_date, String latest_logistics_place, String module_image) {
-        this.title = title;
+    public Main_Search_History_Item(String module_num, String produce_date, String producer, String latest_logistics_date, String latest_logistics_place) {
         this.module_num = module_num;
         this.produce_date = produce_date;
         this.producer = producer;
         this.latest_logistics_date = latest_logistics_date;
         this.latest_logistics_place = latest_logistics_place;
-        this.module_image = module_image;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public String getModule_num() {
@@ -70,24 +58,14 @@ public class Main_Search_History_Item {
         this.latest_logistics_place = latest_logistics_place;
     }
 
-    public String getModule_image() {
-        return module_image;
-    }
-
-    public void setModule_image(String module_image) {
-        this.module_image = module_image;
-    }
-
     @Override
     public String toString() {
         return "Main_Search_History_Item{" +
-                "title='" + title + '\'' +
                 ", module_num='" + module_num + '\'' +
                 ", produce_date='" + produce_date + '\'' +
                 ", producer='" + producer + '\'' +
                 ", latest_logistics_date='" + latest_logistics_date + '\'' +
                 ", latest_logistics_place='" + latest_logistics_place + '\'' +
-                ", module_image='" + module_image + '\'' +
                 '}';
     }
 }

@@ -28,15 +28,12 @@ import Bean.Trade;
 import Callback.ListTradeCallback;
 import adapter.DealDetailItemAdapter;
 import adapter.MyItemClickListener;
-import layout.SpaceItemDecoration;
 import okhttp3.Call;
 
 public class DealDetailActivity extends AppCompatActivity implements View.OnClickListener, MyItemClickListener {
 
     String companyName;
-    private RecyclerView rv;
-    private ArrayList<HashMap<String,Object>> listItem = new ArrayList<HashMap<String,Object>>();
-    private DealDetailItemAdapter ddiAdapter;
+    private ArrayList<HashMap<String,Object>> listItem = new ArrayList<>();
     private String baseUrl = MainActivity.getBaseUrl();
     private String filters;
     TextView startTime, endTime, filter_button;
@@ -140,10 +137,10 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
 
     private void initView() {
         Log.i("ListItem",listItem.toString());
-        ddiAdapter = new DealDetailItemAdapter(this, listItem);
+        DealDetailItemAdapter ddiAdapter = new DealDetailItemAdapter(this, listItem);
         ddiAdapter.setOnItemClickListener(this);
 
-        rv = (RecyclerView) findViewById(R.id.deal_detail_recycleView);
+        RecyclerView rv = (RecyclerView) findViewById(R.id.deal_detail_recycleView);
 
         assert rv != null;
         rv.setAdapter(ddiAdapter);
@@ -153,10 +150,6 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
         layoutManager.setReverseLayout(true);//列表翻转
         rv.setLayoutManager(layoutManager);
         rv.setHasFixedSize(true);
-
-        int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.item_space);
-        rv.addItemDecoration(new SpaceItemDecoration(spacingInPixels));
-
     }
 
     @Override

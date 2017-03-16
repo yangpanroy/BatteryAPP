@@ -17,6 +17,8 @@ import com.novadata.batteryapp.MainActivity;
 import com.novadata.batteryapp.R;
 import com.novadata.batteryapp.UrlSettingActivity;
 
+import utils.HistorySQLite;
+
 import static android.app.Activity.RESULT_OK;
 
 public class fragment_user extends Fragment implements  View.OnClickListener {
@@ -49,11 +51,13 @@ public class fragment_user extends Fragment implements  View.OnClickListener {
 
         RelativeLayout myDeal_item = (RelativeLayout) view.findViewById(R.id.myDeal_item);
         RelativeLayout setting_item = (RelativeLayout) view.findViewById(R.id.setting_item);
+        RelativeLayout clean_item = (RelativeLayout) view.findViewById(R.id.clean_item);
 
         loginButton.setOnClickListener(this);
         logoutButton.setOnClickListener(this);
         myDeal_item.setOnClickListener(this);
         setting_item.setOnClickListener(this);
+        clean_item.setOnClickListener(this);
 
         doLogIn(login_status);
 
@@ -86,6 +90,11 @@ public class fragment_user extends Fragment implements  View.OnClickListener {
                 break;
             case R.id.setting_item:
                 startActivity(new Intent(MainActivity.mainActivity, UrlSettingActivity.class));
+                break;
+            case R.id.clean_item:
+                HistorySQLite historySQLite = new HistorySQLite(getActivity());
+                historySQLite.deleteAllHistory();
+                fragment_main.fragmentMain.clearList();
                 break;
         }
     }
