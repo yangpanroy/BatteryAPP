@@ -51,7 +51,7 @@ import utils.PhotoSaver;
 
 import static android.app.Activity.RESULT_OK;
 
-public class fragment_deal extends Fragment implements View.OnClickListener, RadioGroup.OnCheckedChangeListener, MyItemClickListener {
+public class fragment_deal extends Fragment implements View.OnClickListener, MyItemClickListener {
 
     private View view;
     private LocalBroadcastManager broadcastManager;
@@ -69,11 +69,15 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
     private ArrayList<Package> listPackage = new ArrayList<>();
     TextView initHint;
     RecyclerView rv;
+    LinearLayout default_layout;
+    LinearLayout company_layout;
+    LinearLayout the_4s_layout;
 
+    public static fragment_deal fragmentDeal;
     int login_status = -1;
-    int status_IO;
+    static int status_IO = -1;
     static final int IMPORT = 0, EXPORT = 1;
-    static final int DEFAULT_STATUS = -1, USER_4S = 1, USER_COMPANY_IP = 0, USER_COMPANY_EP = 2;
+    static final int DEFAULT_STATUS = -1, USER_4S = 1, USER_COMPANY_CAR = 0, USER_COMPANY_BATTERY = 2;
     final static int REQUEST_PHOTO = 0, REQUEST_SCAN_PACKAGE = 1, REQUEST_SCAN_MODULE = 2, REQUEST_DEAL = 3, REQUEST_GENERATE = 4;
     private static final String PATH = Environment.getExternalStorageDirectory().getPath()+"/battery/photos";
     private String baseUrl = MainActivity.getBaseUrl();
@@ -101,67 +105,101 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
         consumerNameEt = (EditText) view.findViewById(R.id.consumer_name_editText);
         consumerIdEt = (EditText) view.findViewById(R.id.consumer_id_editText);
         TextView user4SCompany = (TextView) view.findViewById(R.id.user_4s_company);
-
-        photo_Tv.setVisibility(View.VISIBLE);
-        confirm_Tv.setVisibility(View.GONE);
+        TextView changeStatusIO_Tv = (TextView) view.findViewById(R.id.statusIOChange_button);
+        ImageView emptyButton1 = (ImageView) view.findViewById(R.id.emptyButton1);
+        ImageView emptyButton2 = (ImageView) view.findViewById(R.id.emptyButton2);
+        ImageView emptyButton3 = (ImageView) view.findViewById(R.id.emptyButton3);
 
         String user4SCompanyText = "授权企业：" + companyName;
         user4SCompany.setText(user4SCompanyText);
 
         photo_Tv.setOnClickListener(this);
         confirm_Tv.setOnClickListener(this);
+        changeStatusIO_Tv.setOnClickListener(this);
+        emptyButton1.setOnClickListener(this);
+        emptyButton2.setOnClickListener(this);
+        emptyButton3.setOnClickListener(this);
     }
 
     private void initCompanyView() {
         TextView scanPackage_Tv = (TextView) view.findViewById(R.id.scanPackage_button);
         TextView scanModule_Tv = (TextView) view.findViewById(R.id.scanModule_button);
-        RadioGroup rg = (RadioGroup) view.findViewById(R.id.company_RadioGroup);
         TextView userCompany = (TextView) view.findViewById(R.id.user_company);
         TextView completeButton = (TextView) view.findViewById(R.id.complete_button);
         initHint = (TextView) view.findViewById(R.id.init_hint);
         rv = (RecyclerView) view.findViewById(R.id.import_export_recycleView);
+        TextView changeStatusIO_Tv = (TextView) view.findViewById(R.id.changeStatusIO_button);
 
         String userCompanyText = "授权企业：" + companyName;
         userCompany.setText(userCompanyText);
 
-//        getList();//GET整个出入库扫描信息
         initHint.setVisibility(View.VISIBLE);
         rv.setVisibility(View.GONE);
 
         completeButton.setOnClickListener(this);
         scanPackage_Tv.setOnClickListener(this);
         scanModule_Tv.setOnClickListener(this);
-        rg.setOnCheckedChangeListener(this);
+        changeStatusIO_Tv.setOnClickListener(this);
     }
 
     private void checkLayout(int login_status) {
-        LinearLayout default_layout = (LinearLayout) view.findViewById(R.id.deal_default_layout);
-        LinearLayout company_layout = (LinearLayout) view.findViewById(R.id.deal_company_layout);
-        LinearLayout the_4s_layout = (LinearLayout) view.findViewById(R.id.deal_4s_layout);
+        default_layout = (LinearLayout) view.findViewById(R.id.deal_default_layout);
+        company_layout = (LinearLayout) view.findViewById(R.id.deal_company_layout);
+        the_4s_layout = (LinearLayout) view.findViewById(R.id.deal_4s_layout);
+
+        ImageView import_button = (ImageView) view.findViewById(R.id.import_button);
+        ImageView export_button = (ImageView) view.findViewById(R.id.export_button);
 
         switch (login_status){
-            case USER_COMPANY_IP:{
-                Log.i("Tag", "USER_COMPANY_IP has received");
+            case USER_COMPANY_CAR:{
                 //TODO 实现登录功能后更改这里
                 companyName = fragment_user.importCompany;
                 companyBranch = fragment_user.importCompanyBranch;
                 companyId = fragment_user.importCompanyId;
                 companyCreditCode = fragment_user.creditCode_IP;
                 initCompanyView();
-                default_layout.setVisibility(View.GONE);
-                the_4s_layout.setVisibility(View.GONE);
+                Log.i("Tag", "USER_COMPANY_CAR has received");
+                import_button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        status_IO = IMPORT;
+                        Log.i("Tag", "IMPORT status has been selected");
+                        default_layout.setVisibility(View.GONE);
+                        the_4s_layout.setVisibility(View.GONE);
+                        company_layout.setVisibility(View.VISIBLE);
+                    }
+                });
+                export_button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        status_IO = EXPORT;
+                        Log.i("Tag", "EXPORT status has been selected");
+                        default_layout.setVisibility(View.GONE);
+                        the_4s_layout.setVisibility(View.GONE);
+                        company_layout.setVisibility(View.VISIBLE);
+                    }
+                });
+                //用status_IO控制是否选择了出入库，保证刷新UI时能够直接进入交易界面不用重复选择出入库按钮
+                if (status_IO != -1){
+                    default_layout.setVisibility(View.GONE);
+                    the_4s_layout.setVisibility(View.GONE);
+                    company_layout.setVisibility(View.VISIBLE);
+                }
                 break;
             }
-            case USER_COMPANY_EP:{
+            case USER_COMPANY_BATTERY:{
                 //TODO 实现登录功能后更改这里
                 companyName = fragment_user.exportCompany;
                 companyBranch = fragment_user.exportCompanyBranch;
                 companyId = fragment_user.exportCompanyId;
                 companyCreditCode = fragment_user.creditCode_EP;
+                status_IO = EXPORT;
+                Log.i("Tag", "EXPORT status has been selected");
                 initCompanyView();
-                Log.i("Tag", "USER_COMPANY_EP has received");
+                Log.i("Tag", "USER_COMPANY_BATTERY has received");
                 default_layout.setVisibility(View.GONE);
                 the_4s_layout.setVisibility(View.GONE);
+                company_layout.setVisibility(View.VISIBLE);
                 break;
             }
             case USER_4S:{
@@ -170,16 +208,65 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
                 companyBranch = fragment_user.fourSCompanyBranch;
                 companyId = fragment_user.fourSCompanyId;
                 companyCreditCode = fragment_user.creditCode_4S;
-                init4SView();
-                Log.i("Tag", "USER_4S has received");
-                default_layout.setVisibility(View.GONE);
-                company_layout.setVisibility(View.GONE);
+                import_button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        initCompanyView();
+                        Log.i("Tag", "USER_4S TRADE AS USER_COMPANY_CAR has received");
+                        status_IO = IMPORT;
+                        Log.i("Tag", "IMPORT status has been selected");
+                        default_layout.setVisibility(View.GONE);
+                        the_4s_layout.setVisibility(View.GONE);
+                        company_layout.setVisibility(View.VISIBLE);
+                    }
+                });
+                export_button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        init4SView();
+                        Log.i("Tag", "USER_4S TRADE AS USER_4S has received");
+                        status_IO = EXPORT;
+                        Log.i("Tag", "EXPORT status has been selected");
+                        default_layout.setVisibility(View.GONE);
+                        company_layout.setVisibility(View.GONE);
+                        the_4s_layout.setVisibility(View.VISIBLE);
+                    }
+                });
+                //用status_IO控制是否选择了出入库，保证刷新UI时能够直接进入交易界面不用重复选择出入库按钮
+                if (status_IO == IMPORT){
+                    initCompanyView();
+                    Log.i("Tag", "USER_4S TRADE AS USER_COMPANY_CAR has received");
+                    default_layout.setVisibility(View.GONE);
+                    the_4s_layout.setVisibility(View.GONE);
+                    company_layout.setVisibility(View.VISIBLE);
+                }
+                if (status_IO == EXPORT){
+                    init4SView();
+                    Log.i("Tag", "USER_4S TRADE AS USER_4S has received");
+                    default_layout.setVisibility(View.GONE);
+                    company_layout.setVisibility(View.GONE);
+                    the_4s_layout.setVisibility(View.VISIBLE);
+                }
                 break;
             }
             default:{
                 Log.i("Tag", "DEFAULT_STATUS has received");
+                status_IO = -1;
                 company_layout.setVisibility(View.GONE);
                 the_4s_layout.setVisibility(View.GONE);
+                default_layout.setVisibility(View.VISIBLE);
+                import_button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Toast.makeText(getActivity(), "请登录后再进行交易！", Toast.LENGTH_LONG).show();
+                    }
+                });
+                export_button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Toast.makeText(getActivity(), "请登录后再进行交易！", Toast.LENGTH_LONG).show();
+                    }
+                });
                 break;
             }
         }
@@ -283,8 +370,6 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
                         String photoName = PhotoSaver.createPhotoName();
                         PhotoSaver.savePhoto2SDCard(PATH, photoName, bitmap);
                         Toast.makeText(getActivity(), "照片存储成功！路径为 " + PATH, Toast.LENGTH_SHORT).show();
-                        photo_Tv.setVisibility(View.VISIBLE);
-                        confirm_Tv.setVisibility(View.GONE);
                         photo_Iv.setImageDrawable(getResources().getDrawable(R.drawable.contract));
                         //将车架号、购车人姓名、购车人身份证号码和合同照片共同上传
                         //GET /cars/{id} 用其中的packages上报
@@ -350,6 +435,37 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
                 }
 
                 break;
+            case R.id.changeStatusIO_button:
+                setDefaultStatusIO();
+                default_layout.setVisibility(View.VISIBLE);
+                listPackage.clear();
+                listProductIds.clear();
+                initList(listProductIds);
+                initHint.setVisibility(View.VISIBLE);
+                rv.setVisibility(View.GONE);
+                break;
+            case R.id.statusIOChange_button:
+                setDefaultStatusIO();
+                default_layout.setVisibility(View.VISIBLE);
+                listPackage.clear();
+                listProductIds.clear();
+                initList(listProductIds);
+                initHint.setVisibility(View.VISIBLE);
+                rv.setVisibility(View.GONE);
+                carEt.setText("");
+                consumerIdEt.setText("");
+                consumerNameEt.setText("");
+                photo_Iv.setImageResource(R.drawable.contract);
+                break;
+            case R.id.emptyButton1:
+                consumerNameEt.setText("");
+                break;
+            case R.id.emptyButton2:
+                consumerIdEt.setText("");
+                break;
+            case R.id.emptyButton3:
+                carEt.setText("");
+                break;
         }
     }
 
@@ -384,22 +500,6 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
             }
         }
         return result;
-    }
-
-    @Override
-    public void onCheckedChanged(RadioGroup group, int checkedId) {
-
-        switch (checkedId){
-            case R.id.import_radioButton:
-                status_IO = IMPORT;
-                Log.i("Tag", "IMPORT status has been selected");
-                break;
-            case R.id.export_radioButton:
-                status_IO = EXPORT;
-                Log.i("Tag", "EXPORT status has been selected");
-                break;
-        }
-
     }
 
     @Override
@@ -462,10 +562,6 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
             if (requestCode == REQUEST_PHOTO){
                 bitmap=(Bitmap) bundle.get("data");//从附加值中获取返回的图像
                 photo_Iv.setImageBitmap(bitmap);//显示缩略图像
-                if (photo_Iv != null){
-                    photo_Tv.setVisibility(View.GONE);
-                    confirm_Tv.setVisibility(View.VISIBLE);
-                }
             }
             if (requestCode == REQUEST_DEAL)
             {
@@ -577,6 +673,10 @@ public class fragment_deal extends Fragment implements View.OnClickListener, Rad
     @Override
     public void onItemClick(View view, int position) {//点击事件的回调函数
 
+    }
+
+    public static void setDefaultStatusIO(){
+        status_IO = -1;
     }
 
 }

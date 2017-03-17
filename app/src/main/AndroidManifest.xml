@@ -15,7 +15,8 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:windowSoftInputMode="adjustPan|stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -27,9 +28,8 @@
         <activity android:name=".DealDetailActivity" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".GenerateDeal2DCodeActivity" />
-        <activity android:name=".DealDetailActivity" />
         <activity android:name=".SingleTradeActivity" />
-        <activity android:name=".UrlSettingActivity"></activity>
+        <activity android:name=".UrlSettingActivity"/>
     </application>
 
 </manifest>

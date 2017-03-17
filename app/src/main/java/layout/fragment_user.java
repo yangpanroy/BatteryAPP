@@ -153,6 +153,7 @@ public class fragment_user extends Fragment implements  View.OnClickListener {
     private void doLogOut() {
         //清空所有已经登录的用户名和状态
         doLogIn(DEFAULT_STATUS);
+        fragment_deal.setDefaultStatusIO();
         //广播登录状态，使得交易界面变为默认
         Intent intent = new Intent("Login_status");
         intent.putExtra("login_status", DEFAULT_STATUS);
