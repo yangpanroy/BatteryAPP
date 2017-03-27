@@ -45,6 +45,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             }
             else
             {
+                //向后台根据用户名密码返回的信息进行以下逻辑
                 doLogin(username_Et.getText().toString(), password_Et.getText().toString());
 
                 /*Bundle bundle=this.getIntent().getExtras();
