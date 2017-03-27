@@ -21,7 +21,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,8 +38,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
-import Bean.*;
+import Bean.Car;
+import Bean.Deal2DCode;
+import Bean.Module;
 import Bean.Package;
+import Bean.Scan;
+import Bean.Trade;
 import Callback.CarCallback;
 import Callback.MyStringCallback;
 import adapter.ImportExportItemAdapter;
@@ -67,6 +70,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
     private String companyCreditCode;
     public ArrayList<String> listProductIds = new ArrayList<>();
     private ArrayList<Package> listPackage = new ArrayList<>();
+    private ArrayList<String> listPackageId = new ArrayList<>();
     TextView initHint;
     RecyclerView rv;
     LinearLayout default_layout;
@@ -349,7 +353,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                 intent.putExtras(bundle);
                 startActivityForResult(intent, REQUEST_SCAN_PACKAGE);
                 break;
-            case R.id.scanModule_button://点击扫描电池包按钮
+            case R.id.scanModule_button://点击扫描电池模组按钮
                 Intent intent2 = new Intent(MainActivity.mainActivity, ScanActivity.class);
                 Bundle bundle2 = new Bundle();
                 bundle2.putString("result", "result");
@@ -545,7 +549,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                 if (requestCode == REQUEST_SCAN_PACKAGE)
                 {
                     String packageId = zxingResult;
-                    Toast.makeText(getActivity(), "已扫描到电池包：" + packageId, Toast.LENGTH_LONG);
+                    Toast.makeText(getActivity(), "已扫描到电池包：" + packageId, Toast.LENGTH_SHORT);
                     ArrayList<Module> listModule = new ArrayList<>();
                     //listProductIds数组记录了这批待交易的电池模组的二维码，先将其排序以便比对
                     Collections.sort(listProductIds);
