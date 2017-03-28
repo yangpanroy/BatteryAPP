@@ -91,8 +91,6 @@ public class SingleTradeActivity extends AppCompatActivity {
                             temp = "买方：" + response.getTo();
                             to.setText(temp);
                         }
-
-                        //TODO 更改接口
                         for (int i = 0; i < response.getPackages().size(); i++)
                         {
                             TextView packagesId = new TextView(SingleTradeActivity.this);

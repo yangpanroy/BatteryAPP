@@ -19,6 +19,7 @@ import com.novadata.batteryapp.UrlSettingActivity;
 
 import Bean.User;
 import utils.HistorySQLite;
+import utils.TradeExportSQLite;
 import utils.UserSQLite;
 
 import static android.app.Activity.RESULT_OK;
@@ -72,7 +73,7 @@ public class fragment_user extends Fragment implements  View.OnClickListener {
         //查询数据库，读取最近一次登陆的信息，对各个界面赋值
         UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
         User user = userSQLite.getUser();
-        if (user != null)
+        if (user.getCompanyName() != null)
         {
             login_status = user.getCompanyType();
             setCompanyId(user.getCompanyId());
@@ -200,6 +201,9 @@ public class fragment_user extends Fragment implements  View.OnClickListener {
         Intent intent = new Intent("Login_status");
         intent.putExtra("login_status", DEFAULT_STATUS);
         LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
+        //清空SQLite数据库trade表信息
+        TradeExportSQLite tradeExportSQLite = new TradeExportSQLite(MainActivity.mainActivity);
+        tradeExportSQLite.deleteAllTrade();
     }
 
 }

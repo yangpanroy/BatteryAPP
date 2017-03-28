@@ -9,15 +9,15 @@ public class Deal2DCode {
 
     String creditCode;
     String toSignature;
-    Boolean isCommon;
+    String packageListMD5Code;
 
     public Deal2DCode() {
     }
 
-    public Deal2DCode(String creditCode, String toSignature, Boolean isCommon) {
+    public Deal2DCode(String creditCode, String toSignature, String packageListMD5Code) {
         this.creditCode = creditCode;
         this.toSignature = toSignature;
-        this.isCommon = isCommon;
+        this.packageListMD5Code = packageListMD5Code;
     }
 
     public String getCreditCode() {
@@ -36,12 +36,12 @@ public class Deal2DCode {
         this.toSignature = toSignature;
     }
 
-    public Boolean getIsCommon() {
-        return isCommon;
+    public String getPackageListMD5Code() {
+        return packageListMD5Code;
     }
 
-    public void setIsCommon(Boolean isCommon) {
-        this.isCommon = isCommon;
+    public void setPackageListMD5Code(String packageListMD5Code) {
+        this.packageListMD5Code = packageListMD5Code;
     }
 
     @Override
@@ -49,7 +49,7 @@ public class Deal2DCode {
         return "Deal2DCode{" +
                 "creditCode='" + creditCode + '\'' +
                 ", toSignature='" + toSignature + '\'' +
-                ", isCommon=" + isCommon +
+                ", packageListMD5Code='" + packageListMD5Code + '\'' +
                 '}';
     }
 }

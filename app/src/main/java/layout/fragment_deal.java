@@ -40,17 +40,19 @@ import java.util.HashMap;
 
 import Bean.Car;
 import Bean.Deal2DCode;
-import Bean.Module;
 import Bean.Package;
 import Bean.Scan;
 import Bean.Trade;
 import Callback.CarCallback;
 import Callback.MyStringCallback;
+import Callback.PackageCallback;
 import adapter.ImportExportItemAdapter;
 import adapter.MyItemClickListener;
 import okhttp3.Call;
 import okhttp3.MediaType;
+import utils.MD5Util;
 import utils.PhotoSaver;
+import utils.TradeExportSQLite;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -70,14 +72,12 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
     private String companyCreditCode;
     public ArrayList<String> listProductIds = new ArrayList<>();
     private ArrayList<Package> listPackage = new ArrayList<>();
-    private ArrayList<String> listPackageId = new ArrayList<>();
-    TextView initHint;
+    TextView initHint, completeButton, scanDeal2DCodeButton;
     RecyclerView rv;
     LinearLayout default_layout;
     LinearLayout company_layout;
     LinearLayout the_4s_layout;
 
-    public static fragment_deal fragmentDeal;
     int login_status = -1;
     static int status_IO = -1;
     static final int IMPORT = 0, EXPORT = 1;
@@ -127,9 +127,9 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
 
     private void initCompanyView() {
         TextView scanPackage_Tv = (TextView) view.findViewById(R.id.scanPackage_button);
-        TextView scanModule_Tv = (TextView) view.findViewById(R.id.scanModule_button);
         TextView userCompany = (TextView) view.findViewById(R.id.user_company);
-        TextView completeButton = (TextView) view.findViewById(R.id.complete_button);
+        completeButton = (TextView) view.findViewById(R.id.complete_button);
+        scanDeal2DCodeButton = (TextView) view.findViewById(R.id.scan_deal2DCode_button);
         initHint = (TextView) view.findViewById(R.id.init_hint);
         rv = (RecyclerView) view.findViewById(R.id.import_export_recycleView);
         TextView changeStatusIO_Tv = (TextView) view.findViewById(R.id.changeStatusIO_button);
@@ -140,9 +140,12 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
         initHint.setVisibility(View.VISIBLE);
         rv.setVisibility(View.GONE);
 
+        completeButton.setVisibility(View.VISIBLE);
+        scanDeal2DCodeButton.setVisibility(View.GONE);
+
         completeButton.setOnClickListener(this);
+        scanDeal2DCodeButton.setOnClickListener(this);
         scanPackage_Tv.setOnClickListener(this);
-        scanModule_Tv.setOnClickListener(this);
         changeStatusIO_Tv.setOnClickListener(this);
     }
 
@@ -188,6 +191,15 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                     default_layout.setVisibility(View.GONE);
                     the_4s_layout.setVisibility(View.GONE);
                     company_layout.setVisibility(View.VISIBLE);
+                    if (status_IO == EXPORT)
+                    {
+                        //查询SQLite如果有未完成的交易信息，则将界面设置为刚扫描完所有电池包，等待交易的状态
+                        TradeExportSQLite tradeExportSQLite = new TradeExportSQLite(MainActivity.mainActivity);
+                        if (tradeExportSQLite.getTrade() != "")
+                        {
+                            wait2Trade(tradeExportSQLite.getTrade());
+                        }
+                    }
                 }
                 break;
             }
@@ -204,6 +216,12 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                 default_layout.setVisibility(View.GONE);
                 the_4s_layout.setVisibility(View.GONE);
                 company_layout.setVisibility(View.VISIBLE);
+                //查询SQLite如果有未完成的交易信息，则将界面设置为刚扫描完所有电池包，等待交易的状态
+                TradeExportSQLite tradeExportSQLite = new TradeExportSQLite(MainActivity.mainActivity);
+                if (tradeExportSQLite.getTrade() != "")
+                {
+                    wait2Trade(tradeExportSQLite.getTrade());
+                }
                 break;
             }
             case USER_4S:{
@@ -276,6 +294,19 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
         }
     }
 
+    private void wait2Trade(String tradeInfo) {
+        completeButton.setVisibility(View.GONE);
+        scanDeal2DCodeButton.setVisibility(View.VISIBLE);
+
+        String[] packageIds = tradeInfo.split("#");
+        listProductIds.clear();
+        for (int i = 0; i < packageIds.length; i++)
+        {
+            listProductIds.add(packageIds[i]);
+        }
+        initList(listProductIds);
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -310,27 +341,38 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
     @Override
     public void onClick(View v) {
         switch (v.getId()){
+            case R.id.scan_deal2DCode_button://点击扫描交易二维码按钮
+                //卖家扫描买家生成的交易二维码
+                Intent intent = new Intent(MainActivity.mainActivity, ScanActivity.class);
+                Bundle bundle=new Bundle();
+                bundle.putString("deal2DCodeContentRecv", "deal2DCodeContentRecv");
+                intent.putExtras(bundle);
+                startActivityForResult(intent, REQUEST_DEAL);
+                break;
             case R.id.complete_button://点击厂商交易界面完成交易按钮
                 if (status_IO == IMPORT)
                 {
                     //买家生成交易二维码
-                    if (listPackage != null){
+                    if (listProductIds != null){
+                        //listProductIds数组记录了这批待交易的电池模组的二维码，先将其排序以便比对
+                        Collections.sort(listProductIds);
                         //将信息序列化
                         Gson gson = new Gson();
                         //TODO 更新签名 传入
-                        String deal2DCodeContent = gson.toJson(new Deal2DCode(companyCreditCode, "toSignature", true));
-                        //清空记录的模组号\包号
+                        //MD5加密本次交易的商品信息放入二维码内容中，用于比对交易商品是否匹配
+                        String deal2DCodeContent = gson.toJson(new Deal2DCode(companyCreditCode, "toSignature", MD5Util.MD5(listProductIds.toString())));
+                        //清空记录的电池包号，并更新UI
                         listProductIds.clear();
                         initList(listProductIds);
                         listPackage.clear();
                         initHint.setVisibility(View.VISIBLE);
                         rv.setVisibility(View.GONE);
                         //跳转到生成交易二维码界面
-                        Intent intent = new Intent(MainActivity.mainActivity, GenerateDeal2DCodeActivity.class);
-                        Bundle bundle=new Bundle();
-                        bundle.putString("deal2DCodeContent", deal2DCodeContent);
-                        intent.putExtras(bundle);
-                        startActivityForResult(intent, REQUEST_GENERATE);
+                        Intent intent4 = new Intent(MainActivity.mainActivity, GenerateDeal2DCodeActivity.class);
+                        Bundle bundle4=new Bundle();
+                        bundle4.putString("deal2DCodeContent", deal2DCodeContent);
+                        intent4.putExtras(bundle4);
+                        startActivityForResult(intent4, REQUEST_GENERATE);
                     }
                     else {
                         Toast.makeText(getActivity(), "扫描信息不完整", Toast.LENGTH_SHORT).show();
@@ -338,27 +380,26 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                 }
                 if (status_IO == EXPORT)
                 {
-                    //卖家扫描买家生成的交易二维码
-                    Intent intent = new Intent(MainActivity.mainActivity, ScanActivity.class);
-                    Bundle bundle=new Bundle();
-                    bundle.putString("deal2DCodeContentRecv", "deal2DCodeContentRecv");
-                    intent.putExtras(bundle);
-                    startActivityForResult(intent, REQUEST_DEAL);
+                    completeButton.setVisibility(View.GONE);
+                    scanDeal2DCodeButton.setVisibility(View.VISIBLE);
+                    //SQLite存储listPackage等交易信息
+                    StringBuffer sb = new StringBuffer();
+                    for (int i = 0; i < listProductIds.size(); i++)
+                    {
+                        sb.append(listProductIds.get(i));
+                        sb.append("#");
+                    }
+                    //将sb.toString()存储到SQLite中
+                    TradeExportSQLite tradeExportSQLite = new TradeExportSQLite(MainActivity.mainActivity);
+                    tradeExportSQLite.addTrade(sb.toString());
                 }
                 break;
             case R.id.scanPackage_button://点击扫描电池包按钮
-                Intent intent = new Intent(MainActivity.mainActivity, ScanActivity.class);
-                Bundle bundle=new Bundle();
-                bundle.putString("result", "result");
-                intent.putExtras(bundle);
-                startActivityForResult(intent, REQUEST_SCAN_PACKAGE);
-                break;
-            case R.id.scanModule_button://点击扫描电池模组按钮
                 Intent intent2 = new Intent(MainActivity.mainActivity, ScanActivity.class);
-                Bundle bundle2 = new Bundle();
+                Bundle bundle2=new Bundle();
                 bundle2.putString("result", "result");
                 intent2.putExtras(bundle2);
-                startActivityForResult(intent2, REQUEST_SCAN_MODULE);
+                startActivityForResult(intent2, REQUEST_SCAN_PACKAGE);
                 break;
             case R.id.photo_button://点击拍照合同按钮
                 Intent intent3 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//实例化Intent对象,使用MediaStore的ACTION_IMAGE_CAPTURE常量调用系统相机
@@ -511,7 +552,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK){
             Bundle bundle=data.getExtras();
-            if ((requestCode == REQUEST_SCAN_PACKAGE)||(requestCode == REQUEST_SCAN_MODULE)){
+            if (requestCode == REQUEST_SCAN_PACKAGE){
                 String zxingResult = bundle.getString("result");
                 //上传扫描记录
                 Scan scan = new Scan(companyId, companyName, companyBranch, zxingResult);
@@ -526,7 +567,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                         .mediaType(MediaType.parse("application/json; charset=utf-8"))
                         .content(new Gson().toJson(scan))
                         .build()
-                        .execute(new MyStringCallback(){
+                        .execute(new MyStringCallback() {
                             @Override
                             public void onResponse(String response, int id) {
                                 super.onResponse(response, id);
@@ -540,28 +581,9 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                             }
                         });
 
-                if(requestCode == REQUEST_SCAN_MODULE)
-                {
-                    //更新UI
-                    listProductIds.add(zxingResult);
-                    initList(listProductIds);
-                }
-                if (requestCode == REQUEST_SCAN_PACKAGE)
-                {
-                    String packageId = zxingResult;
-                    Toast.makeText(getActivity(), "已扫描到电池包：" + packageId, Toast.LENGTH_SHORT);
-                    ArrayList<Module> listModule = new ArrayList<>();
-                    //listProductIds数组记录了这批待交易的电池模组的二维码，先将其排序以便比对
-                    Collections.sort(listProductIds);
-                    for (int i = 0; i < listProductIds.size(); i++){
-                        Module module = new Module(listProductIds.get(i));
-                        listModule.add(module);
-                    }
-                    //清空模组号
-                    listProductIds.clear();
-                    initList(listProductIds);
-                    listPackage.add(new Package(packageId, listModule));
-                }
+                //更新UI
+                listProductIds.add(zxingResult);
+                initList(listProductIds);
             }
             if (requestCode == REQUEST_PHOTO){
                 bitmap=(Bitmap) bundle.get("data");//从附加值中获取返回的图像
@@ -569,18 +591,23 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
             }
             if (requestCode == REQUEST_DEAL)
             {
+                completeButton.setVisibility(View.VISIBLE);
+                scanDeal2DCodeButton.setVisibility(View.GONE);
                 String deal2DCodeContent = bundle.getString("deal2DCodeContentRecv"); //获得扫描的交易二维码的信息
 
                 //处理交易二维码内的信息并上报
                 //二维码信息中包括买方签名、交易时间和一批电池包的二维码数组
-                //比对二维码中的数组和自己扫描的数组，一致后才上传
                 Deal2DCode deal2DCode = new Gson().fromJson(deal2DCodeContent, new TypeToken<Deal2DCode>() {}.getType());
                 assert deal2DCode != null;
                 Log.i("listPackage  NOTICE", listPackage.toString());
                 Log.i("deal2DCodeContentNOTICE", deal2DCode.toString());
-                if ( deal2DCode.getIsCommon())
+                //listProductIds数组记录了这批待交易的电池模组的二维码，先将其排序以便比对
+                Collections.sort(listProductIds);
+                //比对二维码中的数组和自己扫描的数组，一致后才上传
+                if ( deal2DCode.getPackageListMD5Code() == MD5Util.MD5(listProductIds.toString()))
                 {
                     String toId = "",to = "",toBranch = "";
+                    //TODO 实现登陆后，此处应向后台查询获得数据
                     switch (deal2DCode.getCreditCode()){
                         case fragment_user.creditCode_IP:
                             toId = fragment_user.importCompanyId;
@@ -598,6 +625,28 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                             toBranch = fragment_user.fourSCompanyBranch;
                             break;
                     }
+                    //获得扫描的package信息，用于生成trade对象并上报
+                    for (int i = 0; i < listProductIds.size(); i++)
+                    {
+                        String url = baseUrl + "packages/" + listProductIds.get(i);
+                        OkHttpUtils
+                                .get()
+                                .url(url)
+                                .build()
+                                .execute(new PackageCallback() {
+                                    @Override
+                                    public void onError(Call call, Exception e, int id) {
+                                        Log.i("Tag", "PackageCallback Error!");
+                                    }
+
+                                    @Override
+                                    public void onResponse(Package response, int id) {
+                                        Log.i("Tag", "PackageCallback Success!");
+                                        //向package数组中增加Package对象
+                                        listPackage.add(response);
+                                    }
+                                });
+                    }
                     //TODO 更新签名 传入
                     final Trade trade = new Trade(companyId, companyName, companyBranch, "fromSignature",
                             toId, to, toBranch, deal2DCode.getToSignature(),
@@ -611,7 +660,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                             .mediaType(MediaType.parse("application/json; charset=utf-8"))
                             .content(new Gson().toJson(trade))
                             .build()
-                            .execute(new MyStringCallback(){
+                            .execute(new MyStringCallback() {
                                 @Override
                                 public void onError(Call call, Exception e, int id) {
                                     super.onError(call, e, id);
@@ -628,6 +677,9 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                                 }
                             });
                     listPackage.clear();
+                    //交易完毕后清空待交易信息
+                    TradeExportSQLite tradeExportSQLite = new TradeExportSQLite(MainActivity.mainActivity);
+                    tradeExportSQLite.deleteAllTrade();
                 }
                 else
                 {

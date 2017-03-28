@@ -212,17 +212,31 @@
                                 android:textSize="7pt"
                                 android:text="扫描电池包" />
 
-                            <TextView
-                                android:id="@+id/scanModule_button"
-                                style="@style/AutoWrapTv"
-                                android:textSize="7pt"
-                                android:text="扫描模组" />
-
                         </LinearLayout>
 
                     </TableLayout>
 
                 </android.support.v7.widget.CardView>
+
+                <LinearLayout
+                    android:elevation="4dp"
+                    android:background="@drawable/selector_btn_light"
+                    android:layout_marginBottom="32dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_gravity="left|bottom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/scan_deal2DCode_button"
+                        android:layout_width="150dp"
+                        android:layout_height="40dp"
+                        android:textSize="8pt"
+                        android:textColor="@color/white"
+                        android:gravity="center"
+                        android:text="扫描交易二维码"/>
+
+                </LinearLayout>
 
                 <LinearLayout
                     android:elevation="4dp"

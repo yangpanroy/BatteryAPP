@@ -166,7 +166,6 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
                 if(compareTime()){
                     String s1 = startTime.getText().toString();
                     String s2 = endTime.getText().toString();
-                    //TODO 构建filters
                     filters = "?filters=%7Bfrom%3A%20%7B%24regex%3A%20%23%7D%2C_created%3A%7B%24gte%3A%23%7D%2C_created%3A%7B%24lte%3A%23%7D%7D&params=" + companyName + "%2C" + s1 + "%2C" + s2 + "&limit=10&offset=0";
 
                     String url = baseUrl + "trades" + filters;

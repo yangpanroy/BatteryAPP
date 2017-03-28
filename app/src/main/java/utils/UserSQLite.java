@@ -21,7 +21,7 @@ public class UserSQLite {
 
     public void addUser(String userName, String password, int companyType, String companyName, String companyId, String token, int state, String createDate)
     {
-        if (isHasUser(userName))
+        if (!isHasUser(userName))
         {
             userDb = userSQLiteOpenHelper.getReadableDatabase();
             ContentValues values = new ContentValues();
@@ -57,19 +57,22 @@ public class UserSQLite {
 
     //获得最近一条User记录
     public User getUser(){
-        User user;
+        User user = new User();
         userDb = userSQLiteOpenHelper.getReadableDatabase();
         Cursor cursor = userDb.query("user", null, null, null, null, null, null);
-        cursor.moveToLast();//查询user表并移动到最后一条记录
-        String userName = cursor.getString(cursor.getColumnIndexOrThrow("userName"));
-        String password = cursor.getString(cursor.getColumnIndexOrThrow("password"));
-        int companyType = cursor.getInt(cursor.getColumnIndexOrThrow("companyType"));
-        String companyName = cursor.getString(cursor.getColumnIndexOrThrow("companyName"));
-        String companyId = cursor.getString(cursor.getColumnIndexOrThrow("companyId"));
-        String token = cursor.getString(cursor.getColumnIndexOrThrow("token"));
-        int state = cursor.getInt(cursor.getColumnIndexOrThrow("state"));
-        String createDate = cursor.getString(cursor.getColumnIndexOrThrow("createDate"));
-        user = new User(userName, password, companyType, companyName, companyId, token, state, createDate);
+        if (cursor.getCount() != 0)
+        {
+            cursor.moveToLast();//查询user表并移动到最后一条记录
+            String userName = cursor.getString(cursor.getColumnIndexOrThrow("userName"));
+            String password = cursor.getString(cursor.getColumnIndexOrThrow("password"));
+            int companyType = cursor.getInt(cursor.getColumnIndexOrThrow("companyType"));
+            String companyName = cursor.getString(cursor.getColumnIndexOrThrow("companyName"));
+            String companyId = cursor.getString(cursor.getColumnIndexOrThrow("companyId"));
+            String token = cursor.getString(cursor.getColumnIndexOrThrow("token"));
+            int state = cursor.getInt(cursor.getColumnIndexOrThrow("state"));
+            String createDate = cursor.getString(cursor.getColumnIndexOrThrow("createDate"));
+            user = new User(userName, password, companyType, companyName, companyId, token, state, createDate);
+        }
         //关闭数据库
         userDb.close();
         cursor.close();
