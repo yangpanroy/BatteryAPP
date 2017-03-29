@@ -14,6 +14,7 @@ import com.zhy.http.okhttp.OkHttpUtils;
 import Bean.Trade;
 import Callback.TradeCallback;
 import okhttp3.Call;
+import utils.UserSQLite;
 
 public class SingleTradeActivity extends AppCompatActivity {
 
@@ -57,10 +58,11 @@ public class SingleTradeActivity extends AppCompatActivity {
     private void doGET() {
 
         String url = MainActivity.getBaseUrl() + "trades/" + selectedId;
-
+        UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
         OkHttpUtils
                 .get()//
                 .url(url)//
+                .addHeader("Authorization", " Bearer " + userSQLite.getUser().getToken())
                 .build()//
                 .execute(new TradeCallback()//
                 {

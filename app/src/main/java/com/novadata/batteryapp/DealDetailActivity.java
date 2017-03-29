@@ -29,6 +29,7 @@ import Callback.ListTradeCallback;
 import adapter.DealDetailItemAdapter;
 import adapter.MyItemClickListener;
 import okhttp3.Call;
+import utils.UserSQLite;
 
 public class DealDetailActivity extends AppCompatActivity implements View.OnClickListener, MyItemClickListener {
 
@@ -74,10 +75,12 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
     private void initList() {
         //构建filters 获取出库信息
         filters = "?filters=%7Bfrom%3A%20%7B%24regex%3A%20%23%7D%7D&params=" + companyName + "&limit=10&offset=0";
+        UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
         String url = baseUrl + "trades" + filters;
         OkHttpUtils
                 .get()//
                 .url(url)//
+                .addHeader("Authorization", " Bearer " + userSQLite.getUser().getToken())
                 .build()//
                 .execute(new ListTradeCallback()//
                 {
@@ -110,6 +113,7 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
         OkHttpUtils
                 .get()//
                 .url(url)//
+                .addHeader("Authorization", " Bearer " + userSQLite.getUser().getToken())
                 .build()//
                 .execute(new ListTradeCallback()//
                 {
@@ -169,10 +173,11 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
                     filters = "?filters=%7Bfrom%3A%20%7B%24regex%3A%20%23%7D%2C_created%3A%7B%24gte%3A%23%7D%2C_created%3A%7B%24lte%3A%23%7D%7D&params=" + companyName + "%2C" + s1 + "%2C" + s2 + "&limit=10&offset=0";
 
                     String url = baseUrl + "trades" + filters;
-
+                    UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
                     OkHttpUtils
                             .get()
                             .url(url)
+                            .addHeader("Authorization", " Bearer " + userSQLite.getUser().getToken())
                             .build()
                             .execute(new ListTradeCallback() {
                                 @Override
@@ -205,6 +210,7 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
                     OkHttpUtils
                             .get()
                             .url(url)
+                            .addHeader("Authorization", " Bearer " + userSQLite.getUser().getToken())
                             .build()
                             .execute(new ListTradeCallback() {
                                 @Override

@@ -77,12 +77,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private void doLogin(String userName, String password) {
 
         String url = MainActivity.getBaseUrl() + "login/token";
-
+        UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
         OkHttpUtils
                 .post()
                 .addParams("userName", userName)
                 .addParams("password", password)
                 .url(url)
+                .addHeader("Authorization", " Bearer " + userSQLite.getUser().getToken())
                 .build()
                 .execute(new UserCallback() {
                     @Override

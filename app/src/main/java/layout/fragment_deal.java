@@ -43,6 +43,7 @@ import Bean.Deal2DCode;
 import Bean.Package;
 import Bean.Scan;
 import Bean.Trade;
+import Bean.User;
 import Callback.CarCallback;
 import Callback.MyStringCallback;
 import Callback.PackageCallback;
@@ -53,6 +54,7 @@ import okhttp3.MediaType;
 import utils.MD5Util;
 import utils.PhotoSaver;
 import utils.TradeExportSQLite;
+import utils.UserSQLite;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -420,9 +422,11 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                         //GET /cars/{id} 用其中的packages上报
                         String carId = carEt.getText().toString();
                         String url = baseUrl + "cars/" + carId;
+                        UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
                         OkHttpUtils
                                 .get()
                                 .url(url)
+                                .addHeader("Authorization"," Bearer " + userSQLite.getUser().getToken())
                                 .build()
                                 .execute(new CarCallback() {
                                     @Override
@@ -448,9 +452,11 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                                         String url = baseUrl + "trades";
                                         Log.i("Tag", new Gson().toJson(trade));
 
+                                        UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
                                         OkHttpUtils
                                                 .postString()
                                                 .url(url)
+                                                .addHeader("Authorization", " Bearer " + userSQLite.getUser().getToken())
                                                 .mediaType(MediaType.parse("application/json; charset=utf-8"))
                                                 .content(new Gson().toJson(trade))
                                                 .build()
@@ -561,9 +567,11 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                 String s = new Gson().toJson(scan);
                 Log.i("TAG", s);
 
+                UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
                 OkHttpUtils
                         .postString()
                         .url(url)
+                        .addHeader("Authorization", " Bearer " + userSQLite.getUser().getToken())
                         .mediaType(MediaType.parse("application/json; charset=utf-8"))
                         .content(new Gson().toJson(scan))
                         .build()
@@ -628,10 +636,12 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                     //获得扫描的package信息，用于生成trade对象并上报
                     for (int i = 0; i < listProductIds.size(); i++)
                     {
+                        UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
                         String url = baseUrl + "packages/" + listProductIds.get(i);
                         OkHttpUtils
                                 .get()
                                 .url(url)
+                                .addHeader("Authorization", " Bearer " + userSQLite.getUser().getToken())
                                 .build()
                                 .execute(new PackageCallback() {
                                     @Override
@@ -654,9 +664,11 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                     //POST trade信息
                     String url = baseUrl + "trades";
 
+                    UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
                     OkHttpUtils
                             .postString()
                             .url(url)
+                            .addHeader("Authorization", " Bearer " + userSQLite.getUser().getToken())
                             .mediaType(MediaType.parse("application/json; charset=utf-8"))
                             .content(new Gson().toJson(trade))
                             .build()

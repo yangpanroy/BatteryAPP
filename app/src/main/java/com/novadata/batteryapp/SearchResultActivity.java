@@ -24,6 +24,7 @@ import adapter.SearchResultAdapter;
 import layout.SpaceItemDecoration;
 import okhttp3.Call;
 import utils.HistorySQLite;
+import utils.UserSQLite;
 
 public class SearchResultActivity extends AppCompatActivity implements MyItemClickListener{
 
@@ -55,9 +56,11 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
 
     private void initList() {
         String url = baseUrl + "packages/" + battery_code;
+        UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
         OkHttpUtils
                 .get()//
                 .url(url)//
+                .addHeader("Authorization", " Bearer " + userSQLite.getUser().getToken())
                 .build()//
                 .execute(new PackageCallback()//
                 {
@@ -104,9 +107,11 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
 
     private void initScans() {
         String url = baseUrl + "scans?filters=%7B%22barcode%22%3A%22" + battery_code + "%22%7D&limit=10&offset=0";
+        UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
         OkHttpUtils
                 .get()
                 .url(url)
+                .addHeader("Authorization", " Bearer " + userSQLite.getUser().getToken())
                 .build()
                 .execute(new ListScanCallback() {
                     @Override
