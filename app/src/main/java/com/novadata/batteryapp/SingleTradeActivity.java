@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import com.zhy.http.okhttp.OkHttpUtils;
 
+import java.util.Objects;
+
 import Bean.Trade;
 import Callback.TradeCallback;
 import okhttp3.Call;
@@ -86,7 +88,7 @@ public class SingleTradeActivity extends AppCompatActivity {
                         temp = "交易时间：" + response.createTime;
                         tradeTime.setText(temp);
 
-                        if (response.getAttachment() != ""){
+                        if (!Objects.equals(response.getAttachment(), "")){
                             Bitmap bitmap = response.attachmentToBitmap();
                             tradeAttachment.setImageBitmap(bitmap);
                             tradeAttachment.setVisibility(View.VISIBLE);

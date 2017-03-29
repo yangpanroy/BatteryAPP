@@ -26,8 +26,6 @@ import static android.app.Activity.RESULT_OK;
 
 public class fragment_user extends Fragment implements  View.OnClickListener {
 
-    public static fragment_user fragmentUser;
-
     View view;
     TextView loginButton, logoutButton, user_name, user_detail;
 
@@ -39,7 +37,8 @@ public class fragment_user extends Fragment implements  View.OnClickListener {
     public static final String importCompanyId = "507f191e810c19729de860ec", exportCompanyId = "58b7eda21ff4a3361c0dd62c", fourSCompanyId = "507f191e810c19729de860ea";
     public static final String importCompanyBranch = "第一分公司", exportCompanyBranch = "第二分公司", fourSCompanyBranch = "海淀分店";
 
-    private static String companyName, companyId, token;
+    private static String companyName;
+    private static String token;
 
     @Nullable
     @Override
@@ -91,12 +90,7 @@ public class fragment_user extends Fragment implements  View.OnClickListener {
         fragment_user.companyName = companyName;
     }
 
-    public static String getCompanyId() {
-        return companyId;
-    }
-
     public static void setCompanyId(String companyId) {
-        fragment_user.companyId = companyId;
     }
 
     public static String getToken() {

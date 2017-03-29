@@ -21,6 +21,7 @@ public class UrlSettingActivity extends AppCompatActivity implements View.OnClic
         urlEt = (EditText) findViewById(R.id.url_Et);
         urlBn = (Button) findViewById(R.id.url_Bn);
 
+        assert urlBn != null;
         urlBn.setOnClickListener(this);
     }
 

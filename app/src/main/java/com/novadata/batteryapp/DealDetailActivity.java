@@ -48,6 +48,7 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
         setContentView(R.layout.activity_deal_detail);
 
         this.setTitle("我的交易信息");
+        assert getSupportActionBar() != null;
         getSupportActionBar().setElevation(0);
 
         Bundle bundle=this.getIntent().getExtras();

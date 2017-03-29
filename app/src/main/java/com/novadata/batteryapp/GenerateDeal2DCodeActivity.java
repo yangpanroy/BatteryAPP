@@ -1,13 +1,11 @@
 package com.novadata.batteryapp;
 
 import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.widget.ImageView;
-
-import java.io.IOException;
 
 import cn.bingoogolapple.qrcode.zxing.QRCodeEncoder;
 

@@ -37,13 +37,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Objects;
 
 import Bean.Car;
 import Bean.Deal2DCode;
 import Bean.Package;
 import Bean.Scan;
 import Bean.Trade;
-import Bean.User;
 import Callback.CarCallback;
 import Callback.MyStringCallback;
 import Callback.PackageCallback;
@@ -62,8 +62,6 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
 
     private View view;
     private LocalBroadcastManager broadcastManager;
-    private TextView photo_Tv;
-    private TextView confirm_Tv;
     private ImageView photo_Iv;
     private Bitmap bitmap;
     private EditText carEt, consumerNameEt, consumerIdEt;
@@ -74,17 +72,17 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
     private String companyCreditCode;
     public ArrayList<String> listProductIds = new ArrayList<>();
     private ArrayList<Package> listPackage = new ArrayList<>();
-    TextView initHint, completeButton, scanDeal2DCodeButton;
-    RecyclerView rv;
-    LinearLayout default_layout;
-    LinearLayout company_layout;
-    LinearLayout the_4s_layout;
+    private TextView initHint, completeButton, scanDeal2DCodeButton;
+    private RecyclerView rv;
+    private LinearLayout default_layout;
+    private LinearLayout company_layout;
+    private LinearLayout the_4s_layout;
 
     int login_status = -1;
     static int status_IO = -1;
     static final int IMPORT = 0, EXPORT = 1;
     static final int DEFAULT_STATUS = -1, USER_4S = 1, USER_COMPANY_CAR = 0, USER_COMPANY_BATTERY = 2;
-    final static int REQUEST_PHOTO = 0, REQUEST_SCAN_PACKAGE = 1, REQUEST_SCAN_MODULE = 2, REQUEST_DEAL = 3, REQUEST_GENERATE = 4;
+    final static int REQUEST_PHOTO = 0, REQUEST_SCAN_PACKAGE = 1, REQUEST_DEAL = 3, REQUEST_GENERATE = 4;
     private static final String PATH = Environment.getExternalStorageDirectory().getPath()+"/battery/photos";
     private String baseUrl = MainActivity.getBaseUrl();
 
@@ -104,8 +102,8 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
     }
 
     private void init4SView() {
-        photo_Tv = (TextView) view.findViewById(R.id.photo_button);
-        confirm_Tv = (TextView) view.findViewById(R.id.confirm_button);
+        TextView photo_Tv = (TextView) view.findViewById(R.id.photo_button);
+        TextView confirm_Tv = (TextView) view.findViewById(R.id.confirm_button);
         photo_Iv = (ImageView) view.findViewById(R.id.photo);
         carEt = (EditText) view.findViewById(R.id.car_editText);
         consumerNameEt = (EditText) view.findViewById(R.id.consumer_name_editText);
@@ -197,7 +195,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                     {
                         //查询SQLite如果有未完成的交易信息，则将界面设置为刚扫描完所有电池包，等待交易的状态
                         TradeExportSQLite tradeExportSQLite = new TradeExportSQLite(MainActivity.mainActivity);
-                        if (tradeExportSQLite.getTrade() != "")
+                        if (!Objects.equals(tradeExportSQLite.getTrade(), ""))
                         {
                             wait2Trade(tradeExportSQLite.getTrade());
                         }
@@ -220,7 +218,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                 company_layout.setVisibility(View.VISIBLE);
                 //查询SQLite如果有未完成的交易信息，则将界面设置为刚扫描完所有电池包，等待交易的状态
                 TradeExportSQLite tradeExportSQLite = new TradeExportSQLite(MainActivity.mainActivity);
-                if (tradeExportSQLite.getTrade() != "")
+                if (!Objects.equals(tradeExportSQLite.getTrade(), ""))
                 {
                     wait2Trade(tradeExportSQLite.getTrade());
                 }
@@ -302,10 +300,8 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
 
         String[] packageIds = tradeInfo.split("#");
         listProductIds.clear();
-        for (int i = 0; i < packageIds.length; i++)
-        {
-            listProductIds.add(packageIds[i]);
-        }
+        //把packageIds中的电池包id全部赋值给listProductIds
+        Collections.addAll(listProductIds, packageIds);
         initList(listProductIds);
     }
 
@@ -385,7 +381,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                     completeButton.setVisibility(View.GONE);
                     scanDeal2DCodeButton.setVisibility(View.VISIBLE);
                     //SQLite存储listPackage等交易信息
-                    StringBuffer sb = new StringBuffer();
+                    StringBuilder sb = new StringBuilder();
                     for (int i = 0; i < listProductIds.size(); i++)
                     {
                         sb.append(listProductIds.get(i));
@@ -612,7 +608,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                 //listProductIds数组记录了这批待交易的电池模组的二维码，先将其排序以便比对
                 Collections.sort(listProductIds);
                 //比对二维码中的数组和自己扫描的数组，一致后才上传
-                if ( deal2DCode.getPackageListMD5Code() == MD5Util.MD5(listProductIds.toString()))
+                if (Objects.equals(deal2DCode.getPackageListMD5Code(), MD5Util.MD5(listProductIds.toString())))
                 {
                     String toId = "",to = "",toBranch = "";
                     //TODO 实现登陆后，此处应向后台查询获得数据
