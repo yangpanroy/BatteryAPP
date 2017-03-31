@@ -1,9 +1,6 @@
 package layout;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
@@ -53,6 +50,7 @@ import okhttp3.Call;
 import okhttp3.MediaType;
 import utils.MD5Util;
 import utils.PhotoSaver;
+import utils.RefreshTokenUtil;
 import utils.TradeExportSQLite;
 import utils.UserSQLite;
 
@@ -61,7 +59,6 @@ import static android.app.Activity.RESULT_OK;
 public class fragment_deal extends Fragment implements View.OnClickListener, MyItemClickListener {
 
     private View view;
-    private LocalBroadcastManager broadcastManager;
     private ImageView photo_Iv;
     private Bitmap bitmap;
     private EditText carEt, consumerNameEt, consumerIdEt;
@@ -78,13 +75,15 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
     private LinearLayout company_layout;
     private LinearLayout the_4s_layout;
 
-    int login_status = -1;
+    int login_status = DEFAULT_STATUS;
     static int status_IO = -1;
     static final int IMPORT = 0, EXPORT = 1;
     static final int DEFAULT_STATUS = -1, USER_4S = 1, USER_COMPANY_CAR = 0, USER_COMPANY_BATTERY = 2;
     final static int REQUEST_PHOTO = 0, REQUEST_SCAN_PACKAGE = 1, REQUEST_DEAL = 3, REQUEST_GENERATE = 4;
     private static final String PATH = Environment.getExternalStorageDirectory().getPath()+"/battery/photos";
     private String baseUrl = MainActivity.getBaseUrl();
+    private UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
+    private String token = userSQLite.getUser().getToken();
 
 
     @Nullable
@@ -96,6 +95,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
         int deal_layout = R.layout.fragment_deal;
         view = inflater.inflate(deal_layout, container, false);
 
+        login_status = MainActivity.getLogin_status();
         checkLayout(login_status);
 
         return view;
@@ -306,37 +306,6 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        //注册广播
-        registerReceiver();
-    }
-
-    /**
-     * 注册广播接收器
-     */
-    private void registerReceiver() {
-        broadcastManager = LocalBroadcastManager.getInstance(getActivity());
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("Login_status");
-        broadcastManager.registerReceiver(mAdDownLoadReceiver, intentFilter);
-    }
-
-    private BroadcastReceiver mAdDownLoadReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            login_status = intent.getIntExtra("login_status", DEFAULT_STATUS);
-        }
-    };
-    /**
-     * 注销广播
-     */
-    @Override public void onDetach() {
-        super.onDetach();
-        broadcastManager.unregisterReceiver(mAdDownLoadReceiver);
-    }
-
-    @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.scan_deal2DCode_button://点击扫描交易二维码按钮
@@ -413,21 +382,25 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                         String photoName = PhotoSaver.createPhotoName();
                         PhotoSaver.savePhoto2SDCard(PATH, photoName, bitmap);
                         Toast.makeText(getActivity(), "照片存储成功！路径为 " + PATH, Toast.LENGTH_SHORT).show();
-                        photo_Iv.setImageDrawable(getResources().getDrawable(R.drawable.contract));
                         //将车架号、购车人姓名、购车人身份证号码和合同照片共同上传
                         //GET /cars/{id} 用其中的packages上报
                         String carId = carEt.getText().toString();
                         String url = baseUrl + "cars/" + carId;
-                        UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
                         OkHttpUtils
                                 .get()
                                 .url(url)
-                                .addHeader("Authorization"," Bearer " + userSQLite.getUser().getToken())
+                                .addHeader("Authorization"," Bearer " + token)
                                 .build()
                                 .execute(new CarCallback() {
                                     @Override
                                     public void onError(Call call, Exception e, int id) {
                                         Log.i("Tag", "GET /cars/{id} 信息失败");
+                                        if (id == 401)
+                                        {
+                                            String companyName = userSQLite.getUser().getCompanyName();
+                                            token = new RefreshTokenUtil().refreshToken(companyName);
+                                            Toast.makeText(MainActivity.mainActivity, "请求过期，请重试", Toast.LENGTH_SHORT).show();
+                                        }
                                     }
 
                                     @Override
@@ -448,11 +421,10 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                                         String url = baseUrl + "trades";
                                         Log.i("Tag", new Gson().toJson(trade));
 
-                                        UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
                                         OkHttpUtils
                                                 .postString()
                                                 .url(url)
-                                                .addHeader("Authorization", " Bearer " + userSQLite.getUser().getToken())
+                                                .addHeader("Authorization", " Bearer " + token)
                                                 .mediaType(MediaType.parse("application/json; charset=utf-8"))
                                                 .content(new Gson().toJson(trade))
                                                 .build()
@@ -461,6 +433,12 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                                                     public void onError(Call call, Exception e, int id) {
                                                         super.onError(call, e, id);
                                                         Log.i("Tag", "4S店交易界面 POST /trades 失败！");
+                                                        if (id == 401)
+                                                        {
+                                                            String companyName = userSQLite.getUser().getCompanyName();
+                                                            token = new RefreshTokenUtil().refreshToken(companyName);
+                                                            Toast.makeText(MainActivity.mainActivity, "请求过期，请重试", Toast.LENGTH_SHORT).show();
+                                                        }
                                                     }
 
                                                     @Override
@@ -468,6 +446,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                                                         super.onResponse(response, id);
                                                         Log.i("Tag", "4S店交易界面 POST /trades 成功！");
                                                         Toast.makeText(getActivity(), "4S店交易成功", Toast.LENGTH_SHORT).show();
+                                                        photo_Iv.setImageDrawable(getResources().getDrawable(R.drawable.contract));
                                                     }
                                                 });
                                         //提交完成后清空数组
@@ -563,11 +542,10 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                 String s = new Gson().toJson(scan);
                 Log.i("TAG", s);
 
-                UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
                 OkHttpUtils
                         .postString()
                         .url(url)
-                        .addHeader("Authorization", " Bearer " + userSQLite.getUser().getToken())
+                        .addHeader("Authorization", " Bearer " + token)
                         .mediaType(MediaType.parse("application/json; charset=utf-8"))
                         .content(new Gson().toJson(scan))
                         .build()
@@ -582,6 +560,12 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                             public void onError(Call call, Exception e, int id) {
                                 super.onError(call, e, id);
                                 Log.i("Tag", "POST /scans 失败！");
+                                if (id == 401)
+                                {
+                                    String companyName = userSQLite.getUser().getCompanyName();
+                                    token = new RefreshTokenUtil().refreshToken(companyName);
+                                    Toast.makeText(MainActivity.mainActivity, "请求过期，请重试", Toast.LENGTH_SHORT).show();
+                                }
                             }
                         });
 
@@ -601,7 +585,12 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
 
                 //处理交易二维码内的信息并上报
                 //二维码信息中包括买方签名、交易时间和一批电池包的二维码数组
-                Deal2DCode deal2DCode = new Gson().fromJson(deal2DCodeContent, new TypeToken<Deal2DCode>() {}.getType());
+                Deal2DCode deal2DCode = new Deal2DCode();
+                try{
+                    deal2DCode = new Gson().fromJson(deal2DCodeContent, new TypeToken<Deal2DCode>() {}.getType());
+                }catch (Exception e){
+                    Log.i("Tag", "JSON 格式或语法错误");
+                }
                 assert deal2DCode != null;
                 Log.i("listPackage  NOTICE", listPackage.toString());
                 Log.i("deal2DCodeContentNOTICE", deal2DCode.toString());
@@ -632,17 +621,22 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                     //获得扫描的package信息，用于生成trade对象并上报
                     for (int i = 0; i < listProductIds.size(); i++)
                     {
-                        UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
                         String url = baseUrl + "packages/" + listProductIds.get(i);
                         OkHttpUtils
                                 .get()
                                 .url(url)
-                                .addHeader("Authorization", " Bearer " + userSQLite.getUser().getToken())
+                                .addHeader("Authorization", " Bearer " + token)
                                 .build()
                                 .execute(new PackageCallback() {
                                     @Override
                                     public void onError(Call call, Exception e, int id) {
                                         Log.i("Tag", "PackageCallback Error!");
+                                        if (id == 401)
+                                        {
+                                            String companyName = userSQLite.getUser().getCompanyName();
+                                            token = new RefreshTokenUtil().refreshToken(companyName);
+                                            Toast.makeText(MainActivity.mainActivity, "请求过期，请重试", Toast.LENGTH_SHORT).show();
+                                        }
                                     }
 
                                     @Override
@@ -660,11 +654,10 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                     //POST trade信息
                     String url = baseUrl + "trades";
 
-                    UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
                     OkHttpUtils
                             .postString()
                             .url(url)
-                            .addHeader("Authorization", " Bearer " + userSQLite.getUser().getToken())
+                            .addHeader("Authorization", " Bearer " + token)
                             .mediaType(MediaType.parse("application/json; charset=utf-8"))
                             .content(new Gson().toJson(trade))
                             .build()
@@ -675,6 +668,12 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                                     Toast.makeText(getActivity(), "交易失败请重试！", Toast.LENGTH_LONG).show();
                                     Log.i("Tag", "厂商交易界面 POST /trades 失败！");
                                     Log.i("Tag", new Gson().toJson(trade));
+                                    if (id == 401)
+                                    {
+                                        String companyName = userSQLite.getUser().getCompanyName();
+                                        token = new RefreshTokenUtil().refreshToken(companyName);
+                                        Toast.makeText(MainActivity.mainActivity, "请求过期，请重试", Toast.LENGTH_SHORT).show();
+                                    }
                                 }
 
                                 @Override

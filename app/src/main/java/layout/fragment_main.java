@@ -59,7 +59,7 @@ public class fragment_main extends Fragment implements MyItemClickListener{
 
         initBanner();
         initData();
-//        initList();
+        initList();
 
         return view;
     }

@@ -117,7 +117,7 @@
                     android:layout_gravity="center"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="请先扫描模组，再扫描所属的电池包"
+                    android:text="扫描所有电池包后，点击完成扫描"
                     android:textSize="10pt"
                     android:textColor="@color/custom_gray"/>
 

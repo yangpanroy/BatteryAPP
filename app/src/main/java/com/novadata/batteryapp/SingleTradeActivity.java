@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.zhy.http.okhttp.OkHttpUtils;
 
@@ -16,6 +17,7 @@ import java.util.Objects;
 import Bean.Trade;
 import Callback.TradeCallback;
 import okhttp3.Call;
+import utils.RefreshTokenUtil;
 import utils.UserSQLite;
 
 public class SingleTradeActivity extends AppCompatActivity {
@@ -24,6 +26,9 @@ public class SingleTradeActivity extends AppCompatActivity {
     private TextView tradeId, fromId, from, toId, to, tradeTime;
     private ImageView tradeAttachment;
     private LinearLayout productsIds_LinearLayout;
+
+    private UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
+    private String token = userSQLite.getUser().getToken();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,17 +65,22 @@ public class SingleTradeActivity extends AppCompatActivity {
     private void doGET() {
 
         String url = MainActivity.getBaseUrl() + "trades/" + selectedId;
-        UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
         OkHttpUtils
                 .get()//
                 .url(url)//
-                .addHeader("Authorization", " Bearer " + userSQLite.getUser().getToken())
+                .addHeader("Authorization", " Bearer " + token)
                 .build()//
                 .execute(new TradeCallback()//
                 {
                     @Override
                     public void onError(Call call, Exception e, int id) {
                         Log.i("Tag", "GET 详细交易信息失败");
+                        if (id == 401)
+                        {
+                            String companyName = userSQLite.getUser().getCompanyName();
+                            token = new RefreshTokenUtil().refreshToken(companyName);
+                            Toast.makeText(SingleTradeActivity.this, "请求过期，请重试", Toast.LENGTH_SHORT).show();
+                        }
                     }
 
                     @Override

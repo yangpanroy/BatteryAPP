@@ -1,25 +1,30 @@
 package com.novadata.batteryapp;
 
 import android.Manifest;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
 import java.util.List;
 
+import Bean.User;
 import adapter.MyFragmentPagerAdapter;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
+import utils.UserSQLite;
 
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks{
 
     private static final int REQUEST_CODE_QRCODE_PERMISSIONS = 1;
+    static final int DEFAULT_STATUS = -1, USER_4S = 1, USER_COMPANY_CAR = 0, USER_COMPANY_BATTERY = 2;
 
-//    private static final String baseUrl = "http://192.168.191.1:3000/";
-    private static String baseUrl = "http://222.199.193.107:9000/v1/";
+    private static String baseUrl = "http://192.168.1.222:3000/";
+//    private static String baseUrl = "http://222.199.193.107:9000/v1/";
 
     public static String getBaseUrl() {
         return baseUrl;
@@ -31,6 +36,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     private TextView main_username;
     public static MainActivity mainActivity;
+
+    private static int login_status = -1;
+    private static String companyId;
+    private static String companyName;
+    private static String token;
 
 
     @Override
@@ -44,6 +54,59 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
         //初始化视图
         initViews();
+        checkUser();
+
+    }
+
+    public static void setCompanyId(String companyId) {
+        MainActivity.companyId = companyId;
+    }
+
+    public static int getLogin_status() {
+        return login_status;
+    }
+
+    public static void setLogin_status(int login_status) {
+        MainActivity.login_status = login_status;
+    }
+
+    public static String getCompanyName() {
+        return companyName;
+    }
+
+    public static void setCompanyName(String companyName) {
+        MainActivity.companyName = companyName;
+    }
+
+    public static String getToken() {
+        return token;
+    }
+
+    public static void setToken(String token) {
+        MainActivity.token = token;
+    }
+
+    private void checkUser() {
+        //查询数据库，读取最近一次登陆的信息，对各个界面赋值
+        UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
+        User user = userSQLite.getUser();
+        if (user.getCompanyName() != null)
+        {
+            login_status = user.getCompanyType();
+            setLogin_status(login_status);
+            setCompanyId(user.getCompanyId());
+            setCompanyName(user.getCompanyName());
+            setMain_username(getCompanyName());
+            setToken(user.getToken());
+        }
+/*
+
+        setLogin_status(USER_COMPANY_BATTERY);
+        setCompanyId("123456789");
+        setCompanyName("北京科技大学");
+        setMain_username(getCompanyName());
+        setToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ");
+*/
 
     }
 

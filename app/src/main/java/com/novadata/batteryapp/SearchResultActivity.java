@@ -24,6 +24,7 @@ import adapter.SearchResultAdapter;
 import layout.SpaceItemDecoration;
 import okhttp3.Call;
 import utils.HistorySQLite;
+import utils.RefreshTokenUtil;
 import utils.UserSQLite;
 
 public class SearchResultActivity extends AppCompatActivity implements MyItemClickListener{
@@ -34,6 +35,9 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
     private ArrayList<HashMap<String,Object>> listItem = new ArrayList<>();
     private String baseUrl = MainActivity.getBaseUrl();
     private String module_num, module_date, module_manufacturer, latest_date, latest_place;
+
+    private UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
+    private String token = userSQLite.getUser().getToken();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,17 +60,22 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
 
     private void initList() {
         String url = baseUrl + "packages/" + battery_code;
-        UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
         OkHttpUtils
                 .get()//
                 .url(url)//
-                .addHeader("Authorization", " Bearer " + userSQLite.getUser().getToken())
+                .addHeader("Authorization", " Bearer " + token)
                 .build()//
                 .execute(new PackageCallback()//
                 {
                     @Override
                     public void onError(Call call, Exception e, int id) {
 
+                        if (id == 401)
+                        {
+                            String companyName = userSQLite.getUser().getCompanyName();
+                            token = new RefreshTokenUtil().refreshToken(companyName);
+                            Toast.makeText(SearchResultActivity.this, "请求过期，请重试", Toast.LENGTH_SHORT).show();
+                        }
                         SearchResultActivity.this.setResult(RESULT_EMPTY, SearchResultActivity.this.getIntent());
                         SearchResultActivity.this.finish();
 
@@ -107,17 +116,22 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
 
     private void initScans() {
         String url = baseUrl + "scans?filters=%7B%22barcode%22%3A%22" + battery_code + "%22%7D&limit=10&offset=0";
-        UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
         OkHttpUtils
                 .get()
                 .url(url)
-                .addHeader("Authorization", " Bearer " + userSQLite.getUser().getToken())
+                .addHeader("Authorization", " Bearer " + token)
                 .build()
                 .execute(new ListScanCallback() {
                     @Override
                     public void onError(Call call, Exception e, int id) {
                         Log.i("Tag", "ListScanCallback 失败" + e.getMessage());
                         Toast.makeText(SearchResultActivity.this, "未找到扫描记录", Toast.LENGTH_LONG).show();
+                        if (id == 401)
+                        {
+                            String companyName = userSQLite.getUser().getCompanyName();
+                            token = new RefreshTokenUtil().refreshToken(companyName);
+                            Toast.makeText(SearchResultActivity.this, "请求过期，请重试", Toast.LENGTH_SHORT).show();
+                        }
                     }
 
                     @Override
@@ -172,6 +186,7 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
         //使用SQLite数据库存储本次的搜索信息
         HistorySQLite historySQLite = new HistorySQLite(MainActivity.mainActivity);
         historySQLite.addHistory(module_num, module_date, module_manufacturer, latest_date, latest_place);
+        Log.i("Tag", "HistorySQLite has marked!");
     }
 
     @Override

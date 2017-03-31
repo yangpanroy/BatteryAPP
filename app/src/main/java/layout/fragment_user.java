@@ -29,16 +29,13 @@ public class fragment_user extends Fragment implements  View.OnClickListener {
     View view;
     TextView loginButton, logoutButton, user_name, user_detail;
 
-    int login_status = -1;
+    private static int login_status = -1;
 
-    static final int DEFAULT_STATUS = -1, USER_4S = 1, USER_COMPANY_IP = 0, USER_COMPANY_EP = 2;
+    static final int DEFAULT_STATUS = -1, USER_4S = 1, USER_COMPANY_CAR = 0, USER_COMPANY_BATTERY = 2;
     public static final String creditCode_IP = "911199R", creditCode_EP = "91889R", creditCode_4S = "91888R";
     public static final String importCompany = "深圳比克汽车公司", exportCompany = "深圳电池厂商", fourSCompany = "北京速驰4S店";
     public static final String importCompanyId = "507f191e810c19729de860ec", exportCompanyId = "58b7eda21ff4a3361c0dd62c", fourSCompanyId = "507f191e810c19729de860ea";
     public static final String importCompanyBranch = "第一分公司", exportCompanyBranch = "第二分公司", fourSCompanyBranch = "海淀分店";
-
-    private static String companyName;
-    private static String token;
 
     @Nullable
     @Override
@@ -63,42 +60,10 @@ public class fragment_user extends Fragment implements  View.OnClickListener {
         setting_item.setOnClickListener(this);
         clean_item.setOnClickListener(this);
 
-        checkUser();
+        login_status = MainActivity.getLogin_status();
+        doLogIn(login_status);
 
         return view;
-    }
-
-    private void checkUser() {
-        //查询数据库，读取最近一次登陆的信息，对各个界面赋值
-        UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
-        User user = userSQLite.getUser();
-        if (user.getCompanyName() != null)
-        {
-            login_status = user.getCompanyType();
-            setCompanyId(user.getCompanyId());
-            setCompanyName(user.getCompanyName());
-            setToken(user.getToken());
-        }
-        doLogIn(login_status);
-    }
-
-    public static String getCompanyName() {
-        return companyName;
-    }
-
-    public static void setCompanyName(String companyName) {
-        fragment_user.companyName = companyName;
-    }
-
-    public static void setCompanyId(String companyId) {
-    }
-
-    public static String getToken() {
-        return token;
-    }
-
-    public static void setToken(String token) {
-        fragment_user.token = token;
     }
 
     @Override
@@ -145,9 +110,7 @@ public class fragment_user extends Fragment implements  View.OnClickListener {
             if (requestCode == 0)
             {
                 login_status = bundle.getInt("status");
-                Intent intent = new Intent("Login_status");
-                intent.putExtra("login_status", login_status);
-                LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
+                MainActivity.setLogin_status(login_status);
                 doLogIn(login_status);
             }
         }
@@ -156,26 +119,26 @@ public class fragment_user extends Fragment implements  View.OnClickListener {
     private void doLogIn(int login_status) {
         switch (login_status)
         {
-            case USER_COMPANY_IP:
+            case USER_COMPANY_CAR:
                 loginButton.setVisibility(View.GONE);
                 logoutButton.setVisibility(View.VISIBLE);
                 user_detail.setText("点击查看详细信息");
-                user_name.setText(getCompanyName());
-                MainActivity.mainActivity.setMain_username(getCompanyName());
+                user_name.setText(MainActivity.getCompanyName());
+                MainActivity.mainActivity.setMain_username(MainActivity.getCompanyName());
                 break;
-            case USER_COMPANY_EP:
+            case USER_COMPANY_BATTERY:
                 loginButton.setVisibility(View.GONE);
                 logoutButton.setVisibility(View.VISIBLE);
                 user_detail.setText("点击查看详细信息");
-                user_name.setText(getCompanyName());
-                MainActivity.mainActivity.setMain_username(getCompanyName());
+                user_name.setText(MainActivity.getCompanyName());
+                MainActivity.mainActivity.setMain_username(MainActivity.getCompanyName());
                 break;
             case USER_4S:
                 loginButton.setVisibility(View.GONE);
                 logoutButton.setVisibility(View.VISIBLE);
                 user_detail.setText("点击查看详细信息");
-                user_name.setText(getCompanyName());
-                MainActivity.mainActivity.setMain_username(getCompanyName());
+                user_name.setText(MainActivity.getCompanyName());
+                MainActivity.mainActivity.setMain_username(MainActivity.getCompanyName());
                 break;
             case DEFAULT_STATUS:
                 loginButton.setVisibility(View.VISIBLE);
@@ -191,10 +154,8 @@ public class fragment_user extends Fragment implements  View.OnClickListener {
         //清空所有已经登录的用户名和状态
         doLogIn(DEFAULT_STATUS);
         fragment_deal.setDefaultStatusIO();
-        //广播登录状态，使得交易界面变为默认
-        Intent intent = new Intent("Login_status");
-        intent.putExtra("login_status", DEFAULT_STATUS);
-        LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
+        //恢复登录状态，使得交易界面变为默认
+        MainActivity.setLogin_status(DEFAULT_STATUS);
         //清空SQLite数据库trade表信息
         TradeExportSQLite tradeExportSQLite = new TradeExportSQLite(MainActivity.mainActivity);
         tradeExportSQLite.deleteAllTrade();

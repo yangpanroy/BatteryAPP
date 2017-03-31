@@ -29,6 +29,7 @@ import Callback.ListTradeCallback;
 import adapter.DealDetailItemAdapter;
 import adapter.MyItemClickListener;
 import okhttp3.Call;
+import utils.RefreshTokenUtil;
 import utils.UserSQLite;
 
 public class DealDetailActivity extends AppCompatActivity implements View.OnClickListener, MyItemClickListener {
@@ -41,6 +42,8 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
 
     final int START_DATE_DIALOG = 1, END_DATE_DIALOG = 2;
     int sYear, sMonth, sDay, eYear, eMonth, eDay;
+    private UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
+    private String token = userSQLite.getUser().getToken();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,12 +79,12 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
     private void initList() {
         //构建filters 获取出库信息
         filters = "?filters=%7Bfrom%3A%20%7B%24regex%3A%20%23%7D%7D&params=" + companyName + "&limit=10&offset=0";
-        UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
+
         String url = baseUrl + "trades" + filters;
         OkHttpUtils
                 .get()//
                 .url(url)//
-                .addHeader("Authorization", " Bearer " + userSQLite.getUser().getToken())
+                .addHeader("Authorization", " Bearer " + token)
                 .build()//
                 .execute(new ListTradeCallback()//
                 {
@@ -89,6 +92,11 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
                     public void onError(Call call, Exception e, int id) {
                         Log.i("Tag", "GET from交易信息失败");
                         Log.i("NOTICE", e.toString());
+                        if (id == 401)
+                        {
+                            token = new RefreshTokenUtil().refreshToken(companyName);
+                            Toast.makeText(DealDetailActivity.this, "请求过期，请重试", Toast.LENGTH_SHORT).show();
+                        }
                     }
 
                     @Override
@@ -114,13 +122,18 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
         OkHttpUtils
                 .get()//
                 .url(url)//
-                .addHeader("Authorization", " Bearer " + userSQLite.getUser().getToken())
+                .addHeader("Authorization", " Bearer " + token)
                 .build()//
                 .execute(new ListTradeCallback()//
                 {
                     @Override
                     public void onError(Call call, Exception e, int id) {
                         Log.i("Tag", "GET to交易信息失败");
+                        if (id == 401)
+                        {
+                            token = new RefreshTokenUtil().refreshToken(companyName);
+                            Toast.makeText(DealDetailActivity.this, "请求过期，请重试", Toast.LENGTH_SHORT).show();
+                        }
                     }
 
                     @Override
@@ -174,17 +187,22 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
                     filters = "?filters=%7Bfrom%3A%20%7B%24regex%3A%20%23%7D%2C_created%3A%7B%24gte%3A%23%7D%2C_created%3A%7B%24lte%3A%23%7D%7D&params=" + companyName + "%2C" + s1 + "%2C" + s2 + "&limit=10&offset=0";
 
                     String url = baseUrl + "trades" + filters;
-                    UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
+
                     OkHttpUtils
                             .get()
                             .url(url)
-                            .addHeader("Authorization", " Bearer " + userSQLite.getUser().getToken())
+                            .addHeader("Authorization", " Bearer " + token)
                             .build()
                             .execute(new ListTradeCallback() {
                                 @Override
                                 public void onError(Call call, Exception e, int id) {
                                     Log.i("Tag", "GET 筛选后的出库交易信息失败");
                                     Log.i("Tag", e.getMessage());
+                                    if (id == 401)
+                                    {
+                                        token = new RefreshTokenUtil().refreshToken(companyName);
+                                        Toast.makeText(DealDetailActivity.this, "请求过期，请重试", Toast.LENGTH_SHORT).show();
+                                    }
                                 }
 
                                 @Override
@@ -211,13 +229,18 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
                     OkHttpUtils
                             .get()
                             .url(url)
-                            .addHeader("Authorization", " Bearer " + userSQLite.getUser().getToken())
+                            .addHeader("Authorization", " Bearer " + token)
                             .build()
                             .execute(new ListTradeCallback() {
                                 @Override
                                 public void onError(Call call, Exception e, int id) {
                                     Log.i("Tag", "GET 筛选后的入库交易信息失败");
                                     Log.i("Tag", e.getMessage());
+                                    if (id == 401)
+                                    {
+                                        token = new RefreshTokenUtil().refreshToken(companyName);
+                                        Toast.makeText(DealDetailActivity.this, "请求过期，请重试", Toast.LENGTH_SHORT).show();
+                                    }
                                 }
 
                                 @Override

@@ -13,14 +13,18 @@ import com.zhy.http.okhttp.OkHttpUtils;
 import Bean.User;
 import Callback.UserCallback;
 import okhttp3.Call;
+import utils.RefreshTokenUtil;
 import utils.UserSQLite;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
+    public static LoginActivity loginActivity;
     static final int DEFAULT_STATUS = -1, USER_4S = 1, USER_COMPANY_IP = 0, USER_COMPANY_EP = 2;
 
     TextView signIn_Bn;
     EditText username_Et, password_Et;
+    private UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
+    private String token = userSQLite.getUser().getToken();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,19 +81,24 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private void doLogin(String userName, String password) {
 
         String url = MainActivity.getBaseUrl() + "login/token";
-        UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
         OkHttpUtils
                 .post()
                 .addParams("userName", userName)
                 .addParams("password", password)
                 .url(url)
-                .addHeader("Authorization", " Bearer " + userSQLite.getUser().getToken())
+                .addHeader("Authorization", " Bearer " + token)
                 .build()
                 .execute(new UserCallback() {
                     @Override
                     public void onError(Call call, Exception e, int id) {
                         Log.i("Tag", "UserCallback Error!");
                         Toast.makeText(LoginActivity.this, "登陆失败", Toast.LENGTH_LONG).show();
+                        if (id == 401)
+                        {
+                            String companyName = userSQLite.getUser().getCompanyName();
+                            token = new RefreshTokenUtil().refreshToken(companyName);
+                            Toast.makeText(LoginActivity.this, "请求过期，请重试", Toast.LENGTH_SHORT).show();
+                        }
                     }
 
                     @Override

@@ -78,4 +78,19 @@ public class UserSQLite {
         cursor.close();
         return user;
     }
+
+    public void updateUser(String companyName, String token)
+    {
+        userDb = userSQLiteOpenHelper.getWritableDatabase();
+        //实例化内容值
+        ContentValues values = new ContentValues();
+        //在values中添加内容
+        values.put("token",token);
+        //修改条件
+        String whereClause = "companyName=?";
+        //修改添加参数
+        String[] whereArgs={companyName};
+        //修改
+        userDb.update("user",values,whereClause,whereArgs);
+    }
 }
