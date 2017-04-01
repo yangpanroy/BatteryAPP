@@ -72,8 +72,8 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
 
                         if (id == 401)
                         {
-                            String companyName = userSQLite.getUser().getCompanyName();
-                            token = new RefreshTokenUtil().refreshToken(companyName);
+                            String userName = userSQLite.getUser().getUserName();
+                            token = new RefreshTokenUtil().refreshToken(userName);
                             Toast.makeText(SearchResultActivity.this, "请求过期，请重试", Toast.LENGTH_SHORT).show();
                         }
                         SearchResultActivity.this.setResult(RESULT_EMPTY, SearchResultActivity.this.getIntent());
@@ -128,8 +128,8 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
                         Toast.makeText(SearchResultActivity.this, "未找到扫描记录", Toast.LENGTH_LONG).show();
                         if (id == 401)
                         {
-                            String companyName = userSQLite.getUser().getCompanyName();
-                            token = new RefreshTokenUtil().refreshToken(companyName);
+                            String userName = userSQLite.getUser().getUserName();
+                            token = new RefreshTokenUtil().refreshToken(userName);
                             Toast.makeText(SearchResultActivity.this, "请求过期，请重试", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -190,7 +190,7 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
     }
 
     @Override
-    public void onItemClick(View view, int postion) {//点击事件的回调函数
+    public void onItemClick(View view, int position) {//点击事件的回调函数
 
     }
 

@@ -20,7 +20,7 @@ public class UserSQLiteOpenHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         Log.i("TAG", "创建user表");
-        String sqlStr = "CREATE TABLE IF NOT EXISTS user (_id INTEGER PRIMARY KEY AUTOINCREMENT, userName TEXT, password TEXT, companyType INTEGER, companyName TEXT, companyId TEXT, token TEXT, state INTEGER, createDate TEXT);";
+        String sqlStr = "CREATE TABLE IF NOT EXISTS user (_id INTEGER PRIMARY KEY AUTOINCREMENT, id TEXT, userName TEXT, password TEXT, companyJson TEXT, token TEXT, state INTEGER, createDate TEXT);";
         db.execSQL(sqlStr);
         Log.i("TAG","SQLiteHelper create TABLE user success!");
     }

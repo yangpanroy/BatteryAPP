@@ -31,11 +31,13 @@ public class fragment_user extends Fragment implements  View.OnClickListener {
 
     private static int login_status = -1;
 
-    static final int DEFAULT_STATUS = -1, USER_4S = 1, USER_COMPANY_CAR = 0, USER_COMPANY_BATTERY = 2;
+    static final int DEFAULT_STATUS = -1, USER_COMPANY_BATTERY = 0, USER_COMPANY_CAR = 1, USER_4S = 2;
     public static final String creditCode_IP = "911199R", creditCode_EP = "91889R", creditCode_4S = "91888R";
     public static final String importCompany = "深圳比克汽车公司", exportCompany = "深圳电池厂商", fourSCompany = "北京速驰4S店";
     public static final String importCompanyId = "507f191e810c19729de860ec", exportCompanyId = "58b7eda21ff4a3361c0dd62c", fourSCompanyId = "507f191e810c19729de860ea";
     public static final String importCompanyBranch = "第一分公司", exportCompanyBranch = "第二分公司", fourSCompanyBranch = "海淀分店";
+
+    private UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
 
     @Nullable
     @Override
@@ -111,6 +113,9 @@ public class fragment_user extends Fragment implements  View.OnClickListener {
             {
                 login_status = bundle.getInt("status");
                 MainActivity.setLogin_status(login_status);
+                MainActivity.setCompanyName(userSQLite.getUser().getCompany().getCompanyName());
+                MainActivity.setToken(userSQLite.getUser().getToken());
+                MainActivity.setCompanyId(userSQLite.getUser().getCompany().getId());
                 doLogIn(login_status);
             }
         }
@@ -156,9 +161,10 @@ public class fragment_user extends Fragment implements  View.OnClickListener {
         fragment_deal.setDefaultStatusIO();
         //恢复登录状态，使得交易界面变为默认
         MainActivity.setLogin_status(DEFAULT_STATUS);
-        //清空SQLite数据库trade表信息
+        //清空SQLite数据库trade表user表信息
         TradeExportSQLite tradeExportSQLite = new TradeExportSQLite(MainActivity.mainActivity);
         tradeExportSQLite.deleteAllTrade();
+        userSQLite.deleteAllUser();
     }
 
 }

@@ -8,12 +8,19 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.TextView;
+
+import com.google.gson.Gson;
+import com.zhy.http.okhttp.OkHttpUtils;
 
 import java.util.List;
 
 import Bean.User;
+import Callback.MyStringCallback;
 import adapter.MyFragmentPagerAdapter;
+import okhttp3.Call;
+import okhttp3.MediaType;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 import utils.UserSQLite;
@@ -21,10 +28,10 @@ import utils.UserSQLite;
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks{
 
     private static final int REQUEST_CODE_QRCODE_PERMISSIONS = 1;
-    static final int DEFAULT_STATUS = -1, USER_4S = 1, USER_COMPANY_CAR = 0, USER_COMPANY_BATTERY = 2;
+    static final int DEFAULT_STATUS = -1, USER_COMPANY_BATTERY = 0, USER_COMPANY_CAR = 1, USER_4S = 2;
 
-    private static String baseUrl = "http://192.168.1.222:3000/";
-//    private static String baseUrl = "http://222.199.193.107:9000/v1/";
+    private static String baseUrl = "http://222.199.193.52:3000/";
+//    private static String baseUrl = "http://222.199.193.47:9000/";
 
     public static String getBaseUrl() {
         return baseUrl;
@@ -37,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private TextView main_username;
     public static MainActivity mainActivity;
 
-    private static int login_status = -1;
+    private static int login_status = DEFAULT_STATUS;
     private static String companyId;
     private static String companyName;
     private static String token;
@@ -90,23 +97,21 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         //查询数据库，读取最近一次登陆的信息，对各个界面赋值
         UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
         User user = userSQLite.getUser();
-        if (user.getCompanyName() != null)
+        if (user.getUserName() != null)
         {
-            login_status = user.getCompanyType();
+            login_status = user.getCompany().getCompanyType();
             setLogin_status(login_status);
-            setCompanyId(user.getCompanyId());
-            setCompanyName(user.getCompanyName());
+            setCompanyId(user.getCompany().getId());
+            setCompanyName(user.getCompany().getCompanyName());
             setMain_username(getCompanyName());
             setToken(user.getToken());
         }
-/*
 
-        setLogin_status(USER_COMPANY_BATTERY);
+        /*setLogin_status(USER_COMPANY_CAR);
         setCompanyId("123456789");
         setCompanyName("北京科技大学");
         setMain_username(getCompanyName());
-        setToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ");
-*/
+        setToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ");*/
 
     }
 

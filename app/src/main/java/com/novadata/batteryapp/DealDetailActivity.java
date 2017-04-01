@@ -42,8 +42,7 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
 
     final int START_DATE_DIALOG = 1, END_DATE_DIALOG = 2;
     int sYear, sMonth, sDay, eYear, eMonth, eDay;
-    private UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
-    private String token = userSQLite.getUser().getToken();
+    private String token = MainActivity.getToken();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +94,7 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
                         if (id == 401)
                         {
                             token = new RefreshTokenUtil().refreshToken(companyName);
+                            MainActivity.setToken(token);
                             Toast.makeText(DealDetailActivity.this, "请求过期，请重试", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -112,7 +112,6 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
                             listItem.add(map);
                         }
                         Log.i("Tag", "GET from交易信息成功");
-                        initView();
                     }
                 });
 
@@ -132,6 +131,7 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
                         if (id == 401)
                         {
                             token = new RefreshTokenUtil().refreshToken(companyName);
+                            MainActivity.setToken(token);
                             Toast.makeText(DealDetailActivity.this, "请求过期，请重试", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -201,6 +201,7 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
                                     if (id == 401)
                                     {
                                         token = new RefreshTokenUtil().refreshToken(companyName);
+                                        MainActivity.setToken(token);
                                         Toast.makeText(DealDetailActivity.this, "请求过期，请重试", Toast.LENGTH_SHORT).show();
                                     }
                                 }
@@ -218,7 +219,6 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
                                     }
                                     Log.i("Tag", "GET 筛选后的出库交易信息成功");
                                     Log.i("GET from交易信息 NOTICE", response.toString());
-                                    initView();
                                 }
                             });
 
@@ -239,6 +239,7 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
                                     if (id == 401)
                                     {
                                         token = new RefreshTokenUtil().refreshToken(companyName);
+                                        MainActivity.setToken(token);
                                         Toast.makeText(DealDetailActivity.this, "请求过期，请重试", Toast.LENGTH_SHORT).show();
                                     }
                                 }

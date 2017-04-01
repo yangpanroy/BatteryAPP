@@ -5,6 +5,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import Bean.Company;
 import Bean.User;
 import helper.UserSQLiteOpenHelper;
 
@@ -19,17 +23,17 @@ public class UserSQLite {
         userSQLiteOpenHelper = new UserSQLiteOpenHelper(context);
     }
 
-    public void addUser(String userName, String password, int companyType, String companyName, String companyId, String token, int state, String createDate)
+    public void addUser(String id, String userName, String password, Company company, String token, int state, String createDate)
     {
         if (!isHasUser(userName))
         {
+            deleteAllUser();
             userDb = userSQLiteOpenHelper.getReadableDatabase();
             ContentValues values = new ContentValues();
+            values.put("id", id);
             values.put("userName", userName);
             values.put("password", password);
-            values.put("companyType", companyType);
-            values.put("companyName", companyName);
-            values.put("companyId", companyId);
+            values.put("companyJson", new Gson().toJson(company));
             values.put("token", token);
             values.put("state", state);
             values.put("createDate", createDate);
@@ -63,15 +67,15 @@ public class UserSQLite {
         if (cursor.getCount() != 0)
         {
             cursor.moveToLast();//查询user表并移动到最后一条记录
+            String id = cursor.getString(cursor.getColumnIndexOrThrow("id"));
             String userName = cursor.getString(cursor.getColumnIndexOrThrow("userName"));
             String password = cursor.getString(cursor.getColumnIndexOrThrow("password"));
-            int companyType = cursor.getInt(cursor.getColumnIndexOrThrow("companyType"));
-            String companyName = cursor.getString(cursor.getColumnIndexOrThrow("companyName"));
-            String companyId = cursor.getString(cursor.getColumnIndexOrThrow("companyId"));
+            String companyJson = cursor.getString(cursor.getColumnIndexOrThrow("companyJson"));
             String token = cursor.getString(cursor.getColumnIndexOrThrow("token"));
             int state = cursor.getInt(cursor.getColumnIndexOrThrow("state"));
             String createDate = cursor.getString(cursor.getColumnIndexOrThrow("createDate"));
-            user = new User(userName, password, companyType, companyName, companyId, token, state, createDate);
+            Company company = new Gson().fromJson(companyJson, new TypeToken<Company>() {}.getType());
+            user = new User(id, userName, password, company, token, state, createDate);
         }
         //关闭数据库
         userDb.close();
@@ -79,7 +83,14 @@ public class UserSQLite {
         return user;
     }
 
-    public void updateUser(String companyName, String token)
+    //清空所有的user信息
+    public void deleteAllUser() {
+        userDb = userSQLiteOpenHelper.getWritableDatabase();
+        userDb.execSQL("delete from user");
+        userDb.close();
+    }
+
+    public void updateUser(String userName, String token)
     {
         userDb = userSQLiteOpenHelper.getWritableDatabase();
         //实例化内容值
@@ -87,9 +98,9 @@ public class UserSQLite {
         //在values中添加内容
         values.put("token",token);
         //修改条件
-        String whereClause = "companyName=?";
+        String whereClause = "userName=?";
         //修改添加参数
-        String[] whereArgs={companyName};
+        String[] whereArgs={userName};
         //修改
         userDb.update("user",values,whereClause,whereArgs);
     }

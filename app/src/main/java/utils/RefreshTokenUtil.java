@@ -19,11 +19,11 @@ public class RefreshTokenUtil {
 
     private String token = "";
 
-    public String refreshToken(String companyName)
+    public String refreshToken(String userName)
     {
-        String url = MainActivity.getBaseUrl() + "login/refresh";
+        String url = MainActivity.getBaseUrl() + "login/refresh/" + userName;
         OkHttpUtils
-                .get()
+                .post()
                 .url(url)
                 .build()
                 .execute(new MyStringCallback(){
@@ -42,7 +42,7 @@ public class RefreshTokenUtil {
                     }
                 });
         UserSQLite userSQLite = new UserSQLite(LoginActivity.loginActivity);
-        userSQLite.updateUser(companyName, token);
+        userSQLite.updateUser(userName, token);
         return token;
     }
 

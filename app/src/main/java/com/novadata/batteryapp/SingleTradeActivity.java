@@ -77,8 +77,9 @@ public class SingleTradeActivity extends AppCompatActivity {
                         Log.i("Tag", "GET 详细交易信息失败");
                         if (id == 401)
                         {
-                            String companyName = userSQLite.getUser().getCompanyName();
-                            token = new RefreshTokenUtil().refreshToken(companyName);
+                            String userName = userSQLite.getUser().getUserName();
+                            token = new RefreshTokenUtil().refreshToken(userName);
+                            MainActivity.setToken(token);
                             Toast.makeText(SingleTradeActivity.this, "请求过期，请重试", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -98,7 +99,7 @@ public class SingleTradeActivity extends AppCompatActivity {
                         temp = "交易时间：" + response.createTime;
                         tradeTime.setText(temp);
 
-                        if (!Objects.equals(response.getAttachment(), "")){
+                        if (!Objects.equals(response.getAttachment(), "")&&!Objects.equals(response.getAttachment(), "string")){
                             Bitmap bitmap = response.attachmentToBitmap();
                             tradeAttachment.setImageBitmap(bitmap);
                             tradeAttachment.setVisibility(View.VISIBLE);

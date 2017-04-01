@@ -6,23 +6,35 @@ package Bean;
 public class User {
 
     private String userName, password;
-    private int companyType;
-    String companyName, companyId, token;
+    Company company;
+    String token, id;
     int state;
     String createDate;
 
     public User() {
     }
 
-    public User(String userName, String password, int companyType, String companyName, String companyId, String token, int state, String createDate) {
+    public User(String userName, String password) {
         this.userName = userName;
         this.password = password;
-        this.companyType = companyType;
-        this.companyName = companyName;
-        this.companyId = companyId;
+    }
+
+    public User(String id, String userName, String password, Company company, String token, int state, String createDate) {
+        this.userName = userName;
+        this.password = password;
+        this.company = company;
         this.token = token;
+        this.id = id;
         this.state = state;
         this.createDate = createDate;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getUserName() {
@@ -41,28 +53,12 @@ public class User {
         this.password = password;
     }
 
-    public int getCompanyType() {
-        return companyType;
+    public Company getCompany() {
+        return company;
     }
 
-    public void setCompanyType(int companyType) {
-        this.companyType = companyType;
-    }
-
-    public String getCompanyName() {
-        return companyName;
-    }
-
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
-    }
-
-    public String getCompanyId() {
-        return companyId;
-    }
-
-    public void setCompanyId(String companyId) {
-        this.companyId = companyId;
+    public void setCompany(Company company) {
+        this.company = company;
     }
 
     public String getToken() {
@@ -94,12 +90,11 @@ public class User {
         return "User{" +
                 "userName='" + userName + '\'' +
                 ", password='" + password + '\'' +
-                ", companyType=" + companyType +
-                ", companyName='" + companyName + '\'' +
-                ", companyId='" + companyId + '\'' +
+                ", company=" + company +
                 ", token='" + token + '\'' +
+                ", id='" + id + '\'' +
                 ", state=" + state +
-                ", createDate=" + createDate +
+                ", createDate='" + createDate + '\'' +
                 '}';
     }
 }

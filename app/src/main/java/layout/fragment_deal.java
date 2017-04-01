@@ -78,12 +78,12 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
     int login_status = DEFAULT_STATUS;
     static int status_IO = -1;
     static final int IMPORT = 0, EXPORT = 1;
-    static final int DEFAULT_STATUS = -1, USER_4S = 1, USER_COMPANY_CAR = 0, USER_COMPANY_BATTERY = 2;
+    static final int DEFAULT_STATUS = -1, USER_COMPANY_BATTERY = 0, USER_COMPANY_CAR = 1, USER_4S = 2;
     final static int REQUEST_PHOTO = 0, REQUEST_SCAN_PACKAGE = 1, REQUEST_DEAL = 3, REQUEST_GENERATE = 4;
     private static final String PATH = Environment.getExternalStorageDirectory().getPath()+"/battery/photos";
     private String baseUrl = MainActivity.getBaseUrl();
     private UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
-    private String token = userSQLite.getUser().getToken();
+    private String token;
 
 
     @Nullable
@@ -96,6 +96,8 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
         view = inflater.inflate(deal_layout, container, false);
 
         login_status = MainActivity.getLogin_status();
+        assert userSQLite != null;
+        token = userSQLite.getUser().getToken();
         checkLayout(login_status);
 
         return view;
@@ -160,10 +162,10 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
         switch (login_status){
             case USER_COMPANY_CAR:{
                 //TODO 实现登录功能后更改这里
-                companyName = fragment_user.importCompany;
-                companyBranch = fragment_user.importCompanyBranch;
-                companyId = fragment_user.importCompanyId;
-                companyCreditCode = fragment_user.creditCode_IP;
+                companyName = userSQLite.getUser().getCompany().getCompanyName();
+                companyId = userSQLite.getUser().getCompany().getId();
+                companyBranch = userSQLite.getUser().getCompany().getBranches().toString();
+                companyCreditCode = userSQLite.getUser().getCompany().getCreditCode();
                 initCompanyView();
                 Log.i("Tag", "USER_COMPANY_CAR has received");
                 import_button.setOnClickListener(new View.OnClickListener() {
@@ -205,10 +207,10 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
             }
             case USER_COMPANY_BATTERY:{
                 //TODO 实现登录功能后更改这里
-                companyName = fragment_user.exportCompany;
-                companyBranch = fragment_user.exportCompanyBranch;
-                companyId = fragment_user.exportCompanyId;
-                companyCreditCode = fragment_user.creditCode_EP;
+                companyName = userSQLite.getUser().getCompany().getCompanyName();
+                companyId = userSQLite.getUser().getCompany().getId();
+                companyBranch = userSQLite.getUser().getCompany().getBranches().toString();
+                companyCreditCode = userSQLite.getUser().getCompany().getCreditCode();
                 status_IO = EXPORT;
                 Log.i("Tag", "EXPORT status has been selected");
                 initCompanyView();
@@ -226,10 +228,10 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
             }
             case USER_4S:{
                 //TODO 实现登录功能后更改这里
-                companyName = fragment_user.fourSCompany;
-                companyBranch = fragment_user.fourSCompanyBranch;
-                companyId = fragment_user.fourSCompanyId;
-                companyCreditCode = fragment_user.creditCode_4S;
+                companyName = userSQLite.getUser().getCompany().getCompanyName();
+                companyId = userSQLite.getUser().getCompany().getId();
+                companyBranch = userSQLite.getUser().getCompany().getBranches().toString();
+                companyCreditCode = userSQLite.getUser().getCompany().getCreditCode();
                 import_button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -397,8 +399,8 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                                         Log.i("Tag", "GET /cars/{id} 信息失败");
                                         if (id == 401)
                                         {
-                                            String companyName = userSQLite.getUser().getCompanyName();
-                                            token = new RefreshTokenUtil().refreshToken(companyName);
+                                            String userName = userSQLite.getUser().getUserName();
+                                            token = new RefreshTokenUtil().refreshToken(userName);
                                             Toast.makeText(MainActivity.mainActivity, "请求过期，请重试", Toast.LENGTH_SHORT).show();
                                         }
                                     }
@@ -435,8 +437,8 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                                                         Log.i("Tag", "4S店交易界面 POST /trades 失败！");
                                                         if (id == 401)
                                                         {
-                                                            String companyName = userSQLite.getUser().getCompanyName();
-                                                            token = new RefreshTokenUtil().refreshToken(companyName);
+                                                            String userName = userSQLite.getUser().getUserName();
+                                                            token = new RefreshTokenUtil().refreshToken(userName);
                                                             Toast.makeText(MainActivity.mainActivity, "请求过期，请重试", Toast.LENGTH_SHORT).show();
                                                         }
                                                     }
@@ -562,8 +564,8 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                                 Log.i("Tag", "POST /scans 失败！");
                                 if (id == 401)
                                 {
-                                    String companyName = userSQLite.getUser().getCompanyName();
-                                    token = new RefreshTokenUtil().refreshToken(companyName);
+                                    String userName = userSQLite.getUser().getUserName();
+                                    token = new RefreshTokenUtil().refreshToken(userName);
                                     Toast.makeText(MainActivity.mainActivity, "请求过期，请重试", Toast.LENGTH_SHORT).show();
                                 }
                             }
@@ -633,8 +635,8 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                                         Log.i("Tag", "PackageCallback Error!");
                                         if (id == 401)
                                         {
-                                            String companyName = userSQLite.getUser().getCompanyName();
-                                            token = new RefreshTokenUtil().refreshToken(companyName);
+                                            String userName = userSQLite.getUser().getUserName();
+                                            token = new RefreshTokenUtil().refreshToken(userName);
                                             Toast.makeText(MainActivity.mainActivity, "请求过期，请重试", Toast.LENGTH_SHORT).show();
                                         }
                                     }
@@ -670,8 +672,8 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                                     Log.i("Tag", new Gson().toJson(trade));
                                     if (id == 401)
                                     {
-                                        String companyName = userSQLite.getUser().getCompanyName();
-                                        token = new RefreshTokenUtil().refreshToken(companyName);
+                                        String userName = userSQLite.getUser().getUserName();
+                                        token = new RefreshTokenUtil().refreshToken(userName);
                                         Toast.makeText(MainActivity.mainActivity, "请求过期，请重试", Toast.LENGTH_SHORT).show();
                                     }
                                 }
