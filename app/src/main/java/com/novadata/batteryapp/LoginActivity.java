@@ -82,7 +82,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void doLogin(String userName, String password) {
 
-        String url = MainActivity.getBaseUrl() + "v1/login";
+        String url = MainActivity.getBaseUrl() + "login";
         OkHttpUtils
                 .post()
                 .url(url)

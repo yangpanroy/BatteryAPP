@@ -84,6 +84,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
     private String baseUrl = MainActivity.getBaseUrl();
     private UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
     private String token;
+    String toId, toSignature, to = "",toBranch = "", attachment = "";
 
 
     @Nullable
@@ -329,7 +330,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                         Gson gson = new Gson();
                         //TODO 更新签名 传入
                         //MD5加密本次交易的商品信息放入二维码内容中，用于比对交易商品是否匹配
-                        String deal2DCodeContent = gson.toJson(new Deal2DCode(companyCreditCode, "toSignature", MD5Util.MD5(listProductIds.toString())));
+                        String deal2DCodeContent = gson.toJson(new Deal2DCode(companyId, "toSignature", MD5Util.MD5(listProductIds.toString())));
                         //清空记录的电池包号，并更新UI
                         listProductIds.clear();
                         initList(listProductIds);
@@ -601,29 +602,14 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                 //比对二维码中的数组和自己扫描的数组，一致后才上传
                 if (Objects.equals(deal2DCode.getPackageListMD5Code(), MD5Util.MD5(listProductIds.toString())))
                 {
-                    String toId = "",to = "",toBranch = "";
-                    //TODO 实现登陆后，此处应向后台查询获得数据
-                    switch (deal2DCode.getCreditCode()){
-                        case fragment_user.creditCode_IP:
-                            toId = fragment_user.importCompanyId;
-                            to = fragment_user.importCompany;
-                            toBranch = fragment_user.importCompanyBranch;
-                            break;
-                        case fragment_user.creditCode_EP:
-                            toId = fragment_user.exportCompanyId;
-                            to = fragment_user.exportCompany;
-                            toBranch = fragment_user.exportCompanyBranch;
-                            break;
-                        case fragment_user.creditCode_4S:
-                            toId = fragment_user.fourSCompanyId;
-                            to = fragment_user.fourSCompany;
-                            toBranch = fragment_user.fourSCompanyBranch;
-                            break;
-                    }
+
+                    toId = deal2DCode.getCreditCode();
+                    toSignature = deal2DCode.getToSignature();
                     //获得扫描的package信息，用于生成trade对象并上报
                     for (int i = 0; i < listProductIds.size(); i++)
                     {
                         String url = baseUrl + "packages/" + listProductIds.get(i);
+                        final int size = listProductIds.size();
                         OkHttpUtils
                                 .get()
                                 .url(url)
@@ -646,49 +632,21 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                                         Log.i("Tag", "PackageCallback Success!");
                                         //向package数组中增加Package对象
                                         listPackage.add(response);
+                                        Log.i("ListPackageSize", String.valueOf(listPackage.size()));
+                                        Log.i("ListProductsIdsSize", String.valueOf(size));
+                                        if (listPackage.size() == size)
+                                        {
+                                            Log.i("Tag", "package数组已获取完整！");
+                                            //获得完整的电池包数组后将trade信息上报
+                                            doPostTrade();
+                                        }
+                                        else
+                                        {
+                                            Log.i("Tag", "package数组未获取完整！待续...");
+                                        }
                                     }
                                 });
                     }
-                    //TODO 更新签名 传入
-                    final Trade trade = new Trade(companyId, companyName, companyBranch, "fromSignature",
-                            toId, to, toBranch, deal2DCode.getToSignature(),
-                            "", listPackage);//新建一个trade并POST
-                    //POST trade信息
-                    String url = baseUrl + "trades";
-
-                    OkHttpUtils
-                            .postString()
-                            .url(url)
-                            .addHeader("Authorization", " Bearer " + token)
-                            .mediaType(MediaType.parse("application/json; charset=utf-8"))
-                            .content(new Gson().toJson(trade))
-                            .build()
-                            .execute(new MyStringCallback() {
-                                @Override
-                                public void onError(Call call, Exception e, int id) {
-                                    super.onError(call, e, id);
-                                    Toast.makeText(getActivity(), "交易失败请重试！", Toast.LENGTH_LONG).show();
-                                    Log.i("Tag", "厂商交易界面 POST /trades 失败！");
-                                    Log.i("Tag", new Gson().toJson(trade));
-                                    if (id == 401)
-                                    {
-                                        String userName = userSQLite.getUser().getUserName();
-                                        token = new RefreshTokenUtil().refreshToken(userName);
-                                        Toast.makeText(MainActivity.mainActivity, "请求过期，请重试", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-
-                                @Override
-                                public void onResponse(String response, int id) {
-                                    super.onResponse(response, id);
-                                    Toast.makeText(getActivity(), "交易成功！", Toast.LENGTH_LONG).show();
-                                    Log.i("Tag", "厂商交易界面 POST /trades 成功！");
-                                }
-                            });
-                    listPackage.clear();
-                    //交易完毕后清空待交易信息
-                    TradeExportSQLite tradeExportSQLite = new TradeExportSQLite(MainActivity.mainActivity);
-                    tradeExportSQLite.deleteAllTrade();
                 }
                 else
                 {
@@ -702,6 +660,52 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
             }
 
         }
+    }
+
+    private void doPostTrade() {
+        //TODO 更新签名 传入
+        Trade trade = new Trade(companyId, companyName, companyBranch, "fromSignature",
+                toId, to, toBranch, toSignature,
+                attachment, listPackage);//新建一个trade并POST
+        //POST trade信息
+        String url = baseUrl + "trades";
+
+        OkHttpUtils
+                .postString()
+                .url(url)
+                .addHeader("Authorization", " Bearer " + token)
+                .mediaType(MediaType.parse("application/json; charset=utf-8"))
+                .content(new Gson().toJson(trade))
+                .build()
+                .execute(new MyStringCallback() {
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
+                        super.onError(call, e, id);
+                        Toast.makeText(getActivity(), "交易失败请重试！", Toast.LENGTH_LONG).show();
+                        Log.i("Tag", "厂商交易界面 POST /trades 失败！");
+                        if (id == 401) {
+                            String userName = userSQLite.getUser().getUserName();
+                            token = new RefreshTokenUtil().refreshToken(userName);
+                            Toast.makeText(MainActivity.mainActivity, "请求过期，请重试", Toast.LENGTH_SHORT).show();
+                            listPackage.clear();
+                            //交易完毕后清空待交易信息
+                            TradeExportSQLite tradeExportSQLite = new TradeExportSQLite(MainActivity.mainActivity);
+                            tradeExportSQLite.deleteAllTrade();
+                        }
+                    }
+
+                    @Override
+                    public void onResponse(String response, int id) {
+                        super.onResponse(response, id);
+                        Toast.makeText(getActivity(), "交易成功！", Toast.LENGTH_LONG).show();
+                        Log.i("Tag", "厂商交易界面 POST /trades 成功！");
+                        listPackage.clear();
+                        //交易完毕后清空待交易信息
+                        TradeExportSQLite tradeExportSQLite = new TradeExportSQLite(MainActivity.mainActivity);
+                        tradeExportSQLite.deleteAllTrade();
+                    }
+                });
+        Log.i("Tag", new Gson().toJson(trade));
     }
 
     private void initList(ArrayList<String> listProductIds) {

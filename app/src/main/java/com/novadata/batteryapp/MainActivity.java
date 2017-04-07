@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private static final int REQUEST_CODE_QRCODE_PERMISSIONS = 1;
     static final int DEFAULT_STATUS = -1, USER_COMPANY_BATTERY = 0, USER_COMPANY_CAR = 1, USER_4S = 2;
 
-    private static String baseUrl = "http://222.199.193.52:3000/";
+    private static String baseUrl = "http://222.199.193.57:9000/v1/";
 //    private static String baseUrl = "http://222.199.193.47:9000/";
 
     public static String getBaseUrl() {
