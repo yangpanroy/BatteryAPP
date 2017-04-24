@@ -36,6 +36,7 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
 
     String companyName;
     private ArrayList<HashMap<String,Object>> listItem = new ArrayList<>();
+    private DealDetailItemAdapter ddiAdapter;
     private String baseUrl = MainActivity.getBaseUrl();
     private String filters;
     TextView startTime, endTime, filter_button;
@@ -72,7 +73,9 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
         sMonth = eMonth = ca.get(Calendar.MONTH);
         sDay = eDay = ca.get(Calendar.DAY_OF_MONTH);
 
+        initView();
         initList();
+
     }
 
     private void initList() {
@@ -148,16 +151,14 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
                             listItem.add(map);
                         }
                         Log.i("Tag", "GET to交易信息成功");
-                        initView();
+                        ddiAdapter.notifyDataSetChanged();
                     }
                 });
     }
 
     private void initView() {
-        Log.i("ListItem",listItem.toString());
-        DealDetailItemAdapter ddiAdapter = new DealDetailItemAdapter(this, listItem);
+        ddiAdapter = new DealDetailItemAdapter(this, listItem);
         ddiAdapter.setOnItemClickListener(this);
-
         RecyclerView rv = (RecyclerView) findViewById(R.id.deal_detail_recycleView);
 
         assert rv != null;
@@ -256,7 +257,7 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
                                     }
                                     Log.i("Tag", "GET 筛选后的入库交易信息成功");
                                     Log.i("GET to交易信息 NOTICE", response.toString());
-                                    initView();
+                                    ddiAdapter.notifyDataSetChanged();
                                 }
                             });
 

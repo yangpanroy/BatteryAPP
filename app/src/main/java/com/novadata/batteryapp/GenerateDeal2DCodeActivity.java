@@ -30,7 +30,7 @@ public class GenerateDeal2DCodeActivity extends AppCompatActivity {
         deal2DCodeViewHandler.start();
     }
 
-    class GenerateDeal2DCodeHandler implements Runnable {
+    private class GenerateDeal2DCodeHandler implements Runnable {
         @Override
         public void run() {
             bitmapDeal2DCode = QRCodeEncoder.syncEncodeQRCode(deal2DCodeContent, 250);

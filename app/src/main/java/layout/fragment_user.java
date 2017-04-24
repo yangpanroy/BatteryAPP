@@ -32,10 +32,6 @@ public class fragment_user extends Fragment implements  View.OnClickListener {
     private static int login_status = -1;
 
     static final int DEFAULT_STATUS = -1, USER_COMPANY_BATTERY = 0, USER_COMPANY_CAR = 1, USER_4S = 2;
-    public static final String creditCode_IP = "911199R", creditCode_EP = "91889R", creditCode_4S = "91888R";
-    public static final String importCompany = "深圳比克汽车公司", exportCompany = "深圳电池厂商", fourSCompany = "北京速驰4S店";
-    public static final String importCompanyId = "507f191e810c19729de860ec", exportCompanyId = "58b7eda21ff4a3361c0dd62c", fourSCompanyId = "507f191e810c19729de860ea";
-    public static final String importCompanyBranch = "第一分公司", exportCompanyBranch = "第二分公司", fourSCompanyBranch = "海淀分店";
 
     private UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
 

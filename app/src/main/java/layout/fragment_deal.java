@@ -63,6 +63,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
     private Bitmap bitmap;
     private EditText carEt, consumerNameEt, consumerIdEt;
     private ArrayList<HashMap<String,Object>> listItem = new ArrayList<>();
+    ImportExportItemAdapter ieItemAdapter;
     private String companyName;
     private String companyId;
     private String companyBranch;
@@ -142,6 +143,8 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
 
         initHint.setVisibility(View.VISIBLE);
         rv.setVisibility(View.GONE);
+
+        initView();
 
         completeButton.setVisibility(View.VISIBLE);
         scanDeal2DCodeButton.setVisibility(View.GONE);
@@ -718,12 +721,12 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
             map.put("item_module_id", listProductIds.get(i));
             listItem.add(map);
         }
-        initView();
+        ieItemAdapter.notifyDataSetChanged();
     }
 
     public void initView(){
         //为ListView绑定适配器
-        ImportExportItemAdapter ieItemAdapter = new ImportExportItemAdapter(getActivity(), listItem);
+        ieItemAdapter = new ImportExportItemAdapter(getActivity(), listItem);
         ieItemAdapter.setOnItemClickListener(this);
 
         rv.setAdapter(ieItemAdapter);

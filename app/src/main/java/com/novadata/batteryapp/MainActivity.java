@@ -141,12 +141,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
         main_username = (TextView)findViewById(R.id.main_userName);
 
-        /*//设置Tab的图标
-        main_tab.setIcon(R.drawable.ic_home_selector);
-        deal_tab.setIcon(R.drawable.ic_deal_selector);
-        search_tab.setIcon(R.drawable.ic_search_selector);
-        user_tab.setIcon(R.drawable.ic_user_selector);*/
-
     }
 
     @Override

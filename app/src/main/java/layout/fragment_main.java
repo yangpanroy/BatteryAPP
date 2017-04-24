@@ -41,6 +41,7 @@ public class fragment_main extends Fragment implements MyItemClickListener{
 
     //设置Item内组件资源
     private ArrayList<HashMap<String,Object>> listItem = new ArrayList<>();
+    SearchHistoryItemAdapter shItemAdapter;
 
     //设置图片资源:url或本地资源
     List<String> Banner_image_url = new ArrayList<>();
@@ -59,6 +60,7 @@ public class fragment_main extends Fragment implements MyItemClickListener{
 
         initBanner();
         initData();
+        initView();
         initList();
 
         return view;
@@ -92,12 +94,12 @@ public class fragment_main extends Fragment implements MyItemClickListener{
             map.put("ItemText5", "最近流通地点：" + searchHistoryList.get(i).getLatest_logistics_place());
             listItem.add(map);
         }
-        initView();
+        shItemAdapter.notifyDataSetChanged();
     }
 
     public void initView(){
         //为ListView绑定适配器
-        SearchHistoryItemAdapter shItemAdapter = new SearchHistoryItemAdapter(getActivity(), listItem);
+        shItemAdapter = new SearchHistoryItemAdapter(getActivity(), listItem);
         shItemAdapter.setOnItemClickListener(this);
 
         RecyclerView rv = (RecyclerView) view.findViewById(R.id.my_recycler_view);

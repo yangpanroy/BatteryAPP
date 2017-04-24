@@ -33,6 +33,7 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
     private String battery_code, carId;
     private TextView module_code, manufacturer, date, type, battery_match_head, phone;
     private ArrayList<HashMap<String,Object>> listItem = new ArrayList<>();
+    private SearchResultAdapter srAdapter;
     private String baseUrl = MainActivity.getBaseUrl();
     private String module_num, module_date, module_manufacturer, latest_date, latest_place;
 
@@ -55,6 +56,7 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
         battery_match_head = (TextView) findViewById(R.id.searchResult_head_text6);
         phone = (TextView) findViewById(R.id.searchResult_head_text7);
 
+        initView();
         initList();
     }
 
@@ -151,7 +153,7 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
                             }
                             listItem.add(map);
                         }
-                        initView();
+                        srAdapter.notifyDataSetChanged();
 
                         latest_date = response.get(response.size() - 1).createTime;
                         latest_place = response.get(response.size() - 1).getScanner() + response.get(response.size() - 1).getScanBranch();
@@ -165,7 +167,7 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
     }
 
     private void initView() {
-        SearchResultAdapter srAdapter = new SearchResultAdapter(this, listItem);
+        srAdapter = new SearchResultAdapter(this, listItem);
         srAdapter.setOnItemClickListener(this);
 
         RecyclerView search_result_Rv = (RecyclerView) findViewById(R.id.search_result_recycleView);
