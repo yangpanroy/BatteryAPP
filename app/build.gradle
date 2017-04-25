@@ -37,4 +37,5 @@ dependencies {
     compile 'com.squareup.okio:okio:1.7.0'
     compile 'com.zhy:okhttputils:2.6.2'
     compile 'com.google.code.gson:gson:2.3.1'
+    compile 'cn.bingoogolapple:bga-refreshlayout:1.1.7@aar'
 }

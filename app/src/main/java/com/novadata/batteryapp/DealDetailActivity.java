@@ -28,22 +28,27 @@ import Bean.Trade;
 import Callback.ListTradeCallback;
 import adapter.DealDetailItemAdapter;
 import adapter.MyItemClickListener;
+import cn.bingoogolapple.refreshlayout.BGANormalRefreshViewHolder;
+import cn.bingoogolapple.refreshlayout.BGARefreshLayout;
+import cn.bingoogolapple.refreshlayout.BGARefreshViewHolder;
 import okhttp3.Call;
 import utils.RefreshTokenUtil;
-import utils.UserSQLite;
 
-public class DealDetailActivity extends AppCompatActivity implements View.OnClickListener, MyItemClickListener {
+public class DealDetailActivity extends AppCompatActivity implements View.OnClickListener, MyItemClickListener, BGARefreshLayout.BGARefreshLayoutDelegate{
 
-    String companyName;
+    private String companyName;
+    private BGARefreshLayout mRefreshLayout;
     private ArrayList<HashMap<String,Object>> listItem = new ArrayList<>();
     private DealDetailItemAdapter ddiAdapter;
     private String baseUrl = MainActivity.getBaseUrl();
-    private String filters;
-    TextView startTime, endTime, filter_button;
+    private String filtersFrom, filtersTo;
+    private TextView startTime;
+    private TextView endTime;
 
     final int START_DATE_DIALOG = 1, END_DATE_DIALOG = 2;
     int sYear, sMonth, sDay, eYear, eMonth, eDay;
     private String token = MainActivity.getToken();
+    private int indexOfCurrentItem = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,10 +67,11 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
 
         startTime = (TextView) findViewById(R.id.start_time);
         endTime = (TextView) findViewById(R.id.end_time);
-        filter_button = (TextView) findViewById(R.id.filter_button);
+        TextView filter_button = (TextView) findViewById(R.id.filter_button);
 
         startTime.setOnClickListener(this);
         endTime.setOnClickListener(this);
+        assert filter_button != null;
         filter_button.setOnClickListener(this);
 
         final Calendar ca = Calendar.getInstance();
@@ -73,87 +79,34 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
         sMonth = eMonth = ca.get(Calendar.MONTH);
         sDay = eDay = ca.get(Calendar.DAY_OF_MONTH);
 
+        initRefreshLayout(mRefreshLayout);
         initView();
         initList();
 
     }
 
+    private void initRefreshLayout(BGARefreshLayout refreshLayout) {
+        mRefreshLayout = (BGARefreshLayout) findViewById(R.id.refreshLayout);
+        // 为BGARefreshLayout 设置代理
+        assert mRefreshLayout != null;
+        mRefreshLayout.setDelegate(this);
+        // 设置下拉刷新和上拉加载更多的风格     参数1：应用程序上下文，参数2：是否具有上拉加载更多功能
+        BGARefreshViewHolder refreshViewHolder = new BGANormalRefreshViewHolder(this, true);
+        // 设置下拉刷新和上拉加载更多的风格
+        mRefreshLayout.setRefreshViewHolder(refreshViewHolder);
+
+        // 为了增加下拉刷新头部和加载更多的通用性，提供了以下可选配置选项  -------------START
+        // 设置正在加载更多时不显示加载更多控件
+        // mRefreshLayout.setIsShowLoadingMoreView(false);
+        // 设置正在加载更多时的文本
+        String loadingMoreText = "正在加载...";
+        refreshViewHolder.setLoadingMoreText(loadingMoreText);
+    }
+
     private void initList() {
-        //构建filters 获取出库信息
-        filters = "?filters=%7Bfrom%3A%20%7B%24regex%3A%20%23%7D%7D&params=" + companyName + "&limit=10&offset=0";
-
-        String url = baseUrl + "trades" + filters;
-        OkHttpUtils
-                .get()//
-                .url(url)//
-                .addHeader("Authorization", " Bearer " + token)
-                .build()//
-                .execute(new ListTradeCallback()//
-                {
-                    @Override
-                    public void onError(Call call, Exception e, int id) {
-                        Log.i("Tag", "GET from交易信息失败");
-                        Log.i("NOTICE", e.toString());
-                        if (id == 401)
-                        {
-                            token = new RefreshTokenUtil().refreshToken(companyName);
-                            MainActivity.setToken(token);
-                            Toast.makeText(DealDetailActivity.this, "请求过期，请重试", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onResponse(List<Trade> response, int id) {
-                        listItem.clear();
-                        Log.i("GET from交易信息 NOTICE", response.toString());
-                        for (int i = 0; i < response.size(); i++) {
-                            HashMap<String, Object> map = new HashMap<>();
-                            map.put("detail_item_module_date", response.get(i).createTime);
-                            map.put("detail_logistics_source", response.get(i).getFrom() + response.get(i).getFromBranch());
-                            map.put("detail_logistics_destination", response.get(i).getTo() + response.get(i).getToBranch());
-                            map.put("detail_item_module_id", "ID：" + response.get(i).getId());
-                            listItem.add(map);
-                        }
-                        Log.i("Tag", "GET from交易信息成功");
-                    }
-                });
-
-        //构建filters 获取入库信息
-        filters = "?filters=%7Bto%3A%20%7B%24regex%3A%20%23%7D%7D&params=" + companyName + "&limit=10&offset=0";
-        url = baseUrl + "trades" + filters;
-        OkHttpUtils
-                .get()//
-                .url(url)//
-                .addHeader("Authorization", " Bearer " + token)
-                .build()//
-                .execute(new ListTradeCallback()//
-                {
-                    @Override
-                    public void onError(Call call, Exception e, int id) {
-                        Log.i("Tag", "GET to交易信息失败");
-                        if (id == 401)
-                        {
-                            token = new RefreshTokenUtil().refreshToken(companyName);
-                            MainActivity.setToken(token);
-                            Toast.makeText(DealDetailActivity.this, "请求过期，请重试", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onResponse(List<Trade> response, int id) {
-                        Log.i("GET to交易信息 NOTICE", response.toString());
-                        for (int i = 0; i < response.size(); i++) {
-                            HashMap<String, Object> map = new HashMap<>();
-                            map.put("detail_item_module_date", response.get(i).createTime);
-                            map.put("detail_logistics_source", response.get(i).getFrom() + response.get(i).getFromBranch());
-                            map.put("detail_logistics_destination", response.get(i).getTo() + response.get(i).getToBranch());
-                            map.put("detail_item_module_id", "ID：" + response.get(i).getId());
-                            listItem.add(map);
-                        }
-                        Log.i("Tag", "GET to交易信息成功");
-                        ddiAdapter.notifyDataSetChanged();
-                    }
-                });
+        filtersFrom = "?filters=%7Bfrom%3A%20%7B%24regex%3A%20%23%7D%7D&params=" + companyName + "&limit=10&offset=0";
+        filtersTo = "?filters=%7Bto%3A%20%7B%24regex%3A%20%23%7D%7D&params=" + companyName + "&limit=10&offset=0";
+        beginRefreshing();
     }
 
     private void initView() {
@@ -185,82 +138,9 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
                 if(compareTime()){
                     String s1 = startTime.getText().toString();
                     String s2 = endTime.getText().toString();
-                    filters = "?filters=%7Bfrom%3A%20%7B%24regex%3A%20%23%7D%2C_created%3A%7B%24gte%3A%23%7D%2C_created%3A%7B%24lte%3A%23%7D%7D&params=" + companyName + "%2C" + s1 + "%2C" + s2 + "&limit=10&offset=0";
-
-                    String url = baseUrl + "trades" + filters;
-
-                    OkHttpUtils
-                            .get()
-                            .url(url)
-                            .addHeader("Authorization", " Bearer " + token)
-                            .build()
-                            .execute(new ListTradeCallback() {
-                                @Override
-                                public void onError(Call call, Exception e, int id) {
-                                    Log.i("Tag", "GET 筛选后的出库交易信息失败");
-                                    Log.i("Tag", e.getMessage());
-                                    if (id == 401)
-                                    {
-                                        token = new RefreshTokenUtil().refreshToken(companyName);
-                                        MainActivity.setToken(token);
-                                        Toast.makeText(DealDetailActivity.this, "请求过期，请重试", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-
-                                @Override
-                                public void onResponse(List<Trade> response, int id) {
-                                    listItem.clear();
-                                    for (int i = 0; i < response.size(); i++) {
-                                        HashMap<String, Object> map = new HashMap<>();
-                                        map.put("detail_item_module_date", response.get(i).createTime);
-                                        map.put("detail_logistics_source", response.get(i).getFrom() + response.get(i).getFromBranch());
-                                        map.put("detail_logistics_destination", response.get(i).getTo() + response.get(i).getToBranch());
-                                        map.put("detail_item_module_id",  "ID：" + response.get(i).getId());
-                                        listItem.add(map);
-                                    }
-                                    Log.i("Tag", "GET 筛选后的出库交易信息成功");
-                                    Log.i("GET from交易信息 NOTICE", response.toString());
-                                }
-                            });
-
-                    filters = "?filters=%7Bto%3A%20%7B%24regex%3A%20%23%7D%2C_created%3A%7B%24gte%3A%23%7D%2C_created%3A%7B%24lte%3A%23%7D%7D&params=" + companyName + "%2C" + s1 + "%2C" + s2 + "&offset=0";
-
-                    url = baseUrl + "trades" + filters;
-
-                    OkHttpUtils
-                            .get()
-                            .url(url)
-                            .addHeader("Authorization", " Bearer " + token)
-                            .build()
-                            .execute(new ListTradeCallback() {
-                                @Override
-                                public void onError(Call call, Exception e, int id) {
-                                    Log.i("Tag", "GET 筛选后的入库交易信息失败");
-                                    Log.i("Tag", e.getMessage());
-                                    if (id == 401)
-                                    {
-                                        token = new RefreshTokenUtil().refreshToken(companyName);
-                                        MainActivity.setToken(token);
-                                        Toast.makeText(DealDetailActivity.this, "请求过期，请重试", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-
-                                @Override
-                                public void onResponse(List<Trade> response, int id) {
-                                    for (int i = 0; i < response.size(); i++) {
-                                        HashMap<String, Object> map = new HashMap<>();
-                                        map.put("detail_item_module_date", response.get(i).createTime);
-                                        map.put("detail_logistics_source", response.get(i).getFrom() + response.get(i).getFromBranch());
-                                        map.put("detail_logistics_destination", response.get(i).getTo() + response.get(i).getToBranch());
-                                        map.put("detail_item_module_id",  "ID：" + response.get(i).getId());
-                                        listItem.add(map);
-                                    }
-                                    Log.i("Tag", "GET 筛选后的入库交易信息成功");
-                                    Log.i("GET to交易信息 NOTICE", response.toString());
-                                    ddiAdapter.notifyDataSetChanged();
-                                }
-                            });
-
+                    filtersFrom = "?filters=%7Bfrom%3A%20%7B%24regex%3A%20%23%7D%2C_created%3A%7B%24gte%3A%23%7D%2C_created%3A%7B%24lte%3A%23%7D%7D&params=" + companyName + "%2C" + s1 + "%2C" + s2 + "&limit=10&offset=0";
+                    filtersTo = "?filters=%7Bto%3A%20%7B%24regex%3A%20%23%7D%2C_created%3A%7B%24gte%3A%23%7D%2C_created%3A%7B%24lte%3A%23%7D%7D&params=" + companyName + "%2C" + s1 + "%2C" + s2 + "&offset=0";
+                    beginRefreshing();
                 }
                 break;
         }
@@ -358,5 +238,193 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
         bundle.putString("selectedId", selectedId);
         intent.putExtras(bundle);
         startActivity(intent);
+    }
+
+    @Override
+    public void onBGARefreshLayoutBeginRefreshing(BGARefreshLayout refreshLayout) {
+        //构建filters 获取出库信息
+        indexOfCurrentItem = 0;
+        String url = baseUrl + "trades" + filtersFrom;
+        OkHttpUtils
+                .get()//
+                .url(url)//
+                .addHeader("Authorization", " Bearer " + token)
+                .build()//
+                .execute(new ListTradeCallback()//
+                {
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
+                        Log.i("Tag", "GET from交易信息失败");
+                        Log.i("NOTICE", e.toString());
+                        if (id == 401)
+                        {
+                            token = new RefreshTokenUtil().refreshToken(companyName);
+                            MainActivity.setToken(token);
+                            Toast.makeText(DealDetailActivity.this, "请求过期，请重试", Toast.LENGTH_SHORT).show();
+                        }
+                        else if (id ==404)
+                        {
+                            Toast.makeText(DealDetailActivity.this, "没有网络连接", Toast.LENGTH_SHORT).show();
+                        }
+                        mRefreshLayout.endRefreshing();
+                    }
+
+                    @Override
+                    public void onResponse(List<Trade> response, int id) {
+                        listItem.clear();
+                        Log.i("GET from交易信息 NOTICE", response.toString());
+                        for (int i = 0; i < response.size(); i++) {
+                            HashMap<String, Object> map = new HashMap<>();
+                            map.put("detail_item_module_date", response.get(i).createTime);
+                            map.put("detail_logistics_source", response.get(i).getFrom() + response.get(i).getFromBranch());
+                            map.put("detail_logistics_destination", response.get(i).getTo() + response.get(i).getToBranch());
+                            map.put("detail_item_module_id", "ID：" + response.get(i).getId());
+                            listItem.add(map);
+                        }
+                        Log.i("Tag", "GET from交易信息成功");
+                    }
+                });
+
+        //构建filters 获取入库信息
+
+        url = baseUrl + "trades" + filtersTo;
+        OkHttpUtils
+                .get()//
+                .url(url)//
+                .addHeader("Authorization", " Bearer " + token)
+                .build()//
+                .execute(new ListTradeCallback()//
+                {
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
+                        Log.i("Tag", "GET to交易信息失败");
+                        if (id == 401)
+                        {
+                            token = new RefreshTokenUtil().refreshToken(companyName);
+                            MainActivity.setToken(token);
+                            Toast.makeText(DealDetailActivity.this, "请求过期，请重试", Toast.LENGTH_SHORT).show();
+                        }  else if (id ==404)
+                        {
+                            Toast.makeText(DealDetailActivity.this, "没有网络连接", Toast.LENGTH_SHORT).show();
+                        }
+                        mRefreshLayout.endRefreshing();
+                    }
+
+                    @Override
+                    public void onResponse(List<Trade> response, int id) {
+                        Log.i("GET to交易信息 NOTICE", response.toString());
+                        for (int i = 0; i < response.size(); i++) {
+                            HashMap<String, Object> map = new HashMap<>();
+                            map.put("detail_item_module_date", response.get(i).createTime);
+                            map.put("detail_logistics_source", response.get(i).getFrom() + response.get(i).getFromBranch());
+                            map.put("detail_logistics_destination", response.get(i).getTo() + response.get(i).getToBranch());
+                            map.put("detail_item_module_id", "ID：" + response.get(i).getId());
+                            listItem.add(map);
+                        }
+                        Log.i("Tag", "GET to交易信息成功");
+                        ddiAdapter.notifyDataSetChanged();
+                        mRefreshLayout.endRefreshing();
+                    }
+                });
+    }
+
+    @Override
+    public boolean onBGARefreshLayoutBeginLoadingMore(BGARefreshLayout refreshLayout) {
+        indexOfCurrentItem = indexOfCurrentItem + 10;
+        //构建filters 获取出库信息
+        filtersFrom = filtersFrom.substring(0,filtersFrom.length() - 1) + indexOfCurrentItem;
+
+        String url = baseUrl + "trades" + filtersFrom;
+        OkHttpUtils
+                .get()//
+                .url(url)//
+                .addHeader("Authorization", " Bearer " + token)
+                .build()//
+                .execute(new ListTradeCallback()//
+                {
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
+                        Log.i("Tag", "GET from交易信息失败");
+                        Log.i("NOTICE", e.toString());
+                        if (id == 401)
+                        {
+                            token = new RefreshTokenUtil().refreshToken(companyName);
+                            MainActivity.setToken(token);
+                            Toast.makeText(DealDetailActivity.this, "请求过期，请重试", Toast.LENGTH_SHORT).show();
+                        }
+                        else if (id ==404)
+                        {
+                            Toast.makeText(DealDetailActivity.this, "没有网络连接", Toast.LENGTH_SHORT).show();
+                        }
+                        mRefreshLayout.endLoadingMore();
+                    }
+
+                    @Override
+                    public void onResponse(List<Trade> response, int id) {
+                        Log.i("GET from交易信息 NOTICE", response.toString());
+                        for (int i = 0; i < response.size(); i++) {
+                            HashMap<String, Object> map = new HashMap<>();
+                            map.put("detail_item_module_date", response.get(i).createTime);
+                            map.put("detail_logistics_source", response.get(i).getFrom() + response.get(i).getFromBranch());
+                            map.put("detail_logistics_destination", response.get(i).getTo() + response.get(i).getToBranch());
+                            map.put("detail_item_module_id", "ID：" + response.get(i).getId());
+                            listItem.add(map);
+                        }
+                        Log.i("Tag", "GET from交易信息成功");
+                    }
+                });
+
+        //构建filters 获取入库信息
+        filtersTo = filtersTo.substring(0, filtersTo.length() - 1) + indexOfCurrentItem;
+        url = baseUrl + "trades" + filtersTo;
+        OkHttpUtils
+                .get()//
+                .url(url)//
+                .addHeader("Authorization", " Bearer " + token)
+                .build()//
+                .execute(new ListTradeCallback()//
+                {
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
+                        Log.i("Tag", "GET to交易信息失败");
+                        if (id == 401)
+                        {
+                            token = new RefreshTokenUtil().refreshToken(companyName);
+                            MainActivity.setToken(token);
+                            Toast.makeText(DealDetailActivity.this, "请求过期，请重试", Toast.LENGTH_SHORT).show();
+                        }  else if (id ==404)
+                        {
+                            Toast.makeText(DealDetailActivity.this, "没有网络连接", Toast.LENGTH_SHORT).show();
+                        }
+                        mRefreshLayout.endLoadingMore();
+                    }
+
+                    @Override
+                    public void onResponse(List<Trade> response, int id) {
+                        Log.i("GET to交易信息 NOTICE", response.toString());
+                        for (int i = 0; i < response.size(); i++) {
+                            HashMap<String, Object> map = new HashMap<>();
+                            map.put("detail_item_module_date", response.get(i).createTime);
+                            map.put("detail_logistics_source", response.get(i).getFrom() + response.get(i).getFromBranch());
+                            map.put("detail_logistics_destination", response.get(i).getTo() + response.get(i).getToBranch());
+                            map.put("detail_item_module_id", "ID：" + response.get(i).getId());
+                            listItem.add(map);
+                        }
+                        Log.i("Tag", "GET to交易信息成功");
+                        ddiAdapter.notifyDataSetChanged();
+                        mRefreshLayout.endLoadingMore();
+                    }
+                });
+        return true;
+    }
+
+    // 通过代码方式控制进入正在刷新状态。应用场景：某些应用在 activity 的 onStart 方法中调用，自动进入正在刷新状态获取最新数据
+    public void beginRefreshing() {
+        mRefreshLayout.beginRefreshing();
+    }
+
+    // 通过代码方式控制进入加载更多状态
+    public void beginLoadingMore() {
+        mRefreshLayout.beginLoadingMore();
     }
 }
