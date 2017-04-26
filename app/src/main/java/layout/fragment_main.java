@@ -25,29 +25,39 @@ import java.util.HashMap;
 import java.util.List;
 
 import Bean.Main_Search_History_Item;
-import Callback.ListBannerImageUrlCallback;
-import Callback.ListMainSearchHistoryItemCallback;
+import Bean.Scan;
+import Callback.ListScanCallback;
 import adapter.MyItemClickListener;
 import adapter.SearchHistoryItemAdapter;
+import cn.bingoogolapple.refreshlayout.BGANormalRefreshViewHolder;
+import cn.bingoogolapple.refreshlayout.BGARefreshLayout;
+import cn.bingoogolapple.refreshlayout.BGARefreshViewHolder;
 import okhttp3.Call;
 import utils.HistorySQLite;
+import utils.RefreshTokenUtil;
+import utils.UserSQLite;
 
-public class fragment_main extends Fragment implements MyItemClickListener{
+public class fragment_main extends Fragment implements MyItemClickListener, BGARefreshLayout.BGARefreshLayoutDelegate{
 
     private View view;
     private Banner banner;
+    private BGARefreshLayout mainRefreshLayout;
     private String baseUrl = MainActivity.getBaseUrl();
     public static fragment_main fragmentMain;
+    private UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
+    private String token = userSQLite.getUser().getToken();
 
     //设置Item内组件资源
     private ArrayList<HashMap<String,Object>> listItem = new ArrayList<>();
-    SearchHistoryItemAdapter shItemAdapter;
+    private HashMap<String, Object> map = new HashMap<>();
+    private SearchHistoryItemAdapter shItemAdapter;
 
     //设置图片资源:url或本地资源
     List<String> Banner_image_url = new ArrayList<>();
     private List<Main_Search_History_Item> searchHistoryList;
     private List<Main_Search_History_Item> tempList;
 
+    private int currentIndex;
 
     @Nullable
     @Override
@@ -59,11 +69,23 @@ public class fragment_main extends Fragment implements MyItemClickListener{
         banner = (Banner) view.findViewById(R.id.banner);
 
         initBanner();
+        initRefreshLayout(mainRefreshLayout);
         initData();
         initView();
         initList();
 
         return view;
+    }
+
+    private void initRefreshLayout(BGARefreshLayout refreshLayout) {
+        mainRefreshLayout = (BGARefreshLayout) view.findViewById(R.id.mainRefreshLayout);
+        // 为BGARefreshLayout 设置代理
+        assert mainRefreshLayout != null;
+        mainRefreshLayout.setDelegate(this);
+        // 设置下拉刷新和上拉加载更多的风格     参数1：应用程序上下文，参数2：是否具有上拉加载更多功能
+        BGARefreshViewHolder refreshViewHolder = new BGANormalRefreshViewHolder(MainActivity.mainActivity, false);
+        // 设置下拉刷新和上拉加载更多的风格
+        mainRefreshLayout.setRefreshViewHolder(refreshViewHolder);
     }
 
     private void initData() {
@@ -84,17 +106,7 @@ public class fragment_main extends Fragment implements MyItemClickListener{
     }
 
     private void initList() {
-        listItem.clear();
-        for (int i = 0; i < searchHistoryList.size(); i++) {
-            HashMap<String, Object> map = new HashMap<>();
-            map.put("ItemText1", "编号：" + searchHistoryList.get(i).getModule_num());
-            map.put("ItemText2", "生产日期：" + searchHistoryList.get(i).getProduce_date());
-            map.put("ItemText3", "生产企业：" + searchHistoryList.get(i).getProducer());
-            map.put("ItemText4", "最近流通时间：" + searchHistoryList.get(i).getLatest_logistics_date());
-            map.put("ItemText5", "最近流通地点：" + searchHistoryList.get(i).getLatest_logistics_place());
-            listItem.add(map);
-        }
-        shItemAdapter.notifyDataSetChanged();
+        beginRefreshing();
     }
 
     public void initView(){
@@ -225,4 +237,73 @@ public class fragment_main extends Fragment implements MyItemClickListener{
         reversedList();
     }
 
+    @Override
+    public void onBGARefreshLayoutBeginRefreshing(BGARefreshLayout refreshLayout) {
+        listItem.clear();
+        for (int i = 0; i < searchHistoryList.size(); i++)
+        {
+            currentIndex = i;
+            map.put("ItemText1", "编号：" + searchHistoryList.get(i).getModule_num());
+            map.put("ItemText2", "生产日期：" + searchHistoryList.get(i).getProduce_date());
+            map.put("ItemText3", "生产企业：" + searchHistoryList.get(i).getProducer());
+            map.put("ItemText4", "最近流通时间：" + searchHistoryList.get(i).getLatest_logistics_date());
+            map.put("ItemText5", "最近流通地点：" + searchHistoryList.get(i).getLatest_logistics_place());
+
+            String battery_code = searchHistoryList.get(i).getModule_num();
+            String url = baseUrl + "scans?filters=%7B%22barcode%22%3A%22" + battery_code + "%22%7D&limit=10&offset=0";
+            OkHttpUtils
+                    .get()
+                    .url(url)
+                    .addHeader("Authorization", " Bearer " + token)
+                    .build()
+                    .execute(new ListScanCallback() {
+                        @Override
+                        public void onError(Call call, Exception e, int id) {
+                            Log.i("Tag", "ListScanCallback 失败" + e.getMessage() + " 错误代码：" + id);
+                           // Toast.makeText(MainActivity.mainActivity, "未找到扫描记录", Toast.LENGTH_LONG).show();
+                            if (id == 401)
+                            {
+                                String userName = userSQLite.getUser().getUserName();
+                                token = new RefreshTokenUtil().refreshToken(userName);
+                                Toast.makeText(MainActivity.mainActivity, "请求过期，请重试", Toast.LENGTH_SHORT).show();
+                            }
+                            mainRefreshLayout.endRefreshing();
+                        }
+
+                        @Override
+                        public void onResponse(List<Scan> response, int id) {
+                            String module_num, module_date, module_manufacturer, latest_date, latest_place;
+
+                            module_num = searchHistoryList.get(currentIndex).getModule_num();
+                            module_date = searchHistoryList.get(currentIndex).getProduce_date();
+                            module_manufacturer = searchHistoryList.get(currentIndex).getProducer();
+                            latest_date = response.get(response.size() - 1).createTime;
+                            latest_place = response.get(response.size() - 1).getScanner() + response.get(response.size() - 1).getScanBranch();
+
+                            SearchResultActivity.markSearchHistory(module_num, module_date, module_manufacturer, latest_date, latest_place);
+
+                            map.put("ItemText4", "最近流通时间：" + latest_date);
+                            map.put("ItemText5", "最近流通地点：" + latest_place);
+
+                            Log.i("Tag", "ListScanCallback 成功");
+                            Log.i("Tag", response.toString());
+                        }
+                    });
+
+            listItem.add(map);
+        }
+
+        shItemAdapter.notifyDataSetChanged();
+        mainRefreshLayout.endRefreshing();
+    }
+
+    @Override
+    public boolean onBGARefreshLayoutBeginLoadingMore(BGARefreshLayout refreshLayout) {
+        return false;
+    }
+
+    // 通过代码方式控制进入正在刷新状态。应用场景：某些应用在 activity 的 onStart 方法中调用，自动进入正在刷新状态获取最新数据
+    public void beginRefreshing() {
+        mainRefreshLayout.beginRefreshing();
+    }
 }

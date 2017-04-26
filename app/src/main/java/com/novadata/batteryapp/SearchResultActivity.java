@@ -184,7 +184,7 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
 
     }
 
-    private void markSearchHistory(String module_num, String module_date, String module_manufacturer, String latest_date, String latest_place) {
+    public static void markSearchHistory(String module_num, String module_date, String module_manufacturer, String latest_date, String latest_place) {
         //使用SQLite数据库存储本次的搜索信息
         HistorySQLite historySQLite = new HistorySQLite(MainActivity.mainActivity);
         historySQLite.addHistory(module_num, module_date, module_manufacturer, latest_date, latest_place);
