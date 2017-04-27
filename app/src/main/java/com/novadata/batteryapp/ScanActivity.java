@@ -28,6 +28,7 @@ public class ScanActivity extends AppCompatActivity implements QRCodeView.Delega
     protected void onStart() {
         super.onStart();
         mQRCodeView.startCamera();
+//        前置摄像头
 //        mQRCodeView.startCamera(Camera.CameraInfo.CAMERA_FACING_FRONT);
 
         mQRCodeView.showScanRect();

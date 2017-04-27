@@ -1,22 +1,19 @@
 package com.novadata.batteryapp;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
 import com.zhy.http.okhttp.OkHttpUtils;
 
 import Bean.Company;
 import Bean.User;
 import Callback.UserCallback;
 import okhttp3.Call;
-import okhttp3.MediaType;
-import utils.RefreshTokenUtil;
 import utils.UserSQLite;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
