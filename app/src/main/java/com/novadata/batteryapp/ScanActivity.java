@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import cn.bingoogolapple.qrcode.core.QRCodeView;
-import cn.bingoogolapple.qrcode.zbar.ZBarView;
+import cn.bingoogolapple.qrcode.zxing.ZXingView;
 
 public class ScanActivity extends AppCompatActivity implements QRCodeView.Delegate {
     private static final String TAG = ScanActivity.class.getSimpleName();
@@ -19,7 +19,7 @@ public class ScanActivity extends AppCompatActivity implements QRCodeView.Delega
         setContentView(R.layout.activity_scan);
         this.setTitle("扫描二维码");
 
-        mQRCodeView = (ZBarView) findViewById(R.id.zbarview);
+        mQRCodeView = (ZXingView) findViewById(R.id.zxingview);
         assert mQRCodeView != null;
         mQRCodeView.setDelegate(this);
     }
