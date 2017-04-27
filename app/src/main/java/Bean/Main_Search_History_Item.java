@@ -1,11 +1,11 @@
 package Bean;
 
 public class Main_Search_History_Item {
-    public String module_num;
-    public String produce_date;
-    public String producer;
-    public String latest_logistics_date;
-    public String latest_logistics_place;
+    private String module_num;
+    private String produce_date;
+    private String producer;
+    private String latest_logistics_date;
+    private String latest_logistics_place;
 
     public Main_Search_History_Item() {
     }

@@ -25,9 +25,9 @@ public class HistorySQLite {
 
     //添加主界面历史记录
     public void addHistory(String module_num, String module_date, String module_manufacturer, String latest_date, String latest_place){
-        historyDb = mainHistorySQLiteOpenHelper.getReadableDatabase();
-        ContentValues values = new ContentValues();
         if (!isHasHistory(module_num)){
+            historyDb = mainHistorySQLiteOpenHelper.getReadableDatabase();
+            ContentValues values = new ContentValues();
             values.put("module_num", module_num);
             values.put("module_date", module_date);
             values.put("module_manufacturer", module_manufacturer);
@@ -35,8 +35,14 @@ public class HistorySQLite {
             values.put("latest_place", latest_place);
             //增加搜索的历史记录
             historyDb.insert("history", null, values);
+            historyDb.close();
         }
         else {
+            historyDb = mainHistorySQLiteOpenHelper.getReadableDatabase();
+            ContentValues values = new ContentValues();
+            values.put("module_num", module_num);
+            values.put("module_date", module_date);
+            values.put("module_manufacturer", module_manufacturer);
             values.put("latest_date", latest_date);
             values.put("latest_place", latest_place);
             //修改条件
@@ -45,9 +51,8 @@ public class HistorySQLite {
             String[] whereArgs={module_num};
             //修改
             historyDb.update("history", values, whereClause, whereArgs);
+            historyDb.close();
         }
-        //关闭
-        historyDb.close();
     }
 
     //判断搜索的号码是否与数据库中信息重复

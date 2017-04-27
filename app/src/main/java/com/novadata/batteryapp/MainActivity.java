@@ -30,8 +30,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private static final int REQUEST_CODE_QRCODE_PERMISSIONS = 1;
     static final int DEFAULT_STATUS = -1, USER_COMPANY_BATTERY = 0, USER_COMPANY_CAR = 1, USER_4S = 2;
 
-    private static String baseUrl = "http://222.199.193.57:9000/v1/";
-//    private static String baseUrl = "http://222.199.193.47:9000/";
+    private static String baseUrl = "http://222.199.193.48:9000/v1/";
 
     public static String getBaseUrl() {
         return baseUrl;
@@ -106,12 +105,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             setMain_username(getCompanyName());
             setToken(user.getToken());
         }
-
-        /*setLogin_status(USER_COMPANY_CAR);
-        setCompanyId("123456789");
-        setCompanyName("北京科技大学");
-        setMain_username(getCompanyName());
-        setToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ");*/
 
     }
 

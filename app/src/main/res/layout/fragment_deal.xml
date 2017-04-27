@@ -7,8 +7,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:id="@+id/deal_layout">
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -92,7 +91,6 @@
                 android:layout_height="match_parent">
 
                 <LinearLayout
-                    android:id="@+id/scanned_list"
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
@@ -158,8 +156,7 @@
                                     <ImageView
                                         android:layout_width="30dp"
                                         android:layout_height="30dp"
-                                        android:src="@drawable/ic_battery"
-                                        android:id="@+id/user_icon" />
+                                        android:src="@drawable/ic_battery" />
 
                                     <TextView
                                         android:layout_width="match_parent"
@@ -182,15 +179,13 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="操作员工：0003"
-                                    android:textSize="7pt"
-                                    android:id="@+id/user_staff" />
+                                    android:textSize="7pt" />
 
                                 <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="操作日期：2016年8月3日 "
-                                    android:textSize="7pt"
-                                    android:id="@+id/data" />
+                                    android:textSize="7pt" />
 
                             </LinearLayout>
 
@@ -199,7 +194,6 @@
                                 android:layout_height="40pt"
                                 android:layout_weight="2"
                                 android:layout_gravity="center"
-                                android:id="@+id/user_company_Image"
                                 android:src="@drawable/user_head" />
 
                         </TableRow>
@@ -337,16 +331,14 @@
                                     <ImageView
                                         android:layout_width="30dp"
                                         android:layout_height="30dp"
-                                        android:src="@drawable/ic_battery"
-                                        android:id="@+id/user_4s_icon" />
+                                        android:src="@drawable/ic_battery" />
 
                                     <TextView
                                         android:layout_width="match_parent"
                                         android:layout_height="match_parent"
                                         android:text="授权账户"
                                         android:gravity="center_vertical"
-                                        android:textSize="8pt"
-                                        android:id="@+id/user_4s_name" />
+                                        android:textSize="8pt" />
 
                                 </LinearLayout>
 
@@ -361,15 +353,13 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="操作员工：0003"
-                                    android:textSize="7pt"
-                                    android:id="@+id/user_4s_staff" />
+                                    android:textSize="7pt" />
 
                                 <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="操作日期：2016年8月3日 "
-                                    android:textSize="7pt"
-                                    android:id="@+id/data_4s" />
+                                    android:textSize="7pt" />
 
                             </LinearLayout>
 
@@ -378,7 +368,6 @@
                                 android:layout_weight="2"
                                 android:layout_width="40pt"
                                 android:layout_height="40pt"
-                                android:id="@+id/Image_4s"
                                 android:src="@drawable/user_head" />
 
                         </TableRow>

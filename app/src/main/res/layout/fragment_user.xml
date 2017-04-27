@@ -22,7 +22,6 @@
             <ImageView
                 android:layout_width="65dp"
                 android:layout_height="65dp"
-                android:id="@+id/userHead_imageView"
                 android:src="@drawable/user_head" />
 
             <LinearLayout
@@ -192,7 +191,6 @@
             </RelativeLayout>
 
             <RelativeLayout
-                android:id="@+id/info_item"
                 android:background="@color/white"
                 android:elevation="1dp"
                 android:layout_width="match_parent"

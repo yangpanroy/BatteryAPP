@@ -49,7 +49,6 @@ public class fragment_main extends Fragment implements MyItemClickListener, BGAR
 
     //设置Item内组件资源
     private ArrayList<HashMap<String,Object>> listItem = new ArrayList<>();
-    private HashMap<String, Object> map = new HashMap<>();
     private SearchHistoryItemAdapter shItemAdapter;
 
     //设置图片资源:url或本地资源
@@ -243,11 +242,13 @@ public class fragment_main extends Fragment implements MyItemClickListener, BGAR
         for (int i = 0; i < searchHistoryList.size(); i++)
         {
             currentIndex = i;
+            HashMap<String, Object> map = new HashMap<>();
             map.put("ItemText1", "编号：" + searchHistoryList.get(i).getModule_num());
             map.put("ItemText2", "生产日期：" + searchHistoryList.get(i).getProduce_date());
             map.put("ItemText3", "生产企业：" + searchHistoryList.get(i).getProducer());
             map.put("ItemText4", "最近流通时间：" + searchHistoryList.get(i).getLatest_logistics_date());
             map.put("ItemText5", "最近流通地点：" + searchHistoryList.get(i).getLatest_logistics_place());
+            listItem.add(map);
 
             String battery_code = searchHistoryList.get(i).getModule_num();
             String url = baseUrl + "scans?filters=%7B%22barcode%22%3A%22" + battery_code + "%22%7D&limit=10&offset=0";
@@ -272,27 +273,35 @@ public class fragment_main extends Fragment implements MyItemClickListener, BGAR
 
                         @Override
                         public void onResponse(List<Scan> response, int id) {
-                            String module_num, module_date, module_manufacturer, latest_date, latest_place;
+                            if(response.size() != 0)
+                            {
+                                String module_num, module_date, module_manufacturer, latest_date, latest_place;
 
-                            module_num = searchHistoryList.get(currentIndex).getModule_num();
-                            module_date = searchHistoryList.get(currentIndex).getProduce_date();
-                            module_manufacturer = searchHistoryList.get(currentIndex).getProducer();
-                            latest_date = response.get(response.size() - 1).createTime;
-                            latest_place = response.get(response.size() - 1).getScanner() + response.get(response.size() - 1).getScanBranch();
+                                module_num = searchHistoryList.get(currentIndex).getModule_num();
+                                module_date = searchHistoryList.get(currentIndex).getProduce_date();
+                                module_manufacturer = searchHistoryList.get(currentIndex).getProducer();
+                                latest_date = response.get(response.size() - 1).createTime;
+                                latest_place = response.get(response.size() - 1).getScanner() + response.get(response.size() - 1).getScanBranch();
 
-                            SearchResultActivity.markSearchHistory(module_num, module_date, module_manufacturer, latest_date, latest_place);
+                                //更新SQLite中相应的电池包最新信息
+                                SearchResultActivity.markSearchHistory(module_num, module_date, module_manufacturer, latest_date, latest_place);
 
-                            map.put("ItemText4", "最近流通时间：" + latest_date);
-                            map.put("ItemText5", "最近流通地点：" + latest_place);
+                                listItem.remove(listItem.size()-1);
+                                HashMap<String, Object> map1 = new HashMap<>();
+                                map1.put("ItemText1", "编号：" + module_num);
+                                map1.put("ItemText2", "生产日期：" + module_date);
+                                map1.put("ItemText3", "生产企业：" + module_manufacturer);
+                                map1.put("ItemText4", "最近流通时间：" + latest_date);
+                                map1.put("ItemText5", "最近流通地点：" + latest_place);
+                                listItem.add(map1);
 
-                            Log.i("Tag", "ListScanCallback 成功");
-                            Log.i("Tag", response.toString());
+                                Log.i("Tag", "ListScanCallback 成功");
+                                Log.i("Tag", response.toString());
+                            }
                         }
                     });
 
-            listItem.add(map);
         }
-
         shItemAdapter.notifyDataSetChanged();
         mainRefreshLayout.endRefreshing();
     }

@@ -138,30 +138,33 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
 
                     @Override
                     public void onResponse(List<Scan> response, int id) {
-
-                        listItem.clear();
-                        for (int i = 0; i < response.size(); i++) {
-                            HashMap<String, Object> map = new HashMap<>();
-                            map.put("ItemTitle", response.get(i).getScanner() + response.get(i).getScanBranch());
-                            map.put("ItemText1", "交付日期：" + response.get(i).createTime);
-                            map.put("ItemText2", "电池包：" + battery_code);
-                            map.put("ItemText4", "匹配车架号：" + carId);
-                            if (carId == null) {
-                                map.put("ItemText3", "汽车匹配状态：未匹配");
-                            } else {
-                                map.put("ItemText3", "汽车匹配状态：已匹配");
+                        if (response.size()>0)
+                        {
+                            listItem.clear();
+                            for (int i = 0; i < response.size(); i++) {
+                                HashMap<String, Object> map = new HashMap<>();
+                                map.put("ItemTitle", response.get(i).getScanner() + response.get(i).getScanBranch());
+                                map.put("ItemText1", "交付日期：" + response.get(i).createTime);
+                                map.put("ItemText2", "电池包：" + battery_code);
+                                map.put("ItemText4", "匹配车架号：" + carId);
+                                if (carId == null) {
+                                    map.put("ItemText3", "汽车匹配状态：未匹配");
+                                } else {
+                                    map.put("ItemText3", "汽车匹配状态：已匹配");
+                                }
+                                listItem.add(map);
                             }
-                            listItem.add(map);
+                            srAdapter.notifyDataSetChanged();
+
+                            Log.i("Tag", response.toString());
+
+                            latest_date = response.get(response.size() - 1).createTime;
+                            latest_place = response.get(response.size() - 1).getScanner() + response.get(response.size() - 1).getScanBranch();
+
+                            markSearchHistory(module_num, module_date, module_manufacturer, latest_date, latest_place);
+
                         }
-                        srAdapter.notifyDataSetChanged();
-
-                        latest_date = response.get(response.size() - 1).createTime;
-                        latest_place = response.get(response.size() - 1).getScanner() + response.get(response.size() - 1).getScanBranch();
-
-                        markSearchHistory(module_num, module_date, module_manufacturer, latest_date, latest_place);
-
                         Log.i("Tag", "ListScanCallback 成功");
-                        Log.i("Tag", response.toString());
                     }
                 });
     }

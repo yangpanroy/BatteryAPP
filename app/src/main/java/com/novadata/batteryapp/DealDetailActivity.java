@@ -49,6 +49,8 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
     int sYear, sMonth, sDay, eYear, eMonth, eDay;
     private String token = MainActivity.getToken();
     private int indexOfCurrentItem = 0;
+    private List<Trade> tradeList = new ArrayList<>();
+    private int tradeListSize = tradeList.size();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,9 +106,27 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void initList() {
-        filtersFrom = "?filters=%7Bfrom%3A%20%7B%24regex%3A%20%23%7D%7D&params=" + companyName + "&limit=10&offset=0";
-        filtersTo = "?filters=%7Bto%3A%20%7B%24regex%3A%20%23%7D%7D&params=" + companyName + "&limit=10&offset=0";
         beginRefreshing();
+    }
+
+    private void updateData() {
+        if (tradeListSize == tradeList.size())
+        {
+            Toast.makeText(DealDetailActivity.this, "没有更多的数据了", Toast.LENGTH_SHORT).show();
+        }else
+        {
+            tradeListSize = tradeList.size();
+            listItem.clear();
+            for (int i = 0; i < tradeList.size(); i++) {
+                HashMap<String, Object> map = new HashMap<>();
+                map.put("detail_item_module_date", tradeList.get(i).createTime);
+                map.put("detail_logistics_source", tradeList.get(i).getFrom() + tradeList.get(i).getFromBranch());
+                map.put("detail_logistics_destination", tradeList.get(i).getTo() + tradeList.get(i).getToBranch());
+                map.put("detail_item_module_id", "ID：" + tradeList.get(i).getId());
+                listItem.add(map);
+            }
+            ddiAdapter.notifyDataSetChanged();
+        }
     }
 
     private void initView() {
@@ -118,8 +138,6 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
         rv.setAdapter(ddiAdapter);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        layoutManager.setStackFromEnd(true);//列表再底部开始展示，反转后由上面开始展示
-        layoutManager.setReverseLayout(true);//列表翻转
         rv.setLayoutManager(layoutManager);
         rv.setHasFixedSize(true);
     }
@@ -227,11 +245,11 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
     };
 
     @Override
-    public void onItemClick(View view, int postion) {
+    public void onItemClick(View view, int position) {
 
         String selectedId;
 
-        selectedId = listItem.get(postion).get("detail_item_module_id").toString().substring(3);
+        selectedId = listItem.get(position).get("detail_item_module_id").toString().substring(3);
 
         Intent intent = new Intent(MainActivity.mainActivity, SingleTradeActivity.class);
         Bundle bundle=new Bundle();
@@ -242,8 +260,13 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
 
     @Override
     public void onBGARefreshLayoutBeginRefreshing(BGARefreshLayout refreshLayout) {
-        //构建filters 获取出库信息
+        Log.i("TAG","下拉刷新");
         indexOfCurrentItem = 0;
+
+        tradeList.clear();
+        //构建filters 获取出库信息
+        filtersFrom = "?filters=%7Bfrom%3A%20%7B%24regex%3A%20%23%7D%7D&params=" + companyName + "&limit=10&offset=0";
+        filtersTo = "?filters=%7Bto%3A%20%7B%24regex%3A%20%23%7D%7D&params=" + companyName + "&limit=10&offset=0";
         String url = baseUrl + "trades" + filtersFrom;
         OkHttpUtils
                 .get()//
@@ -271,17 +294,14 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
 
                     @Override
                     public void onResponse(List<Trade> response, int id) {
-                        listItem.clear();
-                        Log.i("GET from交易信息 NOTICE", response.toString());
-                        for (int i = 0; i < response.size(); i++) {
-                            HashMap<String, Object> map = new HashMap<>();
-                            map.put("detail_item_module_date", response.get(i).createTime);
-                            map.put("detail_logistics_source", response.get(i).getFrom() + response.get(i).getFromBranch());
-                            map.put("detail_logistics_destination", response.get(i).getTo() + response.get(i).getToBranch());
-                            map.put("detail_item_module_id", "ID：" + response.get(i).getId());
-                            listItem.add(map);
+                        if (response.size()!=0)
+                        {
+                            tradeList.addAll(response);
+                            updateData();
+                            Log.i("GET from交易信息 NOTICE", response.toString());
+                            Log.i("Tag", "GET from交易信息成功");
+                            mRefreshLayout.endRefreshing();
                         }
-                        Log.i("Tag", "GET from交易信息成功");
                     }
                 });
 
@@ -313,16 +333,12 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
                     @Override
                     public void onResponse(List<Trade> response, int id) {
                         Log.i("GET to交易信息 NOTICE", response.toString());
-                        for (int i = 0; i < response.size(); i++) {
-                            HashMap<String, Object> map = new HashMap<>();
-                            map.put("detail_item_module_date", response.get(i).createTime);
-                            map.put("detail_logistics_source", response.get(i).getFrom() + response.get(i).getFromBranch());
-                            map.put("detail_logistics_destination", response.get(i).getTo() + response.get(i).getToBranch());
-                            map.put("detail_item_module_id", "ID：" + response.get(i).getId());
-                            listItem.add(map);
+                        if (response.size()!=0)
+                        {
+                            tradeList.addAll(response);
+                            updateData();
+                            Log.i("Tag", "GET to交易信息成功");
                         }
-                        Log.i("Tag", "GET to交易信息成功");
-                        ddiAdapter.notifyDataSetChanged();
                         mRefreshLayout.endRefreshing();
                     }
                 });
@@ -330,6 +346,7 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
 
     @Override
     public boolean onBGARefreshLayoutBeginLoadingMore(BGARefreshLayout refreshLayout) {
+        Log.i("TAG","上拉加载");
         indexOfCurrentItem = indexOfCurrentItem + 10;
         //构建filters 获取出库信息
         filtersFrom = filtersFrom.substring(0,filtersFrom.length() - 1) + indexOfCurrentItem;
@@ -362,15 +379,10 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
                     @Override
                     public void onResponse(List<Trade> response, int id) {
                         Log.i("GET from交易信息 NOTICE", response.toString());
-                        for (int i = 0; i < response.size(); i++) {
-                            HashMap<String, Object> map = new HashMap<>();
-                            map.put("detail_item_module_date", response.get(i).createTime);
-                            map.put("detail_logistics_source", response.get(i).getFrom() + response.get(i).getFromBranch());
-                            map.put("detail_logistics_destination", response.get(i).getTo() + response.get(i).getToBranch());
-                            map.put("detail_item_module_id", "ID：" + response.get(i).getId());
-                            listItem.add(map);
-                        }
+                        tradeList.addAll(response);
+                        updateData();
                         Log.i("Tag", "GET from交易信息成功");
+                        mRefreshLayout.endLoadingMore();
                     }
                 });
 
@@ -402,16 +414,9 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
                     @Override
                     public void onResponse(List<Trade> response, int id) {
                         Log.i("GET to交易信息 NOTICE", response.toString());
-                        for (int i = 0; i < response.size(); i++) {
-                            HashMap<String, Object> map = new HashMap<>();
-                            map.put("detail_item_module_date", response.get(i).createTime);
-                            map.put("detail_logistics_source", response.get(i).getFrom() + response.get(i).getFromBranch());
-                            map.put("detail_logistics_destination", response.get(i).getTo() + response.get(i).getToBranch());
-                            map.put("detail_item_module_id", "ID：" + response.get(i).getId());
-                            listItem.add(map);
-                        }
+                        tradeList.addAll(response);
+                        updateData();
                         Log.i("Tag", "GET to交易信息成功");
-                        ddiAdapter.notifyDataSetChanged();
                         mRefreshLayout.endLoadingMore();
                     }
                 });
@@ -423,8 +428,4 @@ public class DealDetailActivity extends AppCompatActivity implements View.OnClic
         mRefreshLayout.beginRefreshing();
     }
 
-    // 通过代码方式控制进入加载更多状态
-    public void beginLoadingMore() {
-        mRefreshLayout.beginLoadingMore();
-    }
 }

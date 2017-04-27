@@ -4,7 +4,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/cv_item"
     android:foreground="?android:attr/selectableItemBackground"
     card_view:cardCornerRadius="0dp"
     card_view:cardElevation="0dp"
@@ -12,7 +11,6 @@
     >
 
     <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/list_cell"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:stretchColumns="0">
@@ -40,16 +38,14 @@
                     <ImageView
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:src="@drawable/ic_battery"
-                        android:id="@+id/imageView2" />
+                        android:src="@drawable/ic_battery" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:text="电池包"
                         android:gravity="center_vertical"
-                        android:textSize="8pt"
-                        android:id="@+id/Itemtitle" />
+                        android:textSize="8pt" />
 
                 </LinearLayout>
 

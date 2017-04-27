@@ -8,7 +8,6 @@
     tools:context=".MainActivity">
 
         <android.support.v7.widget.Toolbar
-            android:id="@+id/toolBar"
             app:layout_scrollFlags="scroll|enterAlways"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -21,7 +20,6 @@
                 android:layout_height="wrap_content">
 
                 <ImageView
-                    android:id="@+id/main_userHead"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:src="@drawable/user_head_white"/>
@@ -44,7 +42,6 @@
                 android:layout_height="wrap_content">
 
                 <ImageView
-                    android:id="@+id/main_info"
                     android:layout_marginRight="16dp"
                     android:layout_gravity="end"
                     android:layout_width="24dp"

@@ -31,7 +31,6 @@
             <ImageView
                 android:layout_width="65dp"
                 android:layout_height="65dp"
-                android:id="@+id/userHead_imageView"
                 android:src="@drawable/user_head_white"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="60dp" />
@@ -46,8 +45,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:orientation="horizontal"
-            android:layout_gravity="center_horizontal"
-            android:id="@+id/login_username_group">
+            android:layout_gravity="center_horizontal">
 
             <android.support.v7.widget.CardView
                 android:layout_margin="4dp"
@@ -72,7 +70,6 @@
                         android:layout_height="match_parent"
                         android:text="用户名"
                         android:textColor="@color/white"
-                        android:id="@+id/username_text"
                         android:textSize="8pt" />
 
                     <EditText
@@ -101,7 +98,6 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_gravity="center_horizontal"
-            android:id="@+id/login_password_group"
             android:orientation="horizontal">
 
             <android.support.v7.widget.CardView
@@ -127,8 +123,7 @@
                         android:layout_height="match_parent"
                         android:text="密    码"
                         android:textColor="@color/white"
-                        android:textSize="8pt"
-                        android:id="@+id/password_text"  />
+                        android:textSize="8pt" />
 
                     <EditText
                         android:imeOptions="actionDone"
@@ -163,15 +158,13 @@
                 android:layout_height="wrap_content"
                 android:text="注册新用户"
                 android:textColor="@color/white"
-                android:layout_marginRight="80dp"
-                android:id="@+id/signUp_text" />
+                android:layout_marginRight="80dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="忘记密码"
-                android:textColor="@color/white"
-                android:id="@+id/forgetPassword_text" />
+                android:textColor="@color/white" />
 
         </LinearLayout>
 

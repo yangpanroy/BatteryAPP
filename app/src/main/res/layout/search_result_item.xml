@@ -4,14 +4,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/cv_searchResult_item"
     android:foreground="?android:attr/selectableItemBackground"
     card_view:cardCornerRadius="8dp"
     card_view:cardElevation="0dp"
     >
 
     <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/searchResult_list_cell"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:stretchColumns="0">
@@ -38,8 +36,7 @@
                     <ImageView
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:src="@drawable/location_icon"
-                        android:id="@+id/searchResult_icon" />
+                        android:src="@drawable/location_icon" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -86,7 +83,6 @@
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_gravity="center_vertical"
-                android:id="@+id/searchResult_ItemImage"
                 android:src="@drawable/battery_pic" />
 
         </TableRow>
