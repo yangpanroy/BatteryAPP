@@ -224,10 +224,17 @@ public class fragment_search extends Fragment implements View.OnClickListener {
         if (resultCode == Activity.RESULT_OK){
             Bundle bundle=data.getExtras();
             String result= bundle.getString("result");
-            searchContentEt.setText(result);
-            String record = searchContentEt.getText().toString();
-            //开始搜索
-            doSearch(record);
+            if (result.length() == 24)
+            {
+                searchContentEt.setText(result);
+                //开始搜索
+                doSearch(result);
+            }
+            else
+            {
+                searchContentEt.setText(result);
+                Toast.makeText(MainActivity.mainActivity, "二维码格式不符，请重新扫描", Toast.LENGTH_SHORT).show();
+            }
         }
         if (resultCode == RESULT_EMPTY)
         {

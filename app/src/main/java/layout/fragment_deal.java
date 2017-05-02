@@ -541,43 +541,50 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
             Bundle bundle=data.getExtras();
             if (requestCode == REQUEST_SCAN_PACKAGE){
                 String zxingResult = bundle.getString("result");
-                //上传扫描记录
-                Scan scan = new Scan(companyId, companyName, companyBranch, zxingResult);
-                String url = baseUrl + "scans";
+                if (zxingResult.length() == 24)
+                {
+                    //上传扫描记录
+                    Scan scan = new Scan(companyId, companyName, companyBranch, zxingResult);
+                    String url = baseUrl + "scans";
 
-                String s = new Gson().toJson(scan);
-                Log.i("TAG", s);
+                    String s = new Gson().toJson(scan);
+                    Log.i("TAG", s);
 
-                OkHttpUtils
-                        .postString()
-                        .url(url)
-                        .addHeader("Authorization", " Bearer " + token)
-                        .mediaType(MediaType.parse("application/json; charset=utf-8"))
-                        .content(new Gson().toJson(scan))
-                        .build()
-                        .execute(new MyStringCallback() {
-                            @Override
-                            public void onResponse(String response, int id) {
-                                super.onResponse(response, id);
-                                Log.i("Tag", "POST /scans 成功！");
-                            }
-
-                            @Override
-                            public void onError(Call call, Exception e, int id) {
-                                super.onError(call, e, id);
-                                Log.i("Tag", "POST /scans 失败！");
-                                if (id == 401)
-                                {
-                                    String userName = userSQLite.getUser().getUserName();
-                                    token = new RefreshTokenUtil().refreshToken(userName);
-                                    Toast.makeText(MainActivity.mainActivity, "请求过期，请重试", Toast.LENGTH_SHORT).show();
+                    OkHttpUtils
+                            .postString()
+                            .url(url)
+                            .addHeader("Authorization", " Bearer " + token)
+                            .mediaType(MediaType.parse("application/json; charset=utf-8"))
+                            .content(new Gson().toJson(scan))
+                            .build()
+                            .execute(new MyStringCallback() {
+                                @Override
+                                public void onResponse(String response, int id) {
+                                    super.onResponse(response, id);
+                                    Log.i("Tag", "POST /scans 成功！");
                                 }
-                            }
-                        });
 
-                //更新UI
-                listProductIds.add(zxingResult);
-                initList(listProductIds);
+                                @Override
+                                public void onError(Call call, Exception e, int id) {
+                                    super.onError(call, e, id);
+                                    Log.i("Tag", "POST /scans 失败！");
+                                    if (id == 401)
+                                    {
+                                        String userName = userSQLite.getUser().getUserName();
+                                        token = new RefreshTokenUtil().refreshToken(userName);
+                                        Toast.makeText(MainActivity.mainActivity, "请求过期，请重试", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+
+                    //更新UI
+                    listProductIds.add(zxingResult);
+                    initList(listProductIds);
+                }
+                else
+                {
+                    Toast.makeText(MainActivity.mainActivity, "二维码格式错误，请重新扫描", Toast.LENGTH_SHORT).show();
+                }
             }
             if (requestCode == REQUEST_PHOTO){
                 bitmap=(Bitmap) bundle.get("data");//从附加值中获取返回的图像
@@ -596,6 +603,9 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                     deal2DCode = new Gson().fromJson(deal2DCodeContent, new TypeToken<Deal2DCode>() {}.getType());
                 }catch (Exception e){
                     Log.i("Tag", "JSON 格式或语法错误");
+                    Toast.makeText(MainActivity.mainActivity, "出现错误，请重新扫描交易二维码", Toast.LENGTH_SHORT).show();
+                    completeButton.setVisibility(View.GONE);
+                    scanDeal2DCodeButton.setVisibility(View.VISIBLE);
                 }
                 assert deal2DCode != null;
                 Log.i("listPackage  NOTICE", listPackage.toString());
@@ -654,6 +664,8 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                 else
                 {
                     Toast.makeText(getActivity(), "交易不匹配，请重新扫描", Toast.LENGTH_LONG).show();
+                    completeButton.setVisibility(View.VISIBLE);
+                    scanDeal2DCodeButton.setVisibility(View.GONE);
                 }
                 //清空扫描的模组号
                 listProductIds.clear();

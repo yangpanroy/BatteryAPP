@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <cn.bingoogolapple.qrcode.zxing.ZXingView
+    <cn.bingoogolapple.qrcode.zbar.ZBarView
         android:id="@+id/zxingview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -19,7 +19,7 @@
         app:qrcv_customScanLineDrawable="@drawable/scan_icon_scanline"
         app:qrcv_isBarcode="false"
         app:qrcv_isCenterVertical="false"
-        app:qrcv_isOnlyDecodeScanBoxArea="false"
+        app:qrcv_isOnlyDecodeScanBoxArea="true"
         app:qrcv_isScanLineReverse="true"
         app:qrcv_isShowDefaultGridScanLineDrawable="false"
         app:qrcv_isShowDefaultScanLineDrawable="true"
