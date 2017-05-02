@@ -1,17 +1,26 @@
 package com.novadata.batteryapp;
 
 import android.Manifest;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.TextView;
+
+import com.google.gson.Gson;
+import com.zhy.http.okhttp.OkHttpUtils;
 
 import java.util.List;
 
 import Bean.User;
+import Callback.MyStringCallback;
 import adapter.MyFragmentPagerAdapter;
+import okhttp3.Call;
+import okhttp3.MediaType;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 import utils.UserSQLite;

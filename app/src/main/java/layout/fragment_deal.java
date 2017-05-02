@@ -165,6 +165,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
 
         switch (login_status){
             case USER_COMPANY_CAR:{
+                //TODO 实现登录功能后更改这里
                 companyName = userSQLite.getUser().getCompany().getCompanyName();
                 companyId = userSQLite.getUser().getCompany().getId();
                 companyBranch = userSQLite.getUser().getCompany().getBranches().toString();
@@ -209,6 +210,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                 break;
             }
             case USER_COMPANY_BATTERY:{
+                //TODO 实现登录功能后更改这里
                 companyName = userSQLite.getUser().getCompany().getCompanyName();
                 companyId = userSQLite.getUser().getCompany().getId();
                 companyBranch = userSQLite.getUser().getCompany().getBranches().toString();
@@ -229,6 +231,7 @@ public class fragment_deal extends Fragment implements View.OnClickListener, MyI
                 break;
             }
             case USER_4S:{
+                //TODO 实现登录功能后更改这里
                 companyName = userSQLite.getUser().getCompany().getCompanyName();
                 companyId = userSQLite.getUser().getCompany().getId();
                 companyBranch = userSQLite.getUser().getCompany().getBranches().toString();
