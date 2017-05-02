@@ -21,17 +21,21 @@ import Callback.ListScanCallback;
 import Callback.PackageCallback;
 import adapter.MyItemClickListener;
 import adapter.SearchResultAdapter;
+import cn.bingoogolapple.refreshlayout.BGANormalRefreshViewHolder;
+import cn.bingoogolapple.refreshlayout.BGARefreshLayout;
+import cn.bingoogolapple.refreshlayout.BGARefreshViewHolder;
 import layout.SpaceItemDecoration;
 import okhttp3.Call;
 import utils.HistorySQLite;
 import utils.RefreshTokenUtil;
 import utils.UserSQLite;
 
-public class SearchResultActivity extends AppCompatActivity implements MyItemClickListener{
+public class SearchResultActivity extends AppCompatActivity implements MyItemClickListener, BGARefreshLayout.BGARefreshLayoutDelegate {
 
     private static final int RESULT_EMPTY = 2;
     private String battery_code, carId;
     private TextView module_code, manufacturer, date, type, battery_match_head, phone;
+    private BGARefreshLayout searchResultRefreshLayout;
     private ArrayList<HashMap<String,Object>> listItem = new ArrayList<>();
     private SearchResultAdapter srAdapter;
     private String baseUrl = MainActivity.getBaseUrl();
@@ -39,6 +43,7 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
 
     private UserSQLite userSQLite = new UserSQLite(MainActivity.mainActivity);
     private String token = userSQLite.getUser().getToken();
+    private int indexOfCurrentItem = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +62,19 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
         phone = (TextView) findViewById(R.id.searchResult_head_text7);
 
         initView();
+        initRefreshLayout(searchResultRefreshLayout);
         initList();
+    }
+
+    private void initRefreshLayout(BGARefreshLayout refreshLayout) {
+        searchResultRefreshLayout = (BGARefreshLayout) findViewById(R.id.searchResultRefreshLayout);
+        // 为BGARefreshLayout 设置代理
+        assert searchResultRefreshLayout != null;
+        searchResultRefreshLayout.setDelegate(this);
+        // 设置下拉刷新和上拉加载更多的风格     参数1：应用程序上下文，参数2：是否具有上拉加载更多功能
+        BGARefreshViewHolder refreshViewHolder = new BGANormalRefreshViewHolder(MainActivity.mainActivity, true);
+        // 设置下拉刷新和上拉加载更多的风格
+        searchResultRefreshLayout.setRefreshViewHolder(refreshViewHolder);
     }
 
     private void initList() {
@@ -107,66 +124,13 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
 
                         carId = response.getVin();
 
-                        initScans();
+                        beginRefreshing();
 
                         Log.i("Tag", "PackageCallback 成功");
                         Log.i("Package {id}",response.toString());
                     }
                 });
 
-    }
-
-    private void initScans() {
-        String url = baseUrl + "scans?filters=%7B%22barcode%22%3A%22" + battery_code + "%22%7D&limit=10&offset=0";
-        OkHttpUtils
-                .get()
-                .url(url)
-                .addHeader("Authorization", " Bearer " + token)
-                .build()
-                .execute(new ListScanCallback() {
-                    @Override
-                    public void onError(Call call, Exception e, int id) {
-                        Log.i("Tag", "ListScanCallback 失败" + e.getMessage());
-                        Toast.makeText(SearchResultActivity.this, "未找到扫描记录", Toast.LENGTH_LONG).show();
-                        if (id == 401)
-                        {
-                            String userName = userSQLite.getUser().getUserName();
-                            token = new RefreshTokenUtil().refreshToken(userName);
-                            Toast.makeText(SearchResultActivity.this, "请求过期，请重试", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onResponse(List<Scan> response, int id) {
-                        if (response.size()>0)
-                        {
-                            listItem.clear();
-                            for (int i = 0; i < response.size(); i++) {
-                                HashMap<String, Object> map = new HashMap<>();
-                                map.put("ItemTitle", response.get(i).getScanner() + response.get(i).getScanBranch());
-                                map.put("ItemText1", "交付日期：" + response.get(i).createTime);
-                                map.put("ItemText2", "电池包：" + battery_code);
-                                map.put("ItemText4", "匹配车架号：" + carId);
-                                if (carId == null) {
-                                    map.put("ItemText3", "汽车匹配状态：未匹配");
-                                } else {
-                                    map.put("ItemText3", "汽车匹配状态：已匹配");
-                                }
-                                listItem.add(map);
-                            }
-                            srAdapter.notifyDataSetChanged();
-
-                            Log.i("Tag", response.toString());
-
-                            latest_date = response.get(response.size() - 1).createTime;
-                            latest_place = response.get(response.size() - 1).getScanner() + response.get(response.size() - 1).getScanBranch();
-
-                            markSearchHistory(module_num, module_date, module_manufacturer, latest_date, latest_place);
-
-                        }
-                        Log.i("Tag", "ListScanCallback 成功");
-                    }
-                });
     }
 
     private void initView() {
@@ -199,4 +163,126 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
 
     }
 
+    @Override
+    public void onBGARefreshLayoutBeginRefreshing(BGARefreshLayout refreshLayout) {
+        indexOfCurrentItem = 0;
+        String url = baseUrl + "scans?filters=%7B%22barcode%22%3A%22" + battery_code + "%22%7D&limit=10&offset=0";
+        OkHttpUtils
+                .get()
+                .url(url)
+                .addHeader("Authorization", " Bearer " + token)
+                .build()
+                .execute(new ListScanCallback() {
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
+                        Log.i("Tag", "ListScanCallback 失败" + e.getMessage());
+                        Toast.makeText(SearchResultActivity.this, "未找到扫描记录", Toast.LENGTH_LONG).show();
+                        if (id == 401)
+                        {
+                            String userName = userSQLite.getUser().getUserName();
+                            token = new RefreshTokenUtil().refreshToken(userName);
+                            Toast.makeText(SearchResultActivity.this, "请求过期，请重试", Toast.LENGTH_SHORT).show();
+                        }
+                        searchResultRefreshLayout.endRefreshing();
+                    }
+
+                    @Override
+                    public void onResponse(List<Scan> response, int id) {
+                        if (response.size()>0)
+                        {
+                            listItem.clear();
+                            for (int i = 0; i < response.size(); i++) {
+                                HashMap<String, Object> map = new HashMap<>();
+                                map.put("ItemTitle", response.get(i).getScanner() + response.get(i).getScanBranch());
+                                map.put("ItemText1", "交付日期：" + response.get(i).createTime);
+                                map.put("ItemText2", "电池包：" + battery_code);
+                                map.put("ItemText4", "匹配车架号：" + carId);
+                                if (carId == null) {
+                                    map.put("ItemText3", "汽车匹配状态：未匹配");
+                                } else {
+                                    map.put("ItemText3", "汽车匹配状态：已匹配");
+                                }
+                                listItem.add(map);
+                            }
+                            srAdapter.notifyDataSetChanged();
+                            searchResultRefreshLayout.endRefreshing();
+
+                            Log.i("Tag", response.toString());
+
+                            latest_date = response.get(response.size() - 1).createTime;
+                            latest_place = response.get(response.size() - 1).getScanner() + response.get(response.size() - 1).getScanBranch();
+
+                            markSearchHistory(module_num, module_date, module_manufacturer, latest_date, latest_place);
+
+                        }
+                        Log.i("Tag", "ListScanCallback 成功");
+                    }
+                });
+    }
+
+    @Override
+    public boolean onBGARefreshLayoutBeginLoadingMore(BGARefreshLayout refreshLayout) {
+        indexOfCurrentItem = indexOfCurrentItem + 10;
+        String url = baseUrl + "scans?filters=%7B%22barcode%22%3A%22" + battery_code + "%22%7D&limit=10&offset=" + indexOfCurrentItem;
+        OkHttpUtils
+                .get()
+                .url(url)
+                .addHeader("Authorization", " Bearer " + token)
+                .build()
+                .execute(new ListScanCallback() {
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
+                        Log.i("Tag", "ListScanCallback 失败" + e.getMessage());
+                        Toast.makeText(SearchResultActivity.this, "未找到扫描记录", Toast.LENGTH_LONG).show();
+                        if (id == 401)
+                        {
+                            String userName = userSQLite.getUser().getUserName();
+                            token = new RefreshTokenUtil().refreshToken(userName);
+                            Toast.makeText(SearchResultActivity.this, "请求过期，请重试", Toast.LENGTH_SHORT).show();
+                        }
+                        searchResultRefreshLayout.endLoadingMore();
+                    }
+
+                    @Override
+                    public void onResponse(List<Scan> response, int id) {
+                        if (response.size()>0)
+                        {
+                            for (int i = 0; i < response.size(); i++) {
+                                HashMap<String, Object> map = new HashMap<>();
+                                map.put("ItemTitle", response.get(i).getScanner() + response.get(i).getScanBranch());
+                                map.put("ItemText1", "交付日期：" + response.get(i).createTime);
+                                map.put("ItemText2", "电池包：" + battery_code);
+                                map.put("ItemText4", "匹配车架号：" + carId);
+                                if (carId == null) {
+                                    map.put("ItemText3", "汽车匹配状态：未匹配");
+                                } else {
+                                    map.put("ItemText3", "汽车匹配状态：已匹配");
+                                }
+                                listItem.add(map);
+                            }
+                            srAdapter.notifyDataSetChanged();
+
+                            Log.i("Tag", response.toString());
+
+                            latest_date = response.get(response.size() - 1).createTime;
+                            latest_place = response.get(response.size() - 1).getScanner() + response.get(response.size() - 1).getScanBranch();
+
+                            markSearchHistory(module_num, module_date, module_manufacturer, latest_date, latest_place);
+
+                        }
+                        else {
+                            Toast.makeText(SearchResultActivity.this, "没有更多了", Toast.LENGTH_SHORT).show();
+                        }
+                        Log.i("Tag", "ListScanCallback 成功");
+                        searchResultRefreshLayout.endLoadingMore();
+
+                    }
+                });
+        return true;
+    }
+
+    // 通过代码方式控制进入正在刷新状态。应用场景：某些应用在 activity 的 onStart 方法中调用，自动进入正在刷新状态获取最新数据
+    public void beginRefreshing() {
+        searchResultRefreshLayout.beginRefreshing();
+    }
 }

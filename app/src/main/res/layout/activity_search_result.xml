@@ -109,11 +109,20 @@
 
     </android.support.v7.widget.CardView>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/search_result_recycleView"
+    <cn.bingoogolapple.refreshlayout.BGARefreshLayout
+        android:id="@+id/searchResultRefreshLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:scrollbars="horizontal"
-        android:paddingTop="6dp"
-        />
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/search_result_recycleView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:scrollbars="horizontal"
+            android:paddingTop="6dp"
+            />
+
+    </cn.bingoogolapple.refreshlayout.BGARefreshLayout>
+
 </LinearLayout>
