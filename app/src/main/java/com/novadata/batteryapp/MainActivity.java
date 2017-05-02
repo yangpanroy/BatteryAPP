@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     static final int DEFAULT_STATUS = -1, USER_COMPANY_BATTERY = 0, USER_COMPANY_CAR = 1, USER_4S = 2;
 
     private static String baseUrl = "http://battery.jinlinglan.com/v1/";
+//    private static String baseUrl = "http://222.199.193.78:9000/v1/";
 
     public static String getBaseUrl() {
         return baseUrl;

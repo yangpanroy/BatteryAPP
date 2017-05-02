@@ -72,7 +72,7 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
         assert searchResultRefreshLayout != null;
         searchResultRefreshLayout.setDelegate(this);
         // 设置下拉刷新和上拉加载更多的风格     参数1：应用程序上下文，参数2：是否具有上拉加载更多功能
-        BGARefreshViewHolder refreshViewHolder = new BGANormalRefreshViewHolder(MainActivity.mainActivity, true);
+        BGARefreshViewHolder refreshViewHolder = new BGANormalRefreshViewHolder(MainActivity.mainActivity, false);
         // 设置下拉刷新和上拉加载更多的风格
         searchResultRefreshLayout.setRefreshViewHolder(refreshViewHolder);
     }
@@ -165,8 +165,7 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
 
     @Override
     public void onBGARefreshLayoutBeginRefreshing(BGARefreshLayout refreshLayout) {
-        indexOfCurrentItem = 0;
-        String url = baseUrl + "scans?filters=%7B%22barcode%22%3A%22" + battery_code + "%22%7D&limit=10&offset=0";
+        String url = baseUrl + "scans?filters=%7B%22barcode%22%3A%22" + battery_code + "%22%7D";
         OkHttpUtils
                 .get()
                 .url(url)
@@ -222,62 +221,6 @@ public class SearchResultActivity extends AppCompatActivity implements MyItemCli
 
     @Override
     public boolean onBGARefreshLayoutBeginLoadingMore(BGARefreshLayout refreshLayout) {
-        indexOfCurrentItem = indexOfCurrentItem + 10;
-        String url = baseUrl + "scans?filters=%7B%22barcode%22%3A%22" + battery_code + "%22%7D&limit=10&offset=" + indexOfCurrentItem;
-        OkHttpUtils
-                .get()
-                .url(url)
-                .addHeader("Authorization", " Bearer " + token)
-                .build()
-                .execute(new ListScanCallback() {
-                    @Override
-                    public void onError(Call call, Exception e, int id) {
-                        Log.i("Tag", "ListScanCallback 失败" + e.getMessage());
-                        Toast.makeText(SearchResultActivity.this, "未找到扫描记录", Toast.LENGTH_LONG).show();
-                        if (id == 401)
-                        {
-                            String userName = userSQLite.getUser().getUserName();
-                            token = new RefreshTokenUtil().refreshToken(userName);
-                            Toast.makeText(SearchResultActivity.this, "请求过期，请重试", Toast.LENGTH_SHORT).show();
-                        }
-                        searchResultRefreshLayout.endLoadingMore();
-                    }
-
-                    @Override
-                    public void onResponse(List<Scan> response, int id) {
-                        if (response.size()>0)
-                        {
-                            for (int i = 0; i < response.size(); i++) {
-                                HashMap<String, Object> map = new HashMap<>();
-                                map.put("ItemTitle", response.get(i).getScanner() + response.get(i).getScanBranch());
-                                map.put("ItemText1", "交付日期：" + response.get(i).createTime);
-                                map.put("ItemText2", "电池包：" + battery_code);
-                                map.put("ItemText4", "匹配车架号：" + carId);
-                                if (carId == null) {
-                                    map.put("ItemText3", "汽车匹配状态：未匹配");
-                                } else {
-                                    map.put("ItemText3", "汽车匹配状态：已匹配");
-                                }
-                                listItem.add(map);
-                            }
-                            srAdapter.notifyDataSetChanged();
-
-                            Log.i("Tag", response.toString());
-
-                            latest_date = response.get(response.size() - 1).createTime;
-                            latest_place = response.get(response.size() - 1).getScanner() + response.get(response.size() - 1).getScanBranch();
-
-                            markSearchHistory(module_num, module_date, module_manufacturer, latest_date, latest_place);
-
-                        }
-                        else {
-                            Toast.makeText(SearchResultActivity.this, "没有更多了", Toast.LENGTH_SHORT).show();
-                        }
-                        Log.i("Tag", "ListScanCallback 成功");
-                        searchResultRefreshLayout.endLoadingMore();
-
-                    }
-                });
         return true;
     }
 

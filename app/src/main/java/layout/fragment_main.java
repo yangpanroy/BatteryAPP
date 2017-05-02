@@ -251,7 +251,7 @@ public class fragment_main extends Fragment implements MyItemClickListener, BGAR
             listItem.add(map);
 
             String battery_code = searchHistoryList.get(i).getModule_num();
-            String url = baseUrl + "scans?filters=%7B%22barcode%22%3A%22" + battery_code + "%22%7D&limit=100&offset=0";
+            String url = baseUrl + "scans?filters=%7B%22barcode%22%3A%22" + battery_code + "%22%7D";
             OkHttpUtils
                     .get()
                     .url(url)
